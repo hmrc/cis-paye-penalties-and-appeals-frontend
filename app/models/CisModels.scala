@@ -16,6 +16,7 @@
 
 package models
 
+import models.shared.PaginationDetails
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
@@ -33,17 +34,9 @@ object CreateCisAppealResponse {
 }
 
 case class ContractorDetails(
-                              hmrcOfficeNumber: String,
+                              hmrcOfficeNumber     : String,
                               schemeReferenceNumber: String
                             )
-
-case class PaginationDetails(
-                              startRow: Long,
-                              endRow: Long,
-                              sortBy: String,
-                              orderBy: String
-                            )
-
 
 case class GetCisAppealablePenaltiesRequest(
                                              hmrcOfficeNumber      : String,
@@ -59,12 +52,12 @@ object GetCisAppealablePenaltiesRequest {
 
   def convertToDataRequest(contractorDetails: ContractorDetails, paginationDetails: PaginationDetails): GetCisAppealablePenaltiesRequest =
     GetCisAppealablePenaltiesRequest(
-      hmrcOfficeNumber = contractorDetails.hmrcOfficeNumber,
+      hmrcOfficeNumber      = contractorDetails.hmrcOfficeNumber,
       schemeReferenceNumber = contractorDetails.schemeReferenceNumber,
-      startRow = paginationDetails.startRow,
-      endRow = paginationDetails.endRow,
-      sortBy = paginationDetails.sortBy,
-      order = paginationDetails.orderBy
+      startRow              = paginationDetails.startRow,
+      endRow                = paginationDetails.endRow,
+      sortBy                = paginationDetails.sortBy,
+      order                 = paginationDetails.orderBy
     )
 }
 
@@ -78,11 +71,11 @@ object GetCisAppealablePenaltiesResponse {
 }
 
 case class GetCisAppealablePenaltyResponse(
-                                              uniqueId: Int,
-                                              issueDate: Option[LocalDate],
+                                              uniqueId        : Int,
+                                              issueDate       : Option[LocalDate],
                                               taxPeriodEndDate: Option[LocalDate],
-                                              penaltyType: Option[String],
-                                              penaltyAmount: Option[Int]
+                                              penaltyType     : Option[String],
+                                              penaltyAmount   : Option[Int]
                                             )
 
 object GetCisAppealablePenaltyResponse {
