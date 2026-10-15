@@ -18,14 +18,15 @@ package services
 
 
 import connectors.CisPayePasConnector
-import models.{ContractorDetails, CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltiesRequest, PaginationDetails}
+import models.shared.PaginationDetails
+import models.{ContractorDetails, CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltiesRequest}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.appealablePenalties.{AppealablePenaltiesViewModel, AppealablePenaltiesViewModelRow}
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future, blocking}
+import scala.concurrent.{ExecutionContext, Future}
 
 class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implicit ec: ExecutionContext) extends Logging {
 
@@ -46,15 +47,14 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
       total = appealablePenalties.total,
       rows = appealablePenalties.appealablePenalties.map { penalty =>
         AppealablePenaltiesViewModelRow(
-          uniqueId = penalty.uniqueId,
-          issueDate = penalty.issueDate,
+          uniqueId         = penalty.uniqueId,
+          issueDate        = penalty.issueDate,
           taxPeriodEndDate = penalty.taxPeriodEndDate,
-          penaltyType = penalty.penaltyType,
-          penaltyAmount = penalty.penaltyAmount
+          typeOfPenalty    = penalty.penaltyType,
+          amount           = penalty.penaltyAmount
         )
       }
     )
-
   }
 
 }
