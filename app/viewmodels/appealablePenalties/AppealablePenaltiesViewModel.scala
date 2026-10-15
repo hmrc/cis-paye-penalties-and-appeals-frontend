@@ -20,13 +20,13 @@ import java.time.LocalDate
 
 case class AppealablePenaltiesViewModel(
                                        total: Int,
-                                       rows: List[AppealablePenaltiesViewModelRow]
+                                       rows : List[AppealablePenaltiesViewModelRow]
                                        )
 
 case class AppealablePenaltiesViewModelRow(
-                                            uniqueId: Int,
-                                            issueDate: Option[LocalDate],
+                                            uniqueId        : Int,
+                                            issueDate       : Option[LocalDate],
                                             taxPeriodEndDate: Option[LocalDate],
-                                            penaltyType: Option[String],
-                                            penaltyAmount: Option[Int]
+                                            typeOfPenalty   : Option[String],
+                                            amount          : Option[Int]
                                           )
