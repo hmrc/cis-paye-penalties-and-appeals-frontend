@@ -71,7 +71,7 @@ object GetCisAppealablePenaltiesResponse {
 }
 
 case class GetCisAppealablePenaltyResponse(
-                                              uniqueId        : Int,
+                                              uniqueId        : Option[Int],
                                               issueDate       : Option[LocalDate],
                                               taxPeriodEndDate: Option[LocalDate],
                                               penaltyType     : Option[String],
