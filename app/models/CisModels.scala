@@ -16,7 +16,6 @@
 
 package models
 
-import models.shared.PaginationDetails
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
@@ -33,11 +32,6 @@ object CreateCisAppealResponse {
     implicit val format: OFormat[CreateCisAppealResponse] = Json.format[CreateCisAppealResponse]
 }
 
-case class ContractorDetails(
-                              hmrcOfficeNumber     : String,
-                              schemeReferenceNumber: String
-                            )
-
 case class GetCisAppealablePenaltiesRequest(
                                              hmrcOfficeNumber      : String,
                                              schemeReferenceNumber : String,
@@ -49,16 +43,6 @@ case class GetCisAppealablePenaltiesRequest(
 
 object GetCisAppealablePenaltiesRequest {
   implicit val format: OFormat[GetCisAppealablePenaltiesRequest] = Json.format[GetCisAppealablePenaltiesRequest]
-
-  def convertToDataRequest(contractorDetails: ContractorDetails, paginationDetails: PaginationDetails): GetCisAppealablePenaltiesRequest =
-    GetCisAppealablePenaltiesRequest(
-      hmrcOfficeNumber      = contractorDetails.hmrcOfficeNumber,
-      schemeReferenceNumber = contractorDetails.schemeReferenceNumber,
-      startRow              = paginationDetails.startRow,
-      endRow                = paginationDetails.endRow,
-      sortBy                = paginationDetails.sortBy,
-      order                 = paginationDetails.orderBy
-    )
 }
 
 case class GetCisAppealablePenaltiesResponse(

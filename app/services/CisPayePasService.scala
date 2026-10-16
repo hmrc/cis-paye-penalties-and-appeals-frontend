@@ -18,8 +18,7 @@ package services
 
 
 import connectors.CisPayePasConnector
-import models.shared.PaginationDetails
-import models.{ContractorDetails, CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltiesRequest}
+import models.{CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltiesRequest}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,15 +36,14 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
     backendConnector.createCisAppeal(createCisAppealRequest)
   }
 
-  def getCisAppealablePenalties(contractorDetails: ContractorDetails, paginationDetails: PaginationDetails)
+  def getCisAppealablePenalties(getCisAppealablePenaltiesRequest: GetCisAppealablePenaltiesRequest)
                                (implicit hc: HeaderCarrier,  request: Request[_]): Future[AppealablePenaltiesViewModel] = {
-    val dataRequest = GetCisAppealablePenaltiesRequest.convertToDataRequest(contractorDetails, paginationDetails)
     logger.debug("[CisPayePasService][getCisAppealablePenalties] Getting appealable penalties")
     for {
-      appealablePenalties <- backendConnector.getCisAppealablePenalties(dataRequest)
+      appealablePenalties <- backendConnector.getCisAppealablePenalties(getCisAppealablePenaltiesRequest)
     } yield AppealablePenaltiesViewModel(
       total = appealablePenalties.total,
-      rows = appealablePenalties.appealablePenalties.map { penalty =>
+      rows  = appealablePenalties.appealablePenalties.map { penalty =>
         AppealablePenaltiesViewModelRow(
           uniqueId         = penalty.uniqueId,
           issueDate        = penalty.issueDate,
