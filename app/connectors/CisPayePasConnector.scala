@@ -55,7 +55,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
   }
 
   def getCisAppealablePenalties(request: GetCisAppealablePenaltiesRequest)(implicit hc: HeaderCarrier): Future[GetCisAppealablePenaltiesResponse] = {
-    http.get(url"$base/cis/penalties")
+    http.post(url"$base/cis/penalties")
       .withBody(Json.toJson(request))
       .execute[Either[UpstreamErrorResponse, GetCisAppealablePenaltiesResponse]]
       .flatMap {
