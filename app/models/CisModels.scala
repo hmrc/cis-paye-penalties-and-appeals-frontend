@@ -37,8 +37,8 @@ case class GetCisAppealablePenaltiesRequest(
                                              schemeReferenceNumber : String,
                                              startRow              : Long,
                                              endRow                : Long,
-                                             sortBy                : String,
-                                             order                 : String
+                                             sortBy                : String = "unique_id",
+                                             order                 : String = "desc"
                                            )
 
 object GetCisAppealablePenaltiesRequest {
