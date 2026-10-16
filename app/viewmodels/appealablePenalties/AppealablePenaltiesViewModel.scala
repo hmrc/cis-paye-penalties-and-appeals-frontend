@@ -28,5 +28,5 @@ case class AppealablePenaltiesViewModelRow(
                                             issueDate        : Option[LocalDate],
                                             taxPeriodEndDate : Option[LocalDate],
                                             typeOfPenalty    : Option[String],
-                                            amount           : Option[Int]
+                                            amount           : Option[BigDecimal]
                                           )

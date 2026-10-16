@@ -33,12 +33,12 @@ object CreateCisAppealResponse {
 }
 
 case class GetCisAppealablePenaltiesRequest(
-                                             hmrcOfficeNumber      : String,
-                                             schemeReferenceNumber : String,
-                                             startRow              : Long,
-                                             endRow                : Long,
-                                             sortBy                : String = "unique_id",
-                                             order                 : String = "desc"
+                                             hmrcOfficeNumber     : String,
+                                             schemeReferenceNumber: String,
+                                             startRow             : Long,
+                                             endRow               : Long,
+                                             sortBy               : String = "unique_id",
+                                             order                : String = "desc"
                                            )
 
 object GetCisAppealablePenaltiesRequest {
@@ -59,7 +59,7 @@ case class GetCisAppealablePenaltyResponse(
                                               issueDate       : Option[LocalDate],
                                               taxPeriodEndDate: Option[LocalDate],
                                               penaltyType     : Option[String],
-                                              penaltyAmount   : Option[Int]
+                                              penaltyAmount   : Option[BigDecimal]
                                             )
 
 object GetCisAppealablePenaltyResponse {

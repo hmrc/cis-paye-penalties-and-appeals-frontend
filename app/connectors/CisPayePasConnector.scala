@@ -35,7 +35,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
 
   private val base = config.baseUrl("cis-paye-penalties-and-appeals") + "/cis-paye-penalties-and-appeals"
 
-  def createCisAppeal(createCisAppealRequest: CreateCisAppealRequest) (implicit hc: HeaderCarrier): Future[CreateCisAppealResponse] = {
+  def createCisAppeal(createCisAppealRequest: CreateCisAppealRequest)(implicit hc: HeaderCarrier): Future[CreateCisAppealResponse] = {
     http.post(url"$base/cis/appeal")
       .withBody(Json.toJson(createCisAppealRequest))
       .execute[Either[UpstreamErrorResponse, CreateCisAppealResponse]]
@@ -62,8 +62,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
         case Right(resp) =>
           logger.debug(s"[CisPayePasConnector][getCisAppealablePenalties] request: ${request}, response: $resp")
           logger.info(s"[CisPayePasConnector][getCisAppealablePenalties] Get success with request: ${request}")
-          Future.successful(
-            resp)
+          Future.successful(resp)
         case Left(error) =>
           logResponse(error, "[CisPayePasConnector][getCisAppealablePenalties]")
           Future.failed(error)

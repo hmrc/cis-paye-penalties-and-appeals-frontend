@@ -20,7 +20,6 @@ package services
 import connectors.CisPayePasConnector
 import models.{CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltiesRequest}
 import play.api.Logging
-import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.appealablePenalties.{AppealablePenaltiesViewModel, AppealablePenaltiesViewModelRow}
 
@@ -30,14 +29,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implicit ec: ExecutionContext) extends Logging {
 
   def createCisAppeal(penaltyId: Long)
-                     (implicit hc: HeaderCarrier,  request: Request[_]): Future[CreateCisAppealResponse] = {
+                     (implicit hc: HeaderCarrier): Future[CreateCisAppealResponse] = {
     logger.debug("[CisPayePasService][createCisAppeal] Creating Cis Appeal")
     val createCisAppealRequest = CreateCisAppealRequest(penaltyId)
     backendConnector.createCisAppeal(createCisAppealRequest)
   }
 
   def getCisAppealablePenalties(getCisAppealablePenaltiesRequest: GetCisAppealablePenaltiesRequest)
-                               (implicit hc: HeaderCarrier,  request: Request[_]): Future[AppealablePenaltiesViewModel] = {
+                               (implicit hc: HeaderCarrier): Future[AppealablePenaltiesViewModel] = {
     logger.debug("[CisPayePasService][getCisAppealablePenalties] Getting appealable penalties")
     for {
       appealablePenalties <- backendConnector.getCisAppealablePenalties(getCisAppealablePenaltiesRequest)
