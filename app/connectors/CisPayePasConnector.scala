@@ -17,7 +17,7 @@
 package connectors
 
 
-import models.{CreateCisAppealRequest, CreateCisAppealResponse}
+import models.{CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltyRequest, GetCisAppealablePenaltyResponse}
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
@@ -36,8 +36,8 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
 
   private val base = config.baseUrl("cis-paye-penalties-and-appeals") + "/cis-paye-penalties-and-appeals"
 
-  def createCisAppeal(createCisAppealRequest: CreateCisAppealRequest) (implicit hc: HeaderCarrier,
-                                               request: Request[_]): Future[CreateCisAppealResponse] = {
+  def createCisAppeal(createCisAppealRequest: CreateCisAppealRequest)(implicit hc: HeaderCarrier,
+                                                                      request: Request[_]): Future[CreateCisAppealResponse] = {
     http.post(url"$base/cis/appeal")
       .withBody(Json.toJson(createCisAppealRequest))
       .execute[Either[UpstreamErrorResponse, CreateCisAppealResponse]]
@@ -53,6 +53,26 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
       .recover {
         case e => throw logResponse(e, "[CisPayePasConnector][createCisAppeal]")
+      }
+  }
+
+  def getCisAppealablePenalty(getCisAppealablePenaltyRequest: GetCisAppealablePenaltyRequest)(implicit hc: HeaderCarrier,
+                                                                                              request: Request[_]): Future[GetCisAppealablePenaltyResponse] = {
+    http.post(url"$base/cis/penalty")
+      .withBody(Json.toJson(getCisAppealablePenaltyRequest))
+      .execute[Either[UpstreamErrorResponse, GetCisAppealablePenaltyResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][getCisAppealablePenalty] request: $getCisAppealablePenaltyRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][getCisAppealablePenalty] Get success with request: $getCisAppealablePenaltyRequest")
+          Future.successful(
+            resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][getCisAppealablePenalty]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][getCisAppealablePenalty]")
       }
   }
 

@@ -18,7 +18,7 @@ package services
 
 
 import connectors.CisPayePasConnector
-import models.{CreateCisAppealRequest, CreateCisAppealResponse}
+import models.{CreateCisAppealRequest, CreateCisAppealResponse, GetCisAppealablePenaltyRequest, GetCisAppealablePenaltyResponse}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,6 +33,12 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
     logger.debug("[CisPayePasService][createCisAppeal] Creating Cis Appeal")
     val createCisAppealRequest = CreateCisAppealRequest(penaltyId)
     backendConnector.createCisAppeal(createCisAppealRequest)
+  }
+
+  def getCisAppealablePenalty(getCisAppealablePenaltyRequest: GetCisAppealablePenaltyRequest)
+                     (implicit hc: HeaderCarrier, request: Request[_]): Future[GetCisAppealablePenaltyResponse] = {
+    logger.debug("[CisPayePasService][getCisAppealablePenaly] Getting Cis Appealable Penalty")
+    backendConnector.getCisAppealablePenalty(getCisAppealablePenaltyRequest)
   }
 
 }

@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.CreateCisAppealRequest
+import models.{CreateCisAppealRequest, GetCisAppealablePenaltyRequest}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -28,6 +28,8 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.*
 import utils.WireMockHelper
+
+import java.time.LocalDate
 
 class CisPayePasConnectorISpec
   extends AnyFreeSpec
@@ -52,6 +54,7 @@ class CisPayePasConnectorISpec
   private lazy val connector = app.injector.instanceOf[CisPayePasConnector]
 
   "CisPayePasConnector Integration Tests" - {
+
     "createCisAppeal()" - {
 
       val createCisAppealRequestJson = Json.obj(
@@ -63,7 +66,7 @@ class CisPayePasConnectorISpec
       
       val createCisAppealPath = "/cis-paye-penalties-and-appeals/cis/appeal"
 
-      "must return CreateCisAppealRequest when the stub returns 200 OK" in {
+      "must return CreateCisAppealResponse when the stub returns 200 OK" in {
         server.stubFor(post(urlPathEqualTo(createCisAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createCisAppealResponseJson.toString())))
         val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
         val result = connector.createCisAppeal(request).futureValue
@@ -99,6 +102,61 @@ class CisPayePasConnectorISpec
         val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
         connector.createCisAppeal(request).futureValue
         server.verify(postRequestedFor(urlPathEqualTo(createCisAppealPath)).withHeader("Content-Type", containing("application/json")))
+      }
+    }
+
+    "getCisAppealablePenalty()" - {
+
+      val getCisAppealablePenaltyRequestJson = Json.obj(
+        "penaltyId" -> 1,
+        "hmrcOfficeNumber" -> "840123",
+        "schemeReferenceNumber" -> "098345"
+      )
+      val getCisAppealablePenaltyResponseJson: JsValue = Json.obj(
+        "issueDate" -> "2023-01-01",
+        "taxPeriodEndDate" -> "2023-04-01",
+        "penaltyType" -> "CIS003",
+        "penaltyAmount" -> 999.23
+      )
+
+      val getCisAppealablePenaltyPath = "/cis-paye-penalties-and-appeals/cis/penalty"
+
+      "must return GetCisAppealablePenaltyResponse when the stub returns 200 OK" in {
+        server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
+        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val result = connector.getCisAppealablePenalty(request).futureValue
+        result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+        server.verify(postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)))
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+        server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(400).withBody("Bad Request")))
+        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val result = connector.getCisAppealablePenalty(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+        server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(500).withBody("Internal Server Error")))
+        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val result = connector.getCisAppealablePenalty(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+      }
+
+      "must make POST request to correct endpoint" in {
+        server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
+        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        connector.getCisAppealablePenalty(request).futureValue
+        server.verify(1, postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)))
+      }
+
+      "must include correct headers in the request" in {
+        server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
+        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        connector.getCisAppealablePenalty(request).futureValue
+        server.verify(postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)).withHeader("Content-Type", containing("application/json")))
       }
     }
   }
