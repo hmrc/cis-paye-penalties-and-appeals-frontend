@@ -60,4 +60,11 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
     backendConnector.getCisAppealablePenalty(getCisAppealablePenaltyRequest)
   }
 
+  def createPayeAppeal(penaltyId: Long)
+                      (implicit hc: HeaderCarrier): Future[CreatePayeAppealResponse] = {
+    logger.debug("[CisPayePasService][createPayeAppeal] Creating Paye Appeal")
+    val createPayeAppealRequest = CreatePayeAppealRequest(penaltyId)
+    backendConnector.createPayeAppeal(createPayeAppealRequest)
+  }
+
 }
