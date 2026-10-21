@@ -32,6 +32,26 @@ object CreateCisAppealResponse {
   implicit val format: OFormat[CreateCisAppealResponse] = Json.format[CreateCisAppealResponse]
 }
 
+case class GetCisAppealablePenaltiesRequest(
+                                             hmrcOfficeNumber     : String,
+                                             schemeReferenceNumber: String,
+                                             startRow             : Long,
+                                             endRow               : Long
+                                           )
+
+object GetCisAppealablePenaltiesRequest {
+  implicit val format: OFormat[GetCisAppealablePenaltiesRequest] = Json.format[GetCisAppealablePenaltiesRequest]
+}
+
+case class GetCisAppealablePenaltiesResponse(
+                                             total: Int,
+                                             appealablePenalties: List[GetCisAppealablePenaltyResponse]
+                                           )
+
+object GetCisAppealablePenaltiesResponse {
+  implicit val format: OFormat[GetCisAppealablePenaltiesResponse] = Json.format[GetCisAppealablePenaltiesResponse]
+}
+
 case class GetCisAppealablePenaltyRequest(
                                            penaltyId: Long,
                                            hmrcOfficeNumber: String,
@@ -43,7 +63,7 @@ object GetCisAppealablePenaltyRequest {
 }
 
 case class GetCisAppealablePenaltyResponse(
-                                            uniqueId: Option[Int],
+                                            uniqueId: Option[Long],
                                             issueDate: Option[LocalDate],
                                             taxPeriodEndDate: Option[LocalDate],
                                             penaltyType: Option[String],
