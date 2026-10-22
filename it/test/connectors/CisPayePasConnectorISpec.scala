@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.{CreateCisAppealRequest, GetCisAppealablePenaltiesRequest, GetCisAppealablePenaltiesResponse, GetCisAppealablePenaltyRequest, GetCisTaxpayerRequest}
+import models.{CreateCisAppealRequest, GetAppealablePenaltiesRequest, GetAppealablePenaltiesResponse, GetAppealablePenaltyRequest, GetCisTaxpayerRequest}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -55,6 +55,7 @@ class CisPayePasConnectorISpec
 
   "CisPayePasConnector Integration Tests" - {
 
+    //CIS
     "createCisAppeal()" - {
 
       val createCisAppealRequestJson = Json.obj(
@@ -141,15 +142,15 @@ class CisPayePasConnectorISpec
           post(urlPathEqualTo(getAppealablePenaltiesUrl))
             .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(penaltiesReturnJson.toString()))
         )
-        val request = penaltiesRequestJson.as[GetCisAppealablePenaltiesRequest]
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
         val result = connector.getCisAppealablePenalties(request).futureValue
-        result mustBe a[GetCisAppealablePenaltiesResponse]
+        result mustBe a[GetAppealablePenaltiesResponse]
         server.verify(postRequestedFor(urlPathEqualTo(getAppealablePenaltiesUrl)))
       }
 
       "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
         server.stubFor(post(urlPathEqualTo(getAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(400).withBody("Bad Request")))
-        val request = penaltiesRequestJson.as[GetCisAppealablePenaltiesRequest]
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
         val result = connector.getCisAppealablePenalties(request).failed.futureValue
         result mustBe an[UpstreamErrorResponse]
         result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
@@ -157,7 +158,7 @@ class CisPayePasConnectorISpec
 
       "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
         server.stubFor(post(urlPathEqualTo(getAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(500).withBody("Internal Server Error")))
-        val request = penaltiesRequestJson.as[GetCisAppealablePenaltiesRequest]
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
         val result = connector.getCisAppealablePenalties(request).failed.futureValue
         result mustBe an[UpstreamErrorResponse]
         result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
@@ -165,14 +166,14 @@ class CisPayePasConnectorISpec
 
       "must make POST request to correct endpoint" in {
         server.stubFor(post(urlPathEqualTo(getAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(penaltiesReturnJson.toString())))
-        val request = penaltiesRequestJson.as[GetCisAppealablePenaltiesRequest]
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
         connector.getCisAppealablePenalties(request).futureValue
         server.verify(1, postRequestedFor(urlPathEqualTo(getAppealablePenaltiesUrl)))
       }
 
       "must include correct headers in the request" in {
         server.stubFor(post(urlPathEqualTo(getAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(penaltiesReturnJson.toString())))
-        val request = penaltiesRequestJson.as[GetCisAppealablePenaltiesRequest]
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
         connector.getCisAppealablePenalties(request).futureValue
         server.verify(postRequestedFor(urlPathEqualTo(getAppealablePenaltiesUrl)).withHeader("Content-Type", containing("application/json")))
       }
@@ -196,7 +197,7 @@ class CisPayePasConnectorISpec
 
       "must return GetCisAppealablePenaltyResponse when the stub returns 200 OK" in {
         server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
-        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val request = getCisAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         val result = connector.getCisAppealablePenalty(request).futureValue
         result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
         server.verify(postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)))
@@ -204,7 +205,7 @@ class CisPayePasConnectorISpec
 
       "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
         server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(400).withBody("Bad Request")))
-        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val request = getCisAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         val result = connector.getCisAppealablePenalty(request).failed.futureValue
         result mustBe an[UpstreamErrorResponse]
         result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
@@ -212,7 +213,7 @@ class CisPayePasConnectorISpec
 
       "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
         server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(500).withBody("Internal Server Error")))
-        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val request = getCisAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         val result = connector.getCisAppealablePenalty(request).failed.futureValue
         result mustBe an[UpstreamErrorResponse]
         result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
@@ -220,14 +221,14 @@ class CisPayePasConnectorISpec
 
       "must make POST request to correct endpoint" in {
         server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
-        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val request = getCisAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         connector.getCisAppealablePenalty(request).futureValue
         server.verify(1, postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)))
       }
 
       "must include correct headers in the request" in {
         server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
-        val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
+        val request = getCisAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         connector.getCisAppealablePenalty(request).futureValue
         server.verify(postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)).withHeader("Content-Type", containing("application/json")))
       }
@@ -317,6 +318,80 @@ class CisPayePasConnectorISpec
         val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
         connector.getCisTaxpayer(request).futureValue
         server.verify(postRequestedFor(urlPathEqualTo(getCisTaxpayerPath)).withHeader("Content-Type", containing("application/json")))
+      }
+    }
+
+    // PAYE
+    "getPayeAppealablePenalties" - {
+
+      val penaltiesRequestJson = Json.obj(
+        "hmrcOfficeNumber" -> "123",
+        "schemeReferenceNumber" -> "AB456",
+        "startRow" -> 1,
+        "endRow" -> 10
+      )
+
+      val penaltiesReturnJson = Json.obj(
+        "total" -> 2,
+        "appealablePenalties" -> Json.arr(
+          Json.obj(
+            "uniqueId" -> 1001,
+            "issueDate" -> "2026-01-15",
+            "taxPeriodEndDate" -> "2025-12-05",
+            "penaltyType" -> "CIS003",
+            "penaltyAmount" -> 100
+          ),
+          Json.obj(
+            "uniqueId" -> 1002,
+            "issueDate" -> "2026-02-20",
+            "taxPeriodEndDate" -> "2026-01-05",
+            "penaltyType" -> "CIS005",
+            "penaltyAmount" -> 200
+          )
+        )
+      )
+
+      val payeAppealablePenaltiesUrl = "/cis-paye-penalties-and-appeals/paye/penalties"
+
+      "must return GetPayeAppealablePenaltiesResponse when the stub returns 200 OK" in {
+        server.stubFor(
+          post(urlPathEqualTo(payeAppealablePenaltiesUrl))
+            .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(penaltiesReturnJson.toString()))
+        )
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
+        val result = connector.getPayeAppealablePenalties(request).futureValue
+        result mustBe a[GetAppealablePenaltiesResponse]
+        server.verify(postRequestedFor(urlPathEqualTo(payeAppealablePenaltiesUrl)))
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+        server.stubFor(post(urlPathEqualTo(payeAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(400).withBody("Bad Request")))
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
+        val result = connector.getPayeAppealablePenalties(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+        server.stubFor(post(urlPathEqualTo(payeAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(500).withBody("Internal Server Error")))
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
+        val result = connector.getPayeAppealablePenalties(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+      }
+
+      "must make POST request to correct endpoint" in {
+        server.stubFor(post(urlPathEqualTo(payeAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(penaltiesReturnJson.toString())))
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
+        connector.getPayeAppealablePenalties(request).futureValue
+        server.verify(1, postRequestedFor(urlPathEqualTo(payeAppealablePenaltiesUrl)))
+      }
+
+      "must include correct headers in the request" in {
+        server.stubFor(post(urlPathEqualTo(payeAppealablePenaltiesUrl)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(penaltiesReturnJson.toString())))
+        val request = penaltiesRequestJson.as[GetAppealablePenaltiesRequest]
+        connector.getPayeAppealablePenalties(request).futureValue
+        server.verify(postRequestedFor(urlPathEqualTo(payeAppealablePenaltiesUrl)).withHeader("Content-Type", containing("application/json")))
       }
     }
   }

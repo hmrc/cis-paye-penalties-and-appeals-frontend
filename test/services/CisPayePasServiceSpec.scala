@@ -47,6 +47,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
 
   "CisPayePasService" - {
 
+    // CIS
     "createCisAppeal" - {
 
       val createCisAppealRequest = CreateCisAppealRequest(1L)
@@ -77,17 +78,17 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
 
     "getCisAppealablePenalties" - {
 
-      val testRequest = GetCisAppealablePenaltiesRequest(
+      val testRequest = GetAppealablePenaltiesRequest(
         hmrcOfficeNumber = "123",
         schemeReferenceNumber = "AB456",
         startRow = 1L,
         endRow = 10L
       )
 
-      val testResponse = GetCisAppealablePenaltiesResponse(
+      val testResponse = GetAppealablePenaltiesResponse(
         total = 2,
         appealablePenalties = List(
-          GetCisAppealablePenaltyResponse(
+          GetAppealablePenaltyResponse(
             uniqueId = Some(10001),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
@@ -134,13 +135,13 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
 
     "getCisAppealablePenalty" - {
 
-      val getCisAppealablePenaltyRequest = GetCisAppealablePenaltyRequest(
+      val getCisAppealablePenaltyRequest = GetAppealablePenaltyRequest(
         penaltyId = 1L,
         hmrcOfficeNumber = "840123",
         schemeReferenceNumber = "098345"
       )
 
-      val getCisAppealablePenaltyResponse = GetCisAppealablePenaltyResponse(
+      val getCisAppealablePenaltyResponse = GetAppealablePenaltyResponse(
         uniqueId = None,
         issueDate = Some(LocalDate.of(2023, 1, 1)),
         taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
@@ -249,6 +250,64 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any())
         verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(secondRequest))(any())
       }
+    }
+  }
+
+  // PAYE
+  "getPayeAppealablePenalties" - {
+
+    val testRequest = GetAppealablePenaltiesRequest(
+      hmrcOfficeNumber = "123",
+      schemeReferenceNumber = "AB456",
+      startRow = 1L,
+      endRow = 10L
+    )
+
+    val testResponse = GetAppealablePenaltiesResponse(
+      total = 2,
+      appealablePenalties = List(
+        GetAppealablePenaltyResponse(
+          uniqueId = Some(10001),
+          issueDate = Some(LocalDate.of(2023, 1, 1)),
+          taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
+          penaltyType = Some("CIS03"),
+          penaltyAmount = Some(BigDecimal(999.23))
+        )
+      )
+    )
+
+    val expectedResponse = AppealablePenaltiesViewModel(
+      total = 2,
+      rows = List(
+        AppealablePenaltiesViewModelRow(
+          uniqueId = Some(10001),
+          issueDate = Some(LocalDate.of(2023, 1, 1)),
+          taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
+          typeOfPenalty = Some("CIS03"),
+          amount = Some(BigDecimal(999.23))
+        )
+      )
+    )
+
+    "must return AppealablePenaltiesViewModel when successful" in {
+      when(mockBackendConnector.getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(testResponse))
+
+      val result = service.getPayeAppealablePenalties(testRequest).futureValue
+
+      result mustBe expectedResponse
+      verify(mockBackendConnector, times(1)).getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier])
+    }
+
+    "must propagate connector failure" in {
+      when(mockBackendConnector.getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
+        .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+      whenReady(service.getPayeAppealablePenalties(testRequest).failed) { exception =>
+        exception mustBe a[RuntimeException]
+        exception.getMessage mustBe "Connector failed"
+      }
+      verify(mockBackendConnector, times(1)).getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier])
     }
   }
 }
