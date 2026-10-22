@@ -23,10 +23,10 @@ import play.api.libs.json.{JsNull, JsSuccess, Json}
 import java.time.LocalDate
 
 class CisPayeModelsSpec extends AnyWordSpec with Matchers {
-  "CreateCisAppealRequest" should {
+  "CreateAppealRequest" should {
 
     "serialize to JSON correctly" in {
-      val request = CreateCisAppealRequest(
+      val request = CreateAppealRequest(
         penaltyId = 1
       )
 
@@ -40,7 +40,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
         "penaltyId" -> 1
       )
 
-      val result = json.validate[CreateCisAppealRequest]
+      val result = json.validate[CreateAppealRequest]
 
       result mustBe a[JsSuccess[_]]
       val request = result.get
@@ -52,15 +52,15 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       val json = Json.obj(
       )
 
-      val result = json.validate[CreateCisAppealRequest]
+      val result = json.validate[CreateAppealRequest]
 
       result.isError mustBe true
     }
   }
-  "CreateCisAppealResponse" should {
+  "CreateAppealResponse" should {
 
     "serialize to JSON correctly when created is true" in {
-      val response = CreateCisAppealResponse(created = true)
+      val response = CreateAppealResponse(created = true)
 
       val json = Json.toJson(response)
 
@@ -68,7 +68,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     }
 
     "serialize to JSON correctly when created is false" in {
-      val response = CreateCisAppealResponse(created = false)
+      val response = CreateAppealResponse(created = false)
 
       val json = Json.toJson(response)
 
@@ -78,7 +78,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     "deserialize from JSON correctly when created is true" in {
       val json = Json.obj("created" -> true)
 
-      val result = json.validate[CreateCisAppealResponse]
+      val result = json.validate[CreateAppealResponse]
 
       result mustBe a[JsSuccess[_]]
       result.get.created mustBe true
@@ -87,7 +87,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     "deserialize from JSON correctly when created is false" in {
       val json = Json.obj("created" -> false)
 
-      val result = json.validate[CreateCisAppealResponse]
+      val result = json.validate[CreateAppealResponse]
 
       result mustBe a[JsSuccess[_]]
       result.get.created mustBe false
@@ -96,7 +96,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     "fail to deserialize when created field is missing" in {
       val json = Json.obj()
 
-      val result = json.validate[CreateCisAppealResponse]
+      val result = json.validate[CreateAppealResponse]
 
       result.isError mustBe true
     }

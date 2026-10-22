@@ -50,10 +50,10 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     // CIS
     "createCisAppeal" - {
 
-      val createCisAppealRequest = CreateCisAppealRequest(1L)
-      val createCisAppealResponse = CreateCisAppealResponse(true)
+      val createCisAppealRequest = CreateAppealRequest(1L)
+      val createCisAppealResponse = CreateAppealResponse(true)
 
-      "must return CreateCisAppealResponse when penaltyId provided" in {
+      "must return CreateAppealResponse when penaltyId provided" in {
         when(mockBackendConnector.createCisAppeal(eqTo(createCisAppealRequest))(any()))
           .thenReturn(Future.successful(createCisAppealResponse))
 
@@ -254,6 +254,34 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
   }
 
   // PAYE
+  "createPayeAppeal" - {
+
+    val createPayeAppealRequest = CreateAppealRequest(1L)
+    val createPayeAppealResponse = CreateAppealResponse(true)
+
+    "must return CreateAppealResponse when penaltyId provided" in {
+      when(mockBackendConnector.createPayeAppeal(eqTo(createPayeAppealRequest))(any()))
+        .thenReturn(Future.successful(createPayeAppealResponse))
+
+      val result = service.createPayeAppeal(createPayeAppealRequest.penaltyId).futureValue
+
+      result mustBe createPayeAppealResponse
+      result.created mustBe true
+      verify(mockBackendConnector, times(1)).createPayeAppeal(eqTo(createPayeAppealRequest))(any())
+    }
+
+    "must propagate connector failure" in {
+      when(mockBackendConnector.createPayeAppeal(eqTo(createPayeAppealRequest))(any()))
+        .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+      whenReady(service.createPayeAppeal(createPayeAppealRequest.penaltyId).failed) { exception =>
+        exception mustBe a[RuntimeException]
+        exception.getMessage mustBe "Connector failed"
+      }
+      verify(mockBackendConnector, times(1)).createPayeAppeal(eqTo(createPayeAppealRequest))(any())
+    }
+  }
+
   "getPayeAppealablePenalties" - {
 
     val testRequest = GetAppealablePenaltiesRequest(
