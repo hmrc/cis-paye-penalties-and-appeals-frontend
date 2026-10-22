@@ -35,6 +35,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
 
   private val base = config.baseUrl("cis-paye-penalties-and-appeals") + "/cis-paye-penalties-and-appeals"
 
+  // CIS
   def createCisAppeal(createCisAppealRequest: CreateCisAppealRequest)(implicit hc: HeaderCarrier): Future[CreateCisAppealResponse] = {
     http.post(url"$base/cis/appeal")
       .withBody(Json.toJson(createCisAppealRequest))
@@ -54,10 +55,10 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
-  def getCisAppealablePenalties(request: GetCisAppealablePenaltiesRequest)(implicit hc: HeaderCarrier): Future[GetCisAppealablePenaltiesResponse] = {
+  def getCisAppealablePenalties(request: GetAppealablePenaltiesRequest)(implicit hc: HeaderCarrier): Future[GetAppealablePenaltiesResponse] = {
     http.post(url"$base/cis/penalties")
       .withBody(Json.toJson(request))
-      .execute[Either[UpstreamErrorResponse, GetCisAppealablePenaltiesResponse]]
+      .execute[Either[UpstreamErrorResponse, GetAppealablePenaltiesResponse]]
       .flatMap {
         case Right(resp) =>
           logger.debug(s"[CisPayePasConnector][getCisAppealablePenalties] request: ${request}, response: $resp")
@@ -72,11 +73,11 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
-  def getCisAppealablePenalty(getCisAppealablePenaltyRequest: GetCisAppealablePenaltyRequest)
-                             (implicit hc: HeaderCarrier): Future[GetCisAppealablePenaltyResponse] = {
+  def getCisAppealablePenalty(getCisAppealablePenaltyRequest: GetAppealablePenaltyRequest)
+                             (implicit hc: HeaderCarrier): Future[GetAppealablePenaltyResponse] = {
     http.post(url"$base/cis/penalty")
       .withBody(Json.toJson(getCisAppealablePenaltyRequest))
-      .execute[Either[UpstreamErrorResponse, GetCisAppealablePenaltyResponse]]
+      .execute[Either[UpstreamErrorResponse, GetAppealablePenaltyResponse]]
       .flatMap {
         case Right(resp) =>
           logger.debug(s"[CisPayePasConnector][getCisAppealablePenalty] request: $getCisAppealablePenaltyRequest, response: $resp")
@@ -108,6 +109,25 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
       .recover {
         case e => throw logResponse(e, "[CisPayePasConnector][getCisTaxpayer]")
+      }
+  }
+
+  // PAYE
+  def getPayeAppealablePenalties(request: GetAppealablePenaltiesRequest)(implicit hc: HeaderCarrier): Future[GetAppealablePenaltiesResponse] = {
+    http.post(url"$base/paye/penalties")
+      .withBody(Json.toJson(request))
+      .execute[Either[UpstreamErrorResponse, GetAppealablePenaltiesResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][getPayeAppealablePenalties] request: ${request}, response: $resp")
+          logger.info(s"[CisPayePasConnector][getPayeAppealablePenalties] Get success with request: ${request}")
+          Future.successful(resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][getPayeAppealablePenalties]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][getPayeAppealablePenalties]")
       }
   }
 
