@@ -17,14 +17,14 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.{CreateCisAppealRequest, GetCisAppealablePenaltiesRequest, GetCisAppealablePenaltiesResponse, GetCisAppealablePenaltyRequest}
+import models.{CreateCisAppealRequest, GetCisAppealablePenaltiesRequest, GetCisAppealablePenaltiesResponse, GetCisAppealablePenaltyRequest, GetCisTaxpayerRequest}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsNull, JsValue, Json}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.*
 import utils.WireMockHelper
@@ -230,6 +230,93 @@ class CisPayePasConnectorISpec
         val request = getCisAppealablePenaltyRequestJson.as[GetCisAppealablePenaltyRequest]
         connector.getCisAppealablePenalty(request).futureValue
         server.verify(postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)).withHeader("Content-Type", containing("application/json")))
+      }
+    }
+
+    "getCisTaxpayer()" - {
+
+      val getCisTaxpayerRequestJson = Json.obj(
+        "hmrcOfficeNumber" -> "123",
+        "schemeReferenceNumber" -> "AB456"
+      )
+      val getCisTaxpayerResponseJson: JsValue = Json.obj(
+        "uniqueId" -> "1000123",
+        "taxOfficeNumber" -> "123",
+        "taxOfficeRef" -> "AB456",
+        "aoDistrict" -> "123",
+        "aoPayType" -> "P",
+        "aoCheckCode" -> "X",
+        "aoReference" -> "00123456",
+        "validBusinessAddr" -> JsNull,
+        "correlation" -> JsNull,
+        "ggAgentId" -> JsNull,
+        "employerName1" -> "ABC",
+        "employerName2" -> JsNull,
+        "agentOwnRef" -> JsNull,
+        "schemeName" -> "ABC Builders Ltd",
+        "utr" -> "1234567890",
+        "enrolledSig" -> JsNull
+      )
+
+      val getCisTaxpayerPath = "/cis-paye-penalties-and-appeals/cis/taxpayer"
+
+      "must return GetCisTaxpayerResponse when the stub returns 200 OK" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).withRequestBody(equalToJson(getCisTaxpayerRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisTaxpayerResponseJson.toString())))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        val result = connector.getCisTaxpayer(request).futureValue
+        result.uniqueId mustBe "1000123"
+        result.taxOfficeNumber mustBe "123"
+        result.taxOfficeRef mustBe "AB456"
+        result.schemeName mustBe Some("ABC Builders Ltd")
+        result.utr mustBe Some("1234567890")
+        result.employerName2 mustBe None
+        server.verify(postRequestedFor(urlPathEqualTo(getCisTaxpayerPath)).withRequestBody(equalToJson(getCisTaxpayerRequestJson.toString())))
+      }
+
+      "must throw UpstreamErrorResponse with status 404 when stub returns 404 Not Found" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json").withBody("""{"message":"CIS taxpayer not found"}""")))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        val result = connector.getCisTaxpayer(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 404
+        result.getMessage must include("CIS taxpayer not found")
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).willReturn(aResponse().withStatus(400).withHeader("Content-Type", "application/json").withBody("""{"message":"Invalid payload","errors":{}}""")))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        val result = connector.getCisTaxpayer(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json").withBody("""{"message":"Unexpected error"}""")))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        val result = connector.getCisTaxpayer(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+      }
+
+      "must fail when stub returns 200 OK with invalid JSON" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{"unexpected":"shape"}""")))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        val result = connector.getCisTaxpayer(request).failed.futureValue
+        result mustBe a[JsValidationException]
+      }
+
+      "must make POST request to correct endpoint" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisTaxpayerResponseJson.toString())))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        connector.getCisTaxpayer(request).futureValue
+        server.verify(1, postRequestedFor(urlPathEqualTo(getCisTaxpayerPath)))
+      }
+
+      "must include correct headers in the request" in {
+        server.stubFor(post(urlPathEqualTo(getCisTaxpayerPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisTaxpayerResponseJson.toString())))
+        val request = getCisTaxpayerRequestJson.as[GetCisTaxpayerRequest]
+        connector.getCisTaxpayer(request).futureValue
+        server.verify(postRequestedFor(urlPathEqualTo(getCisTaxpayerPath)).withHeader("Content-Type", containing("application/json")))
       }
     }
   }

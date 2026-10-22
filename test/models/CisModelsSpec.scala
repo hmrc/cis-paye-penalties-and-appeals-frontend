@@ -18,7 +18,7 @@ package models
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.{JsNull, JsSuccess, Json}
 
 import java.time.LocalDate
 
@@ -334,6 +334,168 @@ class CisModelsSpec extends AnyWordSpec with Matchers {
       )
 
       val result = json.validate[GetCisAppealablePenaltyResponse]
+
+      result.isError mustBe true
+    }
+  }
+
+  "GetCisTaxpayerRequest" should {
+
+    "serialize to JSON correctly" in {
+      val request = GetCisTaxpayerRequest(
+        hmrcOfficeNumber = "123",
+        schemeReferenceNumber = "AB456"
+      )
+
+      val json = Json.toJson(request)
+
+      json mustBe Json.obj(
+        "hmrcOfficeNumber" -> "123",
+        "schemeReferenceNumber" -> "AB456"
+      )
+    }
+
+    "deserialize from JSON correctly" in {
+      val json = Json.obj(
+        "hmrcOfficeNumber" -> "123",
+        "schemeReferenceNumber" -> "AB456"
+      )
+
+      val result = json.validate[GetCisTaxpayerRequest]
+
+      result mustBe a[JsSuccess[_]]
+      result.get mustBe GetCisTaxpayerRequest("123", "AB456")
+    }
+
+    "fail to deserialize when hmrcOfficeNumber is missing" in {
+      val json = Json.obj(
+        "schemeReferenceNumber" -> "AB456"
+      )
+
+      val result = json.validate[GetCisTaxpayerRequest]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when schemeReferenceNumber is missing" in {
+      val json = Json.obj(
+        "hmrcOfficeNumber" -> "123"
+      )
+
+      val result = json.validate[GetCisTaxpayerRequest]
+
+      result.isError mustBe true
+    }
+  }
+
+  "GetCisTaxpayerResponse" should {
+
+    val fullResponse = GetCisTaxpayerResponse(
+      uniqueId = "1000123",
+      taxOfficeNumber = "123",
+      taxOfficeRef = "AB456",
+      aoDistrict = Some("123"),
+      aoPayType = Some("P"),
+      aoCheckCode = Some("X"),
+      aoReference = Some("00123456"),
+      validBusinessAddr = Some("Y"),
+      correlation = Some("corr"),
+      ggAgentId = Some("agent"),
+      employerName1 = Some("ABC"),
+      employerName2 = Some("DEF"),
+      agentOwnRef = Some("own"),
+      schemeName = Some("ABC Builders Ltd"),
+      utr = Some("1234567890"),
+      enrolledSig = Some("sig")
+    )
+
+    val fullJson = Json.obj(
+      "uniqueId" -> "1000123",
+      "taxOfficeNumber" -> "123",
+      "taxOfficeRef" -> "AB456",
+      "aoDistrict" -> "123",
+      "aoPayType" -> "P",
+      "aoCheckCode" -> "X",
+      "aoReference" -> "00123456",
+      "validBusinessAddr" -> "Y",
+      "correlation" -> "corr",
+      "ggAgentId" -> "agent",
+      "employerName1" -> "ABC",
+      "employerName2" -> "DEF",
+      "agentOwnRef" -> "own",
+      "schemeName" -> "ABC Builders Ltd",
+      "utr" -> "1234567890",
+      "enrolledSig" -> "sig"
+    )
+
+    "serialize to JSON correctly" in {
+      Json.toJson(fullResponse) mustBe fullJson
+    }
+
+    "deserialize from JSON correctly" in {
+      val result = fullJson.validate[GetCisTaxpayerResponse]
+
+      result mustBe a[JsSuccess[_]]
+      result.get mustBe fullResponse
+    }
+
+    "deserialize when optional fields are missing" in {
+      val json = Json.obj(
+        "uniqueId" -> "1000123",
+        "taxOfficeNumber" -> "123",
+        "taxOfficeRef" -> "AB456"
+      )
+
+      val result = json.validate[GetCisTaxpayerResponse]
+
+      result mustBe a[JsSuccess[_]]
+      result.get.uniqueId mustBe "1000123"
+      result.get.schemeName mustBe None
+      result.get.utr mustBe None
+    }
+
+    "deserialize when optional fields are null" in {
+      val json = fullJson ++ Json.obj(
+        "validBusinessAddr" -> JsNull,
+        "employerName2" -> JsNull,
+        "enrolledSig" -> JsNull
+      )
+
+      val result = json.validate[GetCisTaxpayerResponse]
+
+      result mustBe a[JsSuccess[_]]
+      result.get.validBusinessAddr mustBe None
+      result.get.employerName2 mustBe None
+      result.get.enrolledSig mustBe None
+      result.get.employerName1 mustBe Some("ABC")
+    }
+
+    "not write None fields to JSON" in {
+      val json = Json.toJson(fullResponse.copy(utr = None))
+
+      (json \ "utr").toOption mustBe None
+    }
+
+    "fail to deserialize when uniqueId is missing" in {
+      val result = (fullJson - "uniqueId").validate[GetCisTaxpayerResponse]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when taxOfficeNumber is missing" in {
+      val result = (fullJson - "taxOfficeNumber").validate[GetCisTaxpayerResponse]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when taxOfficeRef is missing" in {
+      val result = (fullJson - "taxOfficeRef").validate[GetCisTaxpayerResponse]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when type is incorrect" in {
+      val result = (fullJson ++ Json.obj("uniqueId" -> 1000123)).validate[GetCisTaxpayerResponse]
 
       result.isError mustBe true
     }
