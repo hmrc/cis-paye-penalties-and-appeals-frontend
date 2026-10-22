@@ -92,6 +92,25 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
+  def getCisTaxpayer(getCisTaxpayerRequest: GetCisTaxpayerRequest)
+                    (implicit hc: HeaderCarrier): Future[GetCisTaxpayerResponse] = {
+    http.post(url"$base/cis/taxpayer")
+      .withBody(Json.toJson(getCisTaxpayerRequest))
+      .execute[Either[UpstreamErrorResponse, GetCisTaxpayerResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][getCisTaxpayer] request: $getCisTaxpayerRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][getCisTaxpayer] Get success with request: $getCisTaxpayerRequest")
+          Future.successful(resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][getCisTaxpayer]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][getCisTaxpayer]")
+      }
+  }
+
   private def logResponse(e: Throwable, method: String): Throwable = {
     logger.error(s"[$method] Error occurred: ${e.getMessage}", e)
     e

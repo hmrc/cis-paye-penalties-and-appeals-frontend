@@ -60,4 +60,10 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
     backendConnector.getCisAppealablePenalty(getCisAppealablePenaltyRequest)
   }
 
+  def getCisTaxpayer(getCisTaxpayerRequest: GetCisTaxpayerRequest)
+                    (implicit hc: HeaderCarrier): Future[GetCisTaxpayerResponse] = {
+    logger.debug("[CisPayePasService][getCisTaxpayer] Getting Cis Taxpayer")
+    backendConnector.getCisTaxpayer(getCisTaxpayerRequest)
+  }
+
 }

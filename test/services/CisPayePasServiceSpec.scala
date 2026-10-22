@@ -24,7 +24,7 @@ import models.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import viewmodels.appealablePenalties.{AppealablePenaltiesViewModel, AppealablePenaltiesViewModelRow}
 
 import java.time.LocalDate
@@ -168,6 +168,86 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
           exception.getMessage mustBe "Connector failed"
         }
         verify(mockBackendConnector, times(1)).getCisAppealablePenalty(eqTo(getCisAppealablePenaltyRequest))(any())
+      }
+    }
+
+    "getCisTaxpayer" - {
+
+      val getCisTaxpayerRequest = GetCisTaxpayerRequest(
+        hmrcOfficeNumber = "123",
+        schemeReferenceNumber = "AB456"
+      )
+
+      def taxpayerResponse(uniqueId: String, taxOfficeRef: String): GetCisTaxpayerResponse =
+        GetCisTaxpayerResponse(
+          uniqueId = uniqueId,
+          taxOfficeNumber = "123",
+          taxOfficeRef = taxOfficeRef,
+          aoDistrict = Some("123"),
+          aoPayType = Some("P"),
+          aoCheckCode = Some("X"),
+          aoReference = Some("00123456"),
+          validBusinessAddr = None,
+          correlation = None,
+          ggAgentId = None,
+          employerName1 = Some("ABC"),
+          employerName2 = None,
+          agentOwnRef = None,
+          schemeName = Some("ABC Builders Ltd"),
+          utr = Some("1234567890"),
+          enrolledSig = None
+        )
+
+      val getCisTaxpayerResponse = taxpayerResponse("1000123", "AB456")
+
+      "must return GetCisTaxpayerResponse when request provided" in {
+        when(mockBackendConnector.getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any()))
+          .thenReturn(Future.successful(getCisTaxpayerResponse))
+
+        val result = service.getCisTaxpayer(getCisTaxpayerRequest).futureValue
+
+        result mustBe getCisTaxpayerResponse
+        result.schemeName mustBe Some("ABC Builders Ltd")
+        verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any())
+      }
+
+      "must propagate a 404 UpstreamErrorResponse unchanged" in {
+        val notFound = UpstreamErrorResponse("CIS taxpayer not found", 404)
+        when(mockBackendConnector.getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any()))
+          .thenReturn(Future.failed(notFound))
+
+        whenReady(service.getCisTaxpayer(getCisTaxpayerRequest).failed) { exception =>
+          exception mustBe notFound
+          exception.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 404
+        }
+        verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any())
+      }
+
+      "must propagate connector failure" in {
+        when(mockBackendConnector.getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        whenReady(service.getCisTaxpayer(getCisTaxpayerRequest).failed) { exception =>
+          exception mustBe a[RuntimeException]
+          exception.getMessage mustBe "Connector failed"
+        }
+        verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any())
+      }
+
+      "must handle consecutive requests independently" in {
+        val secondRequest = GetCisTaxpayerRequest(hmrcOfficeNumber = "456", schemeReferenceNumber = "CD789")
+        val secondResponse = taxpayerResponse("2000456", "CD789")
+
+        when(mockBackendConnector.getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any()))
+          .thenReturn(Future.successful(getCisTaxpayerResponse))
+        when(mockBackendConnector.getCisTaxpayer(eqTo(secondRequest))(any()))
+          .thenReturn(Future.successful(secondResponse))
+
+        service.getCisTaxpayer(getCisTaxpayerRequest).futureValue mustBe getCisTaxpayerResponse
+        service.getCisTaxpayer(secondRequest).futureValue mustBe secondResponse
+
+        verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any())
+        verify(mockBackendConnector, times(1)).getCisTaxpayer(eqTo(secondRequest))(any())
       }
     }
   }
