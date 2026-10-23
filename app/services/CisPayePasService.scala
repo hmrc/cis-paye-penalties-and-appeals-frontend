@@ -93,4 +93,11 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
       }
     )
   }
+
+  def getPayeAppealablePenalty(getPayeAppealablePenaltyRequest: GetAppealablePenaltyRequest)
+                             (implicit hc: HeaderCarrier): Future[GetAppealablePenaltyResponse] = {
+    logger.debug("[CisPayePasService][getPayeAppealablePenaly] Getting Paye Appealable Penalty")
+    backendConnector.getPayeAppealablePenalty(getPayeAppealablePenaltyRequest)
+  }
+  
 }

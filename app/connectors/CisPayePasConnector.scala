@@ -150,6 +150,26 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
+  def getPayeAppealablePenalty(getPayeAppealablePenaltyRequest: GetAppealablePenaltyRequest)
+                             (implicit hc: HeaderCarrier): Future[GetAppealablePenaltyResponse] = {
+    http.post(url"$base/paye/penalty")
+      .withBody(Json.toJson(getPayeAppealablePenaltyRequest))
+      .execute[Either[UpstreamErrorResponse, GetAppealablePenaltyResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][getPayeAppealablePenalty] request: $getPayeAppealablePenaltyRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][getPayeAppealablePenalty] Get success with request: $getPayeAppealablePenaltyRequest")
+          Future.successful(
+            resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][getPayeAppealablePenalty]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][getPayeAppealablePenalty]")
+      }
+  }
+
   private def logResponse(e: Throwable, method: String): Throwable = {
     logger.error(s"[$method] Error occurred: ${e.getMessage}", e)
     e
