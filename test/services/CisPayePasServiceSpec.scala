@@ -310,4 +310,43 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       verify(mockBackendConnector, times(1)).getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier])
     }
   }
+
+  "getPayeAppealablePenalty" - {
+
+    val getPayeAppealablePenaltyRequest = GetAppealablePenaltyRequest(
+      penaltyId = 1L,
+      hmrcOfficeNumber = "840123",
+      schemeReferenceNumber = "098345"
+    )
+
+    val getPayeAppealablePenaltyResponse = GetAppealablePenaltyResponse(
+      uniqueId = None,
+      issueDate = Some(LocalDate.of(2023, 1, 1)),
+      taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
+      penaltyType = Some("CIS003"),
+      penaltyAmount = Some(BigDecimal("999.23"))
+    )
+
+    "must return GetPayeAppealablePenaltyResponse when request provided" in {
+      when(mockBackendConnector.getPayeAppealablePenalty(eqTo(getPayeAppealablePenaltyRequest))(any()))
+        .thenReturn(Future.successful(getPayeAppealablePenaltyResponse))
+
+      val result = service.getPayeAppealablePenalty(getPayeAppealablePenaltyRequest).futureValue
+
+      result mustBe getPayeAppealablePenaltyResponse
+      result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+      verify(mockBackendConnector, times(1)).getPayeAppealablePenalty(eqTo(getPayeAppealablePenaltyRequest))(any())
+    }
+
+    "must propagate connector failure" in {
+      when(mockBackendConnector.getPayeAppealablePenalty(eqTo(getPayeAppealablePenaltyRequest))(any()))
+        .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+      whenReady(service.getPayeAppealablePenalty(getPayeAppealablePenaltyRequest).failed) { exception =>
+        exception mustBe a[RuntimeException]
+        exception.getMessage mustBe "Connector failed"
+      }
+      verify(mockBackendConnector, times(1)).getPayeAppealablePenalty(eqTo(getPayeAppealablePenaltyRequest))(any())
+    }
+  }
 }

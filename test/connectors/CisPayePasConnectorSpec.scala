@@ -450,14 +450,14 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
             uniqueId = Some(10001),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-            penaltyType = Some("CIS03"),
+            penaltyType = Some("PAYE3"),
             penaltyAmount = Some(BigDecimal(999.23))
           ),
           GetAppealablePenaltyResponse(
             uniqueId = Some(10002),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-            penaltyType = Some("CIS03"),
+            penaltyType = Some("PAYE3"),
             penaltyAmount = Some(BigDecimal(999.23))
           )
         )
@@ -535,6 +535,105 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
 
         val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
         connector.getPayeAppealablePenalties(testRequest)(customHc).futureValue
+
+        verify(mockHttpClient, times(1)).post(any())(any())
+      }
+    }
+
+    "getPayeAppealablePenalty" - {
+
+      val testRequest = GetAppealablePenaltyRequest(
+        penaltyId = 1L,
+        hmrcOfficeNumber = "840123",
+        schemeReferenceNumber = "098345"
+      )
+
+      "must return GetPayeAppealablePenaltyResponse when request is successful" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val expectedResult = GetAppealablePenaltyResponse(
+          uniqueId = None,
+          issueDate = Some(LocalDate.of(2023, 1, 1)),
+          taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
+          penaltyType = Some("PAYE3"),
+          penaltyAmount = Some(BigDecimal("999.23"))
+        )
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, GetAppealablePenaltyResponse]](any(), any()))
+          .thenReturn(Future.successful(Right(expectedResult)))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+        val result = connector.getPayeAppealablePenalty(testRequest).futureValue
+
+        result mustBe expectedResult
+        result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+      }
+
+      "must handle Left response with UpstreamErrorResponse" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+
+        val upstreamError = uk.gov.hmrc.http.UpstreamErrorResponse("Bad Request", 400)
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, GetAppealablePenaltyResponse]](any(), any()))
+          .thenReturn(Future.successful(Left(upstreamError)))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+
+        whenReady(connector.getPayeAppealablePenalty(testRequest).failed) { exception =>
+          exception mustBe upstreamError
+        }
+      }
+
+      "must handle general exceptions" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val runtimeException = new RuntimeException("Connection failed")
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, GetAppealablePenaltyResponse]](any(), any()))
+          .thenReturn(Future.failed(runtimeException))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+
+        whenReady(connector.getPayeAppealablePenalty(testRequest).failed) { exception =>
+          exception mustBe a[RuntimeException]
+          exception.getMessage mustBe "Connection failed"
+        }
+      }
+
+      "must pass implicit HeaderCarrier to http client" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val customHc = HeaderCarrier(sessionId = Some(uk.gov.hmrc.http.SessionId("test-session")))
+        val expectedResult = GetAppealablePenaltyResponse(
+          uniqueId = None,
+          issueDate = Some(LocalDate.of(2023, 1, 1)),
+          taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
+          penaltyType = Some("PAYE3"),
+          penaltyAmount = Some(BigDecimal("999.23"))
+        )
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, GetAppealablePenaltyResponse]](any(), any()))
+          .thenReturn(Future.successful(Right(expectedResult)))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+        connector.getPayeAppealablePenalty(testRequest)(customHc).futureValue
 
         verify(mockHttpClient, times(1)).post(any())(any())
       }
