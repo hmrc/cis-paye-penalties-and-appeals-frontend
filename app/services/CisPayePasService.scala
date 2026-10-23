@@ -30,9 +30,9 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
 
   // CIS
   def createCisAppeal(penaltyId: Long)
-                     (implicit hc: HeaderCarrier): Future[CreateCisAppealResponse] = {
+                     (implicit hc: HeaderCarrier): Future[CreateAppealResponse] = {
     logger.debug("[CisPayePasService][createCisAppeal] Creating Cis Appeal")
-    val createCisAppealRequest = CreateCisAppealRequest(penaltyId)
+    val createCisAppealRequest = CreateAppealRequest(penaltyId)
     backendConnector.createCisAppeal(createCisAppealRequest)
   }
 
@@ -68,6 +68,13 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
   }
 
   // PAYE
+  def createPayeAppeal(penaltyId: Long)
+                     (implicit hc: HeaderCarrier): Future[CreateAppealResponse] = {
+    logger.debug("[CisPayePasService][createPayeAppeal] Creating Paye Appeal")
+    val createPayeAppealRequest = CreateAppealRequest(penaltyId)
+    backendConnector.createPayeAppeal(createPayeAppealRequest)
+  }
+
   def getPayeAppealablePenalties(request: GetAppealablePenaltiesRequest)
                                (implicit hc: HeaderCarrier): Future[AppealablePenaltiesViewModel] = {
     logger.debug("[CisPayePasService][getPayeAppealablePenalties] Getting appealable penalties")

@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.{CreateCisAppealRequest, GetAppealablePenaltiesRequest, GetAppealablePenaltiesResponse, GetAppealablePenaltyRequest, GetCisTaxpayerRequest}
+import models.{CreateAppealRequest, GetAppealablePenaltiesRequest, GetAppealablePenaltiesResponse, GetAppealablePenaltyRequest, GetCisTaxpayerRequest}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -67,9 +67,9 @@ class CisPayePasConnectorISpec
 
       val createCisAppealPath = "/cis-paye-penalties-and-appeals/cis/appeal"
 
-      "must return CreateCisAppealResponse when the stub returns 200 OK" in {
+      "must return CreateAppealResponse when the stub returns 200 OK" in {
         server.stubFor(post(urlPathEqualTo(createCisAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createCisAppealResponseJson.toString())))
-        val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
+        val request = createCisAppealRequestJson.as[CreateAppealRequest]
         val result = connector.createCisAppeal(request).futureValue
         result.created mustBe true
         server.verify(postRequestedFor(urlPathEqualTo(createCisAppealPath)))
@@ -77,7 +77,7 @@ class CisPayePasConnectorISpec
 
       "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
         server.stubFor(post(urlPathEqualTo(createCisAppealPath)).willReturn(aResponse().withStatus(400).withBody("Bad Request")))
-        val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
+        val request = createCisAppealRequestJson.as[CreateAppealRequest]
         val result = connector.createCisAppeal(request).failed.futureValue
         result mustBe an[UpstreamErrorResponse]
         result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
@@ -85,7 +85,7 @@ class CisPayePasConnectorISpec
 
       "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
         server.stubFor(post(urlPathEqualTo(createCisAppealPath)).willReturn(aResponse().withStatus(500).withBody("Internal Server Error")))
-        val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
+        val request = createCisAppealRequestJson.as[CreateAppealRequest]
         val result = connector.createCisAppeal(request).failed.futureValue
         result mustBe an[UpstreamErrorResponse]
         result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
@@ -93,14 +93,14 @@ class CisPayePasConnectorISpec
 
       "must make POST request to correct endpoint" in {
         server.stubFor(post(urlPathEqualTo(createCisAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createCisAppealResponseJson.toString())))
-        val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
+        val request = createCisAppealRequestJson.as[CreateAppealRequest]
         connector.createCisAppeal(request).futureValue
         server.verify(1, postRequestedFor(urlPathEqualTo(createCisAppealPath)))
       }
 
       "must include correct headers in the request" in {
         server.stubFor(post(urlPathEqualTo(createCisAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createCisAppealResponseJson.toString())))
-        val request = createCisAppealRequestJson.as[CreateCisAppealRequest]
+        val request = createCisAppealRequestJson.as[CreateAppealRequest]
         connector.createCisAppeal(request).futureValue
         server.verify(postRequestedFor(urlPathEqualTo(createCisAppealPath)).withHeader("Content-Type", containing("application/json")))
       }
@@ -321,7 +321,57 @@ class CisPayePasConnectorISpec
       }
     }
 
-    // PAYE
+    //PAYE
+    "createPayeAppeal()" - {
+
+      val createPayeAppealRequestJson = Json.obj(
+        "penaltyId" -> 1
+      )
+      val createPayeAppealResponseJson: JsValue = Json.obj(
+        "created" -> true
+      )
+
+      val createPayeAppealPath = "/cis-paye-penalties-and-appeals/paye/appeal"
+
+      "must return CreateAppealResponse when the stub returns 200 OK" in {
+        server.stubFor(post(urlPathEqualTo(createPayeAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createPayeAppealResponseJson.toString())))
+        val request = createPayeAppealRequestJson.as[CreateAppealRequest]
+        val result = connector.createPayeAppeal(request).futureValue
+        result.created mustBe true
+        server.verify(postRequestedFor(urlPathEqualTo(createPayeAppealPath)))
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+        server.stubFor(post(urlPathEqualTo(createPayeAppealPath)).willReturn(aResponse().withStatus(400).withBody("Bad Request")))
+        val request = createPayeAppealRequestJson.as[CreateAppealRequest]
+        val result = connector.createPayeAppeal(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+      }
+
+      "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+        server.stubFor(post(urlPathEqualTo(createPayeAppealPath)).willReturn(aResponse().withStatus(500).withBody("Internal Server Error")))
+        val request = createPayeAppealRequestJson.as[CreateAppealRequest]
+        val result = connector.createPayeAppeal(request).failed.futureValue
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+      }
+
+      "must make POST request to correct endpoint" in {
+        server.stubFor(post(urlPathEqualTo(createPayeAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createPayeAppealResponseJson.toString())))
+        val request = createPayeAppealRequestJson.as[CreateAppealRequest]
+        connector.createPayeAppeal(request).futureValue
+        server.verify(1, postRequestedFor(urlPathEqualTo(createPayeAppealPath)))
+      }
+
+      "must include correct headers in the request" in {
+        server.stubFor(post(urlPathEqualTo(createPayeAppealPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(createPayeAppealResponseJson.toString())))
+        val request = createPayeAppealRequestJson.as[CreateAppealRequest]
+        connector.createPayeAppeal(request).futureValue
+        server.verify(postRequestedFor(urlPathEqualTo(createPayeAppealPath)).withHeader("Content-Type", containing("application/json")))
+      }
+    }
+
     "getPayeAppealablePenalties" - {
 
       val penaltiesRequestJson = Json.obj(

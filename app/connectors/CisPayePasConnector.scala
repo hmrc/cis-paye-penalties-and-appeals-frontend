@@ -36,10 +36,10 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
   private val base = config.baseUrl("cis-paye-penalties-and-appeals") + "/cis-paye-penalties-and-appeals"
 
   // CIS
-  def createCisAppeal(createCisAppealRequest: CreateCisAppealRequest)(implicit hc: HeaderCarrier): Future[CreateCisAppealResponse] = {
+  def createCisAppeal(createCisAppealRequest: CreateAppealRequest)(implicit hc: HeaderCarrier): Future[CreateAppealResponse] = {
     http.post(url"$base/cis/appeal")
       .withBody(Json.toJson(createCisAppealRequest))
-      .execute[Either[UpstreamErrorResponse, CreateCisAppealResponse]]
+      .execute[Either[UpstreamErrorResponse, CreateAppealResponse]]
       .flatMap {
         case Right(resp) =>
           logger.debug(s"[CisPayePasConnector][createCisAppeal] Penalty Id: ${createCisAppealRequest.penaltyId}, response: $resp")
@@ -113,6 +113,25 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
   }
 
   // PAYE
+  def createPayeAppeal(createPayeAppealRequest: CreateAppealRequest)(implicit hc: HeaderCarrier): Future[CreateAppealResponse] = {
+    http.post(url"$base/paye/appeal")
+      .withBody(Json.toJson(createPayeAppealRequest))
+      .execute[Either[UpstreamErrorResponse, CreateAppealResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][createPayeAppeal] Penalty Id: ${createPayeAppealRequest.penaltyId}, response: $resp")
+          logger.info(s"[CisPayePasConnector][createPayeAppeal] Create success with penalty Id: ${createPayeAppealRequest.penaltyId}")
+          Future.successful(
+            resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][createPayeAppeal]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][createPayeAppeal]")
+      }
+  }
+
   def getPayeAppealablePenalties(request: GetAppealablePenaltiesRequest)(implicit hc: HeaderCarrier): Future[GetAppealablePenaltiesResponse] = {
     http.post(url"$base/paye/penalties")
       .withBody(Json.toJson(request))

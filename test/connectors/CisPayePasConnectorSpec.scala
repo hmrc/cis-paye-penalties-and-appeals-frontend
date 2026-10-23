@@ -42,17 +42,17 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
     // CIS
     "createCisAppeal" - {
 
-      "must return CreateCisAppealResponse when request is successful" in {
+      "must return CreateAppealResponse when request is successful" in {
         val mockHttpClient = mock[HttpClientV2]
         val mockConfig = mock[ServicesConfig]
         val mockRequestBuilder = mock[RequestBuilder]
-        val testRequest = CreateCisAppealRequest(penaltyId = 1)
-        val expectedResult = CreateCisAppealResponse(true)
+        val testRequest = CreateAppealRequest(penaltyId = 1)
+        val expectedResult = CreateAppealResponse(true)
 
         when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
         when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateCisAppealResponse]](any(), any()))
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
           .thenReturn(Future.successful(Right(expectedResult)))
 
         val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
@@ -66,14 +66,14 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockHttpClient = mock[HttpClientV2]
         val mockConfig = mock[ServicesConfig]
         val mockRequestBuilder = mock[RequestBuilder]
-        val testRequest = CreateCisAppealRequest(penaltyId = 1)
+        val testRequest = CreateAppealRequest(penaltyId = 1)
 
         val upstreamError = uk.gov.hmrc.http.UpstreamErrorResponse("Bad Request", 400)
 
         when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
         when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateCisAppealResponse]](any(), any()))
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
           .thenReturn(Future.successful(Left(upstreamError)))
 
         val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
@@ -87,13 +87,13 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockHttpClient = mock[HttpClientV2]
         val mockConfig = mock[ServicesConfig]
         val mockRequestBuilder = mock[RequestBuilder]
-        val testRequest = CreateCisAppealRequest(penaltyId = 1)
+        val testRequest = CreateAppealRequest(penaltyId = 1)
         val runtimeException = new RuntimeException("Connection failed")
 
         when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
         when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateCisAppealResponse]](any(), any()))
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
           .thenReturn(Future.failed(runtimeException))
 
         val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
@@ -109,13 +109,13 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockConfig = mock[ServicesConfig]
         val mockRequestBuilder = mock[RequestBuilder]
         val customHc = HeaderCarrier(sessionId = Some(uk.gov.hmrc.http.SessionId("test-session")))
-        val testRequest = CreateCisAppealRequest(penaltyId = 1)
-        val expectedResult = CreateCisAppealResponse(created = true)
+        val testRequest = CreateAppealRequest(penaltyId = 1)
+        val expectedResult = CreateAppealResponse(created = true)
 
         when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
         when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateCisAppealResponse]](any(), any()))
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
           .thenReturn(Future.successful(Right(expectedResult)))
 
         val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
@@ -434,6 +434,91 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
     }
 
     // PAYE
+    "createPayeAppeal" - {
+
+      "must return CreateAppealResponse when request is successful" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val testRequest = CreateAppealRequest(penaltyId = 1)
+        val expectedResult = CreateAppealResponse(true)
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
+          .thenReturn(Future.successful(Right(expectedResult)))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+        val result = connector.createPayeAppeal(testRequest).futureValue
+
+        result mustBe expectedResult
+        result.created mustBe true
+      }
+
+      "must handle Left response with UpstreamErrorResponse" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val testRequest = CreateAppealRequest(penaltyId = 1)
+
+        val upstreamError = uk.gov.hmrc.http.UpstreamErrorResponse("Bad Request", 400)
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
+          .thenReturn(Future.successful(Left(upstreamError)))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+
+        whenReady(connector.createPayeAppeal(testRequest).failed) { exception =>
+          exception mustBe upstreamError
+        }
+      }
+
+      "must handle general exceptions" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val testRequest = CreateAppealRequest(penaltyId = 1)
+        val runtimeException = new RuntimeException("Connection failed")
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
+          .thenReturn(Future.failed(runtimeException))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+
+        whenReady(connector.createPayeAppeal(testRequest).failed) { exception =>
+          exception mustBe a[RuntimeException]
+          exception.getMessage mustBe "Connection failed"
+        }
+      }
+
+      "must pass implicit HeaderCarrier to http client" in {
+        val mockHttpClient = mock[HttpClientV2]
+        val mockConfig = mock[ServicesConfig]
+        val mockRequestBuilder = mock[RequestBuilder]
+        val customHc = HeaderCarrier(sessionId = Some(uk.gov.hmrc.http.SessionId("test-session")))
+        val testRequest = CreateAppealRequest(penaltyId = 1)
+        val expectedResult = CreateAppealResponse(created = true)
+
+        when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, CreateAppealResponse]](any(), any()))
+          .thenReturn(Future.successful(Right(expectedResult)))
+
+        val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+        connector.createPayeAppeal(testRequest)(customHc).futureValue
+
+        verify(mockHttpClient, times(1)).post(any())(any())
+      }
+    }
+
     "getPayeAppealablePenalties" - {
 
       val testRequest = GetAppealablePenaltiesRequest(
