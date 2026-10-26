@@ -507,8 +507,8 @@ class CisPayePasConnectorISpec
         "schemeReferenceNumber" -> "AB456"
       )
       val getPayeTaxpayerResponseJson: JsValue = Json.obj(
-        "uniqueId" -> "1000123",
-        "instanceId" -> "inst-1",
+        "uniqueId" -> 1000123,
+        "instanceId" -> 2000123,
         "districtNumber" -> "123",
         "employerRef" -> "AB456",
         "employerName1" -> "ABC",
@@ -523,8 +523,8 @@ class CisPayePasConnectorISpec
         val request = getPayeTaxpayerRequestJson.as[GetTaxpayerRequest]
         val result = connector.getPayeTaxpayer(request).futureValue
         result mustBe a[GetPayeTaxpayerResponse]
-        result.uniqueId mustBe "1000123"
-        result.instanceId mustBe "inst-1"
+        result.uniqueId mustBe 1000123L
+        result.instanceId mustBe 2000123L
         result.districtNumber mustBe "123"
         result.employerRef mustBe "AB456"
         result.employerName1 mustBe Some("ABC")

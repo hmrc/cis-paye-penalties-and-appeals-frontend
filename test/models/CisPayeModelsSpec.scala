@@ -505,8 +505,8 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
   "GetPayeTaxpayerResponse" should {
 
     val fullResponse = GetPayeTaxpayerResponse(
-      uniqueId = "1000123",
-      instanceId = "inst-1",
+      uniqueId = 1000123L,
+      instanceId = 2000123L,
       districtNumber = "123",
       employerRef = "AB456",
       employerName1 = Some("ABC"),
@@ -515,8 +515,8 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     )
 
     val fullJson = Json.obj(
-      "uniqueId" -> "1000123",
-      "instanceId" -> "inst-1",
+      "uniqueId" -> 1000123,
+      "instanceId" -> 2000123,
       "districtNumber" -> "123",
       "employerRef" -> "AB456",
       "employerName1" -> "ABC",
@@ -525,7 +525,11 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     )
 
     "serialize to JSON correctly" in {
-      Json.toJson(fullResponse) mustBe fullJson
+      val json = Json.toJson(fullResponse)
+
+      json mustBe fullJson
+      (json \ "uniqueId").as[Long] mustBe 1000123L
+      (json \ "instanceId").as[Long] mustBe 2000123L
     }
 
     "deserialize from JSON correctly" in {
@@ -537,8 +541,8 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "deserialize when optional fields are missing" in {
       val json = Json.obj(
-        "uniqueId" -> "1000123",
-        "instanceId" -> "inst-1",
+        "uniqueId" -> 1000123,
+        "instanceId" -> 2000123,
         "districtNumber" -> "123",
         "employerRef" -> "AB456"
       )
@@ -546,7 +550,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       val result = json.validate[GetPayeTaxpayerResponse]
 
       result mustBe a[JsSuccess[_]]
-      result.get.uniqueId mustBe "1000123"
+      result.get.uniqueId mustBe 1000123L
       result.get.employerName1 mustBe None
       result.get.employerName2 mustBe None
       result.get.agentOwnRef mustBe None
@@ -597,7 +601,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     }
 
     "fail to deserialize when type is incorrect" in {
-      val result = (fullJson ++ Json.obj("uniqueId" -> 1000123)).validate[GetPayeTaxpayerResponse]
+      val result = (fullJson ++ Json.obj("uniqueId" -> "1000123")).validate[GetPayeTaxpayerResponse]
 
       result.isError mustBe true
     }

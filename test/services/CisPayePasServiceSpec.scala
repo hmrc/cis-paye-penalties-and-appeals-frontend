@@ -385,10 +385,10 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       schemeReferenceNumber = "AB456"
     )
 
-    def taxpayerResponse(uniqueId: String, employerRef: String): GetPayeTaxpayerResponse =
+    def taxpayerResponse(uniqueId: Long, employerRef: String): GetPayeTaxpayerResponse =
       GetPayeTaxpayerResponse(
         uniqueId = uniqueId,
-        instanceId = "inst-1",
+        instanceId = 2000123L,
         districtNumber = "123",
         employerRef = employerRef,
         employerName1 = Some("ABC"),
@@ -396,7 +396,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         agentOwnRef = None
       )
 
-    val getPayeTaxpayerResponse = taxpayerResponse("1000123", "AB456")
+    val getPayeTaxpayerResponse = taxpayerResponse(1000123L, "AB456")
 
     "must return GetPayeTaxpayerResponse when request provided" in {
       when(mockBackendConnector.getPayeTaxpayer(eqTo(getTaxpayerRequest))(any()))
@@ -434,7 +434,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
 
     "must handle consecutive requests independently" in {
       val secondRequest = GetTaxpayerRequest(hmrcOfficeNumber = "456", schemeReferenceNumber = "CD789")
-      val secondResponse = taxpayerResponse("2000456", "CD789")
+      val secondResponse = taxpayerResponse(2000456L, "CD789")
 
       when(mockBackendConnector.getPayeTaxpayer(eqTo(getTaxpayerRequest))(any()))
         .thenReturn(Future.successful(getPayeTaxpayerResponse))

@@ -732,8 +732,8 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
       )
 
       val expectedResult = GetPayeTaxpayerResponse(
-        uniqueId = "1000123",
-        instanceId = "inst-1",
+        uniqueId = 1000123L,
+        instanceId = 2000123L,
         districtNumber = "123",
         employerRef = "AB456",
         employerName1 = Some("ABC"),

@@ -107,8 +107,8 @@ object GetCisTaxpayerResponse {
 }
 
 case class GetPayeTaxpayerResponse(
-                                    uniqueId: String,
-                                    instanceId: String,
+                                    uniqueId: Long,
+                                    instanceId: Long,
                                     districtNumber: String,
                                     employerRef: String,
                                     employerName1: Option[String],
