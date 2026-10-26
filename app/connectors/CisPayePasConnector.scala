@@ -93,7 +93,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
-  def getCisTaxpayer(getCisTaxpayerRequest: GetCisTaxpayerRequest)
+  def getCisTaxpayer(getCisTaxpayerRequest: GetTaxpayerRequest)
                     (implicit hc: HeaderCarrier): Future[GetCisTaxpayerResponse] = {
     http.post(url"$base/cis/taxpayer")
       .withBody(Json.toJson(getCisTaxpayerRequest))
@@ -167,6 +167,25 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
       .recover {
         case e => throw logResponse(e, "[CisPayePasConnector][getPayeAppealablePenalty]")
+      }
+  }
+
+  def getPayeTaxpayer(getTaxpayerRequest: GetTaxpayerRequest)
+                     (implicit hc: HeaderCarrier): Future[GetPayeTaxpayerResponse] = {
+    http.post(url"$base/paye/taxpayer")
+      .withBody(Json.toJson(getTaxpayerRequest))
+      .execute[Either[UpstreamErrorResponse, GetPayeTaxpayerResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][getPayeTaxpayer] request: $getTaxpayerRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][getPayeTaxpayer] Get success with request: $getTaxpayerRequest")
+          Future.successful(resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][getPayeTaxpayer]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][getPayeTaxpayer]")
       }
   }
 

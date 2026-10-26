@@ -174,7 +174,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
 
     "getCisTaxpayer" - {
 
-      val getCisTaxpayerRequest = GetCisTaxpayerRequest(
+      val getCisTaxpayerRequest = GetTaxpayerRequest(
         hmrcOfficeNumber = "123",
         schemeReferenceNumber = "AB456"
       )
@@ -236,7 +236,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       }
 
       "must handle consecutive requests independently" in {
-        val secondRequest = GetCisTaxpayerRequest(hmrcOfficeNumber = "456", schemeReferenceNumber = "CD789")
+        val secondRequest = GetTaxpayerRequest(hmrcOfficeNumber = "456", schemeReferenceNumber = "CD789")
         val secondResponse = taxpayerResponse("2000456", "CD789")
 
         when(mockBackendConnector.getCisTaxpayer(eqTo(getCisTaxpayerRequest))(any()))
@@ -375,6 +375,77 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         exception.getMessage mustBe "Connector failed"
       }
       verify(mockBackendConnector, times(1)).getPayeAppealablePenalty(eqTo(getPayeAppealablePenaltyRequest))(any())
+    }
+  }
+
+  "getPayeTaxpayer" - {
+
+    val getTaxpayerRequest = GetTaxpayerRequest(
+      hmrcOfficeNumber = "123",
+      schemeReferenceNumber = "AB456"
+    )
+
+    def taxpayerResponse(uniqueId: Long, employerRef: String): GetPayeTaxpayerResponse =
+      GetPayeTaxpayerResponse(
+        uniqueId = uniqueId,
+        instanceId = 2000123L,
+        districtNumber = "123",
+        employerRef = employerRef,
+        employerName1 = Some("ABC"),
+        employerName2 = None,
+        agentOwnRef = None
+      )
+
+    val getPayeTaxpayerResponse = taxpayerResponse(1000123L, "AB456")
+
+    "must return GetPayeTaxpayerResponse when request provided" in {
+      when(mockBackendConnector.getPayeTaxpayer(eqTo(getTaxpayerRequest))(any()))
+        .thenReturn(Future.successful(getPayeTaxpayerResponse))
+
+      val result = service.getPayeTaxpayer(getTaxpayerRequest).futureValue
+
+      result mustBe getPayeTaxpayerResponse
+      result.employerName1 mustBe Some("ABC")
+      verify(mockBackendConnector, times(1)).getPayeTaxpayer(eqTo(getTaxpayerRequest))(any())
+    }
+
+    "must propagate a 404 UpstreamErrorResponse unchanged" in {
+      val notFound = UpstreamErrorResponse("PAYE taxpayer not found", 404)
+      when(mockBackendConnector.getPayeTaxpayer(eqTo(getTaxpayerRequest))(any()))
+        .thenReturn(Future.failed(notFound))
+
+      whenReady(service.getPayeTaxpayer(getTaxpayerRequest).failed) { exception =>
+        exception mustBe notFound
+        exception.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 404
+      }
+      verify(mockBackendConnector, times(1)).getPayeTaxpayer(eqTo(getTaxpayerRequest))(any())
+    }
+
+    "must propagate connector failure" in {
+      when(mockBackendConnector.getPayeTaxpayer(eqTo(getTaxpayerRequest))(any()))
+        .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+      whenReady(service.getPayeTaxpayer(getTaxpayerRequest).failed) { exception =>
+        exception mustBe a[RuntimeException]
+        exception.getMessage mustBe "Connector failed"
+      }
+      verify(mockBackendConnector, times(1)).getPayeTaxpayer(eqTo(getTaxpayerRequest))(any())
+    }
+
+    "must handle consecutive requests independently" in {
+      val secondRequest = GetTaxpayerRequest(hmrcOfficeNumber = "456", schemeReferenceNumber = "CD789")
+      val secondResponse = taxpayerResponse(2000456L, "CD789")
+
+      when(mockBackendConnector.getPayeTaxpayer(eqTo(getTaxpayerRequest))(any()))
+        .thenReturn(Future.successful(getPayeTaxpayerResponse))
+      when(mockBackendConnector.getPayeTaxpayer(eqTo(secondRequest))(any()))
+        .thenReturn(Future.successful(secondResponse))
+
+      service.getPayeTaxpayer(getTaxpayerRequest).futureValue mustBe getPayeTaxpayerResponse
+      service.getPayeTaxpayer(secondRequest).futureValue mustBe secondResponse
+
+      verify(mockBackendConnector, times(1)).getPayeTaxpayer(eqTo(getTaxpayerRequest))(any())
+      verify(mockBackendConnector, times(1)).getPayeTaxpayer(eqTo(secondRequest))(any())
     }
   }
 }
