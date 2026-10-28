@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.{CreateAppealRequest, GetAppealablePenaltiesRequest, GetAppealablePenaltiesResponse, GetAppealablePenaltyRequest, GetPayeTaxpayerResponse, GetPenaltyAllowedRequest, GetTaxpayerRequest}
+import models.{ClientListStatusRequest, CreateAppealRequest, GetAppealablePenaltiesRequest, GetAppealablePenaltiesResponse, GetAppealablePenaltyRequest, GetPayeTaxpayerResponse, GetPenaltyAllowedRequest, GetTaxpayerRequest}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -715,6 +715,64 @@ class CisPayePasConnectorISpec
       val request = getPayePenaltyAllowedRequestJson.as[GetPenaltyAllowedRequest]
       connector.getPayePenaltyAllowed(request).futureValue
       server.verify(postRequestedFor(urlPathEqualTo(getPayePenaltyAllowedPath)).withHeader("Content-Type", containing("application/json")))
+    }
+  }
+
+  "getClientListDownloadStatus()" - {
+
+    val clientListStatusRequestJson = Json.obj(
+      "credentialId" -> "123",
+      "serviceId" -> "CIS"
+    )
+    val clientListStatusResponseJson: JsValue = Json.obj(
+      "status" -> "Succeeded"
+    )
+
+    val getclientListDownloadStatusPath = "/cis-paye-penalties-and-appeals/agent/clientlist/status"
+
+    "must return ClientListStatusResponse when the stub returns 200 OK" in {
+      server.stubFor(post(urlPathEqualTo(getclientListDownloadStatusPath)).withRequestBody(equalToJson(clientListStatusRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(clientListStatusResponseJson.toString())))
+      val request = clientListStatusRequestJson.as[ClientListStatusRequest]
+      val result = connector.getClientListDownloadStatus(request).futureValue
+      result.status mustBe "Succeeded"
+      server.verify(postRequestedFor(urlPathEqualTo(getclientListDownloadStatusPath)).withRequestBody(equalToJson(clientListStatusRequestJson.toString())))
+    }
+
+    "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+      server.stubFor(post(urlPathEqualTo(getclientListDownloadStatusPath)).willReturn(aResponse().withStatus(400).withHeader("Content-Type", "application/json").withBody("""{"message":"Invalid payload","errors":{}}""")))
+      val request = clientListStatusRequestJson.as[ClientListStatusRequest]
+      val result = connector.getClientListDownloadStatus(request).failed.futureValue
+      result mustBe an[UpstreamErrorResponse]
+      result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+    }
+
+    "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+      server.stubFor(post(urlPathEqualTo(getclientListDownloadStatusPath)).willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json").withBody("""{"message":"Unexpected error"}""")))
+      val request = clientListStatusRequestJson.as[ClientListStatusRequest]
+      val result = connector.getClientListDownloadStatus(request).failed.futureValue
+      result mustBe an[UpstreamErrorResponse]
+      result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+    }
+
+    "must fail when stub returns 200 OK with invalid JSON" in {
+      server.stubFor(post(urlPathEqualTo(getclientListDownloadStatusPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{"unexpected":"shape"}""")))
+      val request = clientListStatusRequestJson.as[ClientListStatusRequest]
+      val result = connector.getClientListDownloadStatus(request).failed.futureValue
+      result mustBe a[JsValidationException]
+    }
+
+    "must make POST request to correct endpoint" in {
+      server.stubFor(post(urlPathEqualTo(getclientListDownloadStatusPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(clientListStatusResponseJson.toString())))
+      val request = clientListStatusRequestJson.as[ClientListStatusRequest]
+      connector.getClientListDownloadStatus(request).futureValue
+      server.verify(1, postRequestedFor(urlPathEqualTo(getclientListDownloadStatusPath)))
+    }
+
+    "must include correct headers in the request" in {
+      server.stubFor(post(urlPathEqualTo(getclientListDownloadStatusPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(clientListStatusResponseJson.toString())))
+      val request = clientListStatusRequestJson.as[ClientListStatusRequest]
+      connector.getClientListDownloadStatus(request).futureValue
+      server.verify(postRequestedFor(urlPathEqualTo(getclientListDownloadStatusPath)).withHeader("Content-Type", containing("application/json")))
     }
   }
 }

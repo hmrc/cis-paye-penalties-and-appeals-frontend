@@ -229,6 +229,26 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
+  def getClientListDownloadStatus(clientListStatusRequest: ClientListStatusRequest)
+                           (implicit hc: HeaderCarrier): Future[ClientListStatusResponse] = {
+    http.post(url"$base/agent/clientlist/status")
+      .withBody(Json.toJson(clientListStatusRequest))
+      .execute[Either[UpstreamErrorResponse, ClientListStatusResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.info(s"[CisPayePasConnector][getClientListDownloadStatus] request: $clientListStatusRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][getClientListDownloadStatus] Get success with request: $clientListStatusRequest")
+          Future.successful(
+            resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][getClientListDownloadStatus]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][getClientListDownloadStatus]")
+      }
+  }
+
   private def logResponse(e: Throwable, method: String): Throwable = {
     logger.error(s"[$method] Error occurred: ${e.getMessage}", e)
     e
