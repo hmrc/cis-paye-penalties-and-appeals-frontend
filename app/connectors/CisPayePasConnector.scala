@@ -236,7 +236,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       .execute[Either[UpstreamErrorResponse, ClientListStatusResponse]]
       .flatMap {
         case Right(resp) =>
-          logger.info(s"[CisPayePasConnector][getClientListDownloadStatus] request: $clientListStatusRequest, response: $resp")
+          logger.debug(s"[CisPayePasConnector][getClientListDownloadStatus] request: $clientListStatusRequest, response: $resp")
           logger.info(s"[CisPayePasConnector][getClientListDownloadStatus] Get success with request: $clientListStatusRequest")
           Future.successful(
             resp)
