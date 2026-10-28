@@ -995,4 +995,86 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
       verify(mockHttpClient, times(1)).post(any())(any())
     }
   }
+
+  "getClientListDownloadStatus" - {
+
+    val testRequest = ClientListStatusRequest(credentialId = "123", serviceId = "CIS")
+    val expectedResponse = ClientListStatusResponse(status = "Succeeded")
+
+    "must return ClientListStatusResponse when request is successful" in {
+      val mockHttpClient = mock[HttpClientV2]
+      val mockConfig = mock[ServicesConfig]
+      val mockRequestBuilder = mock[RequestBuilder]
+
+      when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, ClientListStatusResponse]](any(), any()))
+        .thenReturn(Future.successful(Right(expectedResponse)))
+
+      val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+      val result = connector.getClientListDownloadStatus(testRequest).futureValue
+
+      result mustBe expectedResponse
+      result mustBe a[ClientListStatusResponse]
+    }
+
+    "must handle Left response with UpstreamErrorResponse" in {
+      val mockHttpClient = mock[HttpClientV2]
+      val mockConfig = mock[ServicesConfig]
+      val mockRequestBuilder = mock[RequestBuilder]
+
+      val upstreamError = uk.gov.hmrc.http.UpstreamErrorResponse("Bad Request", 400)
+
+      when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, ClientListStatusResponse]](any(), any()))
+        .thenReturn(Future.successful(Left(upstreamError)))
+
+      val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+
+      whenReady(connector.getClientListDownloadStatus(testRequest).failed) { exception =>
+        exception mustBe upstreamError
+      }
+    }
+
+    "must handle general exceptions" in {
+      val mockHttpClient = mock[HttpClientV2]
+      val mockConfig = mock[ServicesConfig]
+      val mockRequestBuilder = mock[RequestBuilder]
+      val runtimeException = new RuntimeException("Connection failed")
+
+      when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, ClientListStatusResponse]](any(), any()))
+        .thenReturn(Future.failed(runtimeException))
+
+      val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+
+      whenReady(connector.getClientListDownloadStatus(testRequest).failed) { exception =>
+        exception mustBe a[RuntimeException]
+        exception.getMessage mustBe "Connection failed"
+      }
+    }
+
+    "must pass implicit HeaderCarrier to http client" in {
+      val mockHttpClient = mock[HttpClientV2]
+      val mockConfig = mock[ServicesConfig]
+      val mockRequestBuilder = mock[RequestBuilder]
+      val customHc = HeaderCarrier(sessionId = Some(uk.gov.hmrc.http.SessionId("test-session")))
+
+      when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, ClientListStatusResponse]](any(), any()))
+        .thenReturn(Future.successful(Right(expectedResponse)))
+
+      val connector = new CisPayePasConnector(mockHttpClient, mockConfig)
+      connector.getClientListDownloadStatus(testRequest)(customHc).futureValue
+
+      verify(mockHttpClient, times(1)).post(any())(any())
+    }
+  }
 }
