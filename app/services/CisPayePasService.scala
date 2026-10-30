@@ -73,6 +73,12 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
     backendConnector.getCisPenaltyAllowed(getPenaltyAllowedRequest)
   }
 
+  def hasCisClient(hasCisClientRequest: HasCisClientRequest)
+                  (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
+    logger.debug("[CisPayePasService][hasCisClient] Checking Cis Has Client")
+    backendConnector.hasCisClient(hasCisClientRequest)
+  }
+
   // PAYE
   def createPayeAppeal(penaltyId: Long)
                      (implicit hc: HeaderCarrier): Future[CreateAppealResponse] = {
