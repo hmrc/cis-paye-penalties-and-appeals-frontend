@@ -132,6 +132,26 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
   }
 
+  def hasCisClient(hasCisClientRequest: HasCisClientRequest)
+                  (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
+    http.post(url"$base/cis/agent/clientlist/has-client")
+      .withBody(Json.toJson(hasCisClientRequest))
+      .execute[Either[UpstreamErrorResponse, HasClientResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][hasCisClient] request: $hasCisClientRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][hasCisClient] Get success with request: $hasCisClientRequest")
+          Future.successful(
+            resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][hasCisClient]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][hasCisClient]")
+      }
+  }
+
   // PAYE
   def createPayeAppeal(createPayeAppealRequest: CreateAppealRequest)(implicit hc: HeaderCarrier): Future[CreateAppealResponse] = {
     http.post(url"$base/paye/appeal")
