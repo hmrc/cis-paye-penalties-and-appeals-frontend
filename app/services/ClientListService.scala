@@ -37,4 +37,16 @@ class ClientListService @Inject()(backendConnector: CisPayePasConnector)(implici
     logger.debug("[ClientListService][initiateClientListDownload] Initiating client list download")
     backendConnector.initiateClientListDownload(initiateRequest)
   }
+
+  def hasCisClient(hasCisClientRequest: HasCisClientRequest)
+                  (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
+    logger.debug("[ClientListService][hasCisClient] Checking Cis Has Client")
+    backendConnector.hasCisClient(hasCisClientRequest)
+  }
+
+  def hasPayeClient(hasPayeClientRequest: HasPayeClientRequest)
+                   (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
+    logger.debug("[ClientListService][hasPayeClient] Checking Paye Has Client")
+    backendConnector.hasPayeClient(hasPayeClientRequest)
+  }
 }

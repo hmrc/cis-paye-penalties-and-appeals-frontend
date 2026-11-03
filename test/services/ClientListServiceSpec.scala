@@ -99,5 +99,103 @@ class ClientListServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         verify(mockBackendConnector, times(1)).initiateClientListDownload(eqTo(testRequest))(any())
       }
     }
+
+    "hasCisClient" - {
+
+      val testRequest = HasCisClientRequest(
+        agentDetails = AgentDetails(
+          credentialId = "CRED01",
+          irAgentId = "123456"
+        ),
+        contractorDetails = ContractorDetails(
+          hmrcOfficeNumber = "754",
+          schemeReferenceNumber = "EZ00100"
+        )
+      )
+
+      "must return HasClientResponse with hasClient true when successful" in {
+        val testResponse = HasClientResponse(hasClient = true)
+
+        when(mockBackendConnector.hasCisClient(eqTo(testRequest))(any[HeaderCarrier]))
+          .thenReturn(Future.successful(testResponse))
+
+        val result = service.hasCisClient(testRequest).futureValue
+
+        result mustBe testResponse
+        verify(mockBackendConnector, times(1)).hasCisClient(eqTo(testRequest))(any[HeaderCarrier])
+      }
+
+      "must return HasClientResponse with hasClient false when successful" in {
+        val testResponse = HasClientResponse(hasClient = false)
+
+        when(mockBackendConnector.hasCisClient(eqTo(testRequest))(any[HeaderCarrier]))
+          .thenReturn(Future.successful(testResponse))
+
+        val result = service.hasCisClient(testRequest).futureValue
+
+        result mustBe testResponse
+        verify(mockBackendConnector, times(1)).hasCisClient(eqTo(testRequest))(any[HeaderCarrier])
+      }
+
+      "must propagate connector failure" in {
+        when(mockBackendConnector.hasCisClient(eqTo(testRequest))(any[HeaderCarrier]))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        whenReady(service.hasCisClient(testRequest).failed) { exception =>
+          exception mustBe a[RuntimeException]
+          exception.getMessage mustBe "Connector failed"
+        }
+        verify(mockBackendConnector, times(1)).hasCisClient(eqTo(testRequest))(any[HeaderCarrier])
+      }
+    }
+
+    "hasPayeClient" - {
+
+      val testRequest = HasPayeClientRequest(
+        agentDetails = AgentDetails(
+          credentialId = "CRED01",
+          irAgentId = "123456"
+        ),
+        employerDetails = EmployerDetails(
+          hmrcOfficeNumber = "840",
+          schemeReferenceNumber = "MZ00064"
+        )
+      )
+
+      "must return HasClientResponse with hasClient true when successful" in {
+        val testResponse = HasClientResponse(hasClient = true)
+
+        when(mockBackendConnector.hasPayeClient(eqTo(testRequest))(any[HeaderCarrier]))
+          .thenReturn(Future.successful(testResponse))
+
+        val result = service.hasPayeClient(testRequest).futureValue
+
+        result mustBe testResponse
+        verify(mockBackendConnector, times(1)).hasPayeClient(eqTo(testRequest))(any[HeaderCarrier])
+      }
+
+      "must return HasClientResponse with hasClient false when successful" in {
+        val testResponse = HasClientResponse(hasClient = false)
+
+        when(mockBackendConnector.hasPayeClient(eqTo(testRequest))(any[HeaderCarrier]))
+          .thenReturn(Future.successful(testResponse))
+
+        val result = service.hasPayeClient(testRequest).futureValue
+
+        result mustBe testResponse
+        verify(mockBackendConnector, times(1)).hasPayeClient(eqTo(testRequest))(any[HeaderCarrier])
+      }
+
+      "must propagate connector failure" in {
+        when(mockBackendConnector.hasPayeClient(eqTo(testRequest))(any[HeaderCarrier]))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        whenReady(service.hasPayeClient(testRequest).failed) { exception =>
+          exception mustBe a[RuntimeException]
+          exception.getMessage mustBe "Connector failed"
+        }
+        verify(mockBackendConnector, times(1)).hasPayeClient(eqTo(testRequest))(any[HeaderCarrier])
+      }
+    }
   }
 }

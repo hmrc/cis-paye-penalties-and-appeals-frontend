@@ -773,6 +773,86 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "HasPayeClientRequest" should {
+
+    val fullRequest = HasPayeClientRequest(
+      agentDetails = AgentDetails(
+        credentialId = "CRED01",
+        irAgentId = "123456"
+      ),
+      employerDetails = EmployerDetails(
+        hmrcOfficeNumber = "840",
+        schemeReferenceNumber = "MZ00064"
+      )
+    )
+
+    val fullJson = Json.obj(
+      "agentDetails" -> Json.obj(
+        "credentialId" -> "CRED01",
+        "irAgentId" -> "123456"
+      ),
+      "employerDetails" -> Json.obj(
+        "hmrcOfficeNumber" -> "840",
+        "schemeReferenceNumber" -> "MZ00064"
+      )
+    )
+
+    "serialize to JSON correctly" in {
+      Json.toJson(fullRequest) mustBe fullJson
+    }
+
+    "deserialize from JSON correctly" in {
+      val result = fullJson.validate[HasPayeClientRequest]
+
+      result mustBe a[JsSuccess[_]]
+      result.get mustBe fullRequest
+    }
+
+    "fail to deserialize when employerDetails is missing" in {
+      val result = (fullJson - "employerDetails").validate[HasPayeClientRequest]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when contractorDetails is provided instead of employerDetails" in {
+      val json = (fullJson - "employerDetails") ++ Json.obj(
+        "contractorDetails" -> Json.obj(
+          "hmrcOfficeNumber" -> "840",
+          "schemeReferenceNumber" -> "MZ00064"
+        )
+      )
+
+      val result = json.validate[HasPayeClientRequest]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when a nested field is missing" in {
+      val json = fullJson ++ Json.obj(
+        "employerDetails" -> Json.obj(
+          "hmrcOfficeNumber" -> "840"
+        )
+      )
+
+      val result = json.validate[HasPayeClientRequest]
+
+      result.isError mustBe true
+    }
+
+    "fail to deserialize when the body is flat" in {
+      val json = Json.obj(
+        "credentialId" -> "CRED01",
+        "irAgentId" -> "123456",
+        "hmrcOfficeNumber" -> "840",
+        "schemeReferenceNumber" -> "MZ00064"
+      )
+
+      val result = json.validate[HasPayeClientRequest]
+
+      result.isError mustBe true
+    }
+  }
+
   "HasClientResponse" should {
 
     val fullResponse = HasClientResponse(
