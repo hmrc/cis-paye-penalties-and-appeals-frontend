@@ -2,13 +2,13 @@
 
 This is the frontend service responsible for the submission of appeals for CIS & PAYE.
 
-For more information please refer to the [documentation]([https://confluence.tools.tax.service.gov.uk/spaces/RBD/pages/1081606211/3.+Stamp+Duty+Land+Tax+-+SDLT](https://confluence.tools.tax.service.gov.uk/spaces/RBD/pages/1389331265/14.+Penalities+and+Appeals+PAS)).
+For more information please refer to the [documentation](https://confluence.tools.tax.service.gov.uk/spaces/RBD/pages/1389331265/14.+Penalities+and+Appeals+PAS).
 
 ## Running the service
 Before starting, you will need to have  [service-manager](https://github.com/hmrc/service-manager) installed/configured
 
 ### Dependencies
-All dependencies can be found in [AppDependencies.scala]([https://github.com/hmrc/sdlt-filing-frontend/blob/main/project/AppDependencies.scala](https://github.com/hmrc/cis-paye-penalties-and-appeals-frontend/blob/main/project/AppDependencies.scala))
+All dependencies can be found in [AppDependencies.scala](https://github.com/hmrc/cis-paye-penalties-and-appeals-frontend/blob/main/project/AppDependencies.scala)
 
 ### Running locally:
 Service Manager:
