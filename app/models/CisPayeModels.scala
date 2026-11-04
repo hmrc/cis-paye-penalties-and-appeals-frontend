@@ -185,3 +185,15 @@ object ClientListStatusResponse {
   implicit val format: OFormat[ClientListStatusResponse] = Json.format[ClientListStatusResponse]
 }
 
+case class InitiateClientListDownloadRequest(serviceId: String, credentialId: String, agentId: String)
+
+object InitiateClientListDownloadRequest {
+  implicit val format: OFormat[InitiateClientListDownloadRequest] = Json.format[InitiateClientListDownloadRequest]
+}
+
+case class InitiateClientListDownloadResponse(browserInterval: Int, businessServiceIntervals: Seq[Int])
+
+object InitiateClientListDownloadResponse {
+  implicit val format: OFormat[InitiateClientListDownloadResponse] = Json.format[InitiateClientListDownloadResponse]
+}
+

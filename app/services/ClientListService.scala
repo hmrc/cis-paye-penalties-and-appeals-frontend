@@ -32,4 +32,10 @@ class ClientListService @Inject()(backendConnector: CisPayePasConnector)(implici
     logger.debug("[ClientListService][getClientListDownloadStatus] Getting client list download status")
     backendConnector.getClientListDownloadStatus(clientListStatusRequest)
   }
+
+  def initiateClientListDownload(initiateRequest: InitiateClientListDownloadRequest)
+                                (implicit hc: HeaderCarrier): Future[InitiateClientListDownloadResponse] = {
+    logger.debug("[ClientListService][initiateClientListDownload] Initiating client list download")
+    backendConnector.initiateClientListDownload(initiateRequest)
+  }
 }
