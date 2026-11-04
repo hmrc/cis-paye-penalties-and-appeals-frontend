@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.cis
+package controllers
 
 import controllers.actions.IdentifierAction
 import controllers.routes.JourneyRecoveryController
@@ -25,18 +25,18 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CisPayePasService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.appealablePenalties.AppealablePenaltiesDisplayRow
-import views.html.cis.CisAppealablePenaltiesView
+import views.html.AppealablePenaltiesView
 
 import javax.inject.*
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class CisAppealablePenaltiesController @Inject()(
+class AppealablePenaltiesController @Inject()(
                                              override val messagesApi: MessagesApi,
                                              val controllerComponents: MessagesControllerComponents,
                                              identify: IdentifierAction,
                                              cisPayePasService: CisPayePasService,
-                                             view: CisAppealablePenaltiesView
+                                             view: AppealablePenaltiesView
                                            )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Logging {
   
   val hmrcOfficeNumber = "001"
@@ -50,7 +50,6 @@ class CisAppealablePenaltiesController @Inject()(
     cisPayePasService.getCisAppealablePenalties(request)
       .map { viewModel =>
         logger.info(s"[CisAppealablePenaltiesController][onPageLoad] - render page")
-        println(viewModel.rows)
         val total = viewModel.total
         val rows = viewModel.rows.map(AppealablePenaltiesDisplayRow.fromRow)
         Ok(view(total, rows))
