@@ -44,11 +44,19 @@ object AppealablePenaltiesDisplayRow {
   def fromRow(row: AppealablePenaltiesViewModelRow): AppealablePenaltiesDisplayRow = {
     val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
+    val typeOfPenalty = row.typeOfPenalty match {
+      case Some("CIS03") => "Fixed penalty 1"
+      case Some("CIS04") => "Fixed penalty 2"
+      case Some("CIS05") => "Tax geared penalty 1"
+      case Some("CIS06") => "Tax geared penalty 2"
+      case _ => ""
+    }
+
     AppealablePenaltiesDisplayRow(
       penaltyId        = row.penaltyId.map(_.toString).getOrElse(""),
       issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
       taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
-      typeOfPenalty    = row.typeOfPenalty.getOrElse(""),
+      typeOfPenalty    = typeOfPenalty,
       amount           = row.amount.map(a => f"£$a%.2f").getOrElse("")
     )
   }
