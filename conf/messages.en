@@ -28,6 +28,9 @@ error.title.prefix = Error:
 error.prefix = Error
 error.summary.title = There is a problem
 
+pagination.previous = Prev
+pagination.next = Next
+
 index.title = cis-paye-penalties-and-appeals-frontend
 index.heading = cis-paye-penalties-and-appeals-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
@@ -55,9 +58,11 @@ appealablePenalties.issueDate        = Issue Date
 appealablePenalties.taxPeriodEndDate = End of tax period
 appealablePenalties.amount           = Amount
 
-cis.appealablePenalties.title   = Appealable penalties
-cis.appealablePenalties.heading = There are {0} penalties you can appeal
-cis.appealablePenalties.p1      = To appeal a penalty, select the Penalty ID. You can only appeal one penalty at a time.
+appealablePenalties.title   = Appealable penalties
+appealablePenalties.heading = There are {0} penalties you can appeal
+appealablePenalties.p1      = To appeal a penalty, select the Penalty ID. You can only appeal one penalty at a time.
+
+appealablePenalties.paginationInfo = Showing <b>{0}</b> to <b>{1}</b> of <b>{2}</b> records
 
 beforeYouStart.title = Before you start
 beforeYouStart.heading = Before you start

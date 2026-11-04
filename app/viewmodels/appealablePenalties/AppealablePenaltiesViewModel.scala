@@ -16,6 +16,8 @@
 
 package viewmodels.appealablePenalties
 
+import controllers.routes.BeforeYouStartController
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -37,7 +39,8 @@ case class AppealablePenaltiesDisplayRow(
                                           issueDate: String,
                                           taxPeriodEndDate: String,
                                           typeOfPenalty: String,
-                                          amount: String
+                                          amount: String,
+                                          redirectUrl: String
                                         )
 
 object AppealablePenaltiesDisplayRow {
@@ -45,19 +48,22 @@ object AppealablePenaltiesDisplayRow {
     val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
     val typeOfPenalty = row.typeOfPenalty match {
-      case Some("CIS03") => "Fixed penalty 1"
-      case Some("CIS04") => "Fixed penalty 2"
-      case Some("CIS05") => "Tax geared penalty 1"
-      case Some("CIS06") => "Tax geared penalty 2"
+      case Some("CIS3") => "Fixed penalty 1"
+      case Some("CIS4") => "Fixed penalty 2"
+      case Some("CIS5") => "Tax geared penalty 1"
+      case Some("CIS6") => "Tax geared penalty 2"
       case _ => ""
     }
 
+    val penaltyId = row.penaltyId.map(_.toString).getOrElse("")
+
     AppealablePenaltiesDisplayRow(
-      penaltyId        = row.penaltyId.map(_.toString).getOrElse(""),
+      penaltyId        = penaltyId,
       issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
       taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
       typeOfPenalty    = typeOfPenalty,
-      amount           = row.amount.map(a => f"£$a%.2f").getOrElse("")
+      amount           = row.amount.map(a => f"£$a%.2f").getOrElse(""),
+      redirectUrl      = BeforeYouStartController.onPageLoad(penaltyId).url
     )
   }
 }

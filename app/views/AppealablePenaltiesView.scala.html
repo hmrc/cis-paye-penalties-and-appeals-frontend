@@ -28,13 +28,13 @@
     link: Link
 )
 
-@(total: Int, rows: List[AppealablePenaltiesDisplayRow])(implicit request: Request[_], messages: Messages)
+@(total: Int, rows: List[AppealablePenaltiesDisplayRow], paginationComponent: Option[Pagination], infoText: Option[String])(implicit request: Request[_], messages: Messages)
 
 @renderTable() = {
     @govukTable(Table(
         rows = rows.map { currentRow =>
             Seq(
-                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyId, linkUrl = "#") )),
+                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyId, linkUrl = currentRow.redirectUrl) )),
                 TableRow(content = Text( currentRow.typeOfPenalty )),
                 TableRow(content = Text( currentRow.issueDate )),
                 TableRow(content = Text( currentRow.taxPeriodEndDate )),
@@ -52,12 +52,16 @@
     ))
 }
 
-@layout(pageTitle = titleNoForm(messages("cis.appealablePenalties.title")), showBackLink = false, isFullWidth = true) {
+@layout(pageTitle = titleNoForm(messages("appealablePenalties.title")), showBackLink = false, isFullWidth = true) {
 
-    @caption("ClientName")
-    @h1(messages("cis.appealablePenalties.heading", total))
+    @caption("Client name")
+    @h1(messages("appealablePenalties.heading", total))
 
-    @p(messages("cis.appealablePenalties.p1"))
+    @p(messages("appealablePenalties.p1"))
+
+    @infoText.map(p(_))
 
     @renderTable()
+
+    @paginationComponent.map(govukPagination(_))
 }

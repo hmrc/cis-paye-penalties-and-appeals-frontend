@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.IdentifierAction
+import controllers.actions.{DataRetrievalAction, IdentifierAction}
 import controllers.routes.JourneyRecoveryController
 import models.GetAppealablePenaltiesRequest
 import play.api.Logging
@@ -24,6 +24,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CisPayePasService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.PaginationHelper
 import viewmodels.appealablePenalties.AppealablePenaltiesDisplayRow
 import views.html.AppealablePenaltiesView
 
@@ -35,16 +36,23 @@ class AppealablePenaltiesController @Inject()(
                                              override val messagesApi: MessagesApi,
                                              val controllerComponents: MessagesControllerComponents,
                                              identify: IdentifierAction,
+                                             getData: DataRetrievalAction,
                                              cisPayePasService: CisPayePasService,
                                              view: AppealablePenaltiesView
-                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Logging {
+                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with PaginationHelper with Logging {
   
-  val hmrcOfficeNumber = "001"
-  val schemeReferenceNumber = "AB123"
+  private val hmrcOfficeNumber = "123"
+  private val schemeReferenceNumber = "AB456"
+  private val rowsPerPage = 10
   
-  def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
+  def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData).async { implicit request =>
+    val currentPage = page.getOrElse(1)
+
+    val startRow = if(currentPage == 1) 0 else ((currentPage - 1) * rowsPerPage) + 1
+    val endRow = currentPage * rowsPerPage
+
     val request = GetAppealablePenaltiesRequest(
-      hmrcOfficeNumber = hmrcOfficeNumber, schemeReferenceNumber = schemeReferenceNumber, startRow = 0, endRow = 10
+      hmrcOfficeNumber = hmrcOfficeNumber, schemeReferenceNumber = schemeReferenceNumber, startRow = startRow, endRow = endRow
     )
     
     cisPayePasService.getCisAppealablePenalties(request)
@@ -52,7 +60,21 @@ class AppealablePenaltiesController @Inject()(
         logger.info(s"[CisAppealablePenaltiesController][onPageLoad] - render page")
         val total = viewModel.total
         val rows = viewModel.rows.map(AppealablePenaltiesDisplayRow.fromRow)
-        Ok(view(total, rows))
+
+        val pagination = getPaginationWithInfoText(
+          rows = rows,
+          totalRowCount = total,
+          paginationIndex = Some(currentPage),
+          urlSelector = (p: Int) => controllers.routes.AppealablePenaltiesController.onPageLoad(Some(p)).url
+        )
+
+        pagination match {
+          case Some((_, paginationComponent, infoText)) =>
+            Ok(view(total, rows, paginationComponent, infoText))
+
+          case None =>
+            Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
+        }
       } recover {
       case ex =>
         logger.error(s"[CisAppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
