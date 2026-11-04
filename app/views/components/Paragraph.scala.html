@@ -17,13 +17,12 @@
 @this()
 
 @(
-message: String,
-bold: Boolean = false,
-extraClasses: String = ""
+    msg: String,
+    extraClasses: String = ""
 )(implicit messages: Messages)
 
-<p class="govuk-body @extraClasses @if(bold) {govuk-!-font-weight-bold}">
+<p class="govuk-body @extraClasses">
     @{
-    Html(messages(message))
+        Html(messages(msg))
     }
 </p>

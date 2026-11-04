@@ -1,4 +1,4 @@
-service.name = cis-paye-penalties-and-appeals-frontend
+service.name = Penalties and Appeals
 
 site.back = Back
 site.remove = Remove
@@ -10,6 +10,7 @@ site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
+site.warning = Warning
 
 date.day = Day
 date.month = Month
@@ -57,3 +58,13 @@ appealablePenalties.amount           = Amount
 cis.appealablePenalties.title   = Appealable penalties
 cis.appealablePenalties.heading = There are {0} penalties you can appeal
 cis.appealablePenalties.p1      = To appeal a penalty, select the Penalty ID. You can only appeal one penalty at a time.
+
+beforeYouStart.title = Before you start
+beforeYouStart.heading = Before you start
+beforeYouStart.p1 = To appeal a penalty, you must tell us:
+beforeYouStart.list.bullet1.text = the reason that led to the penalty, HMRC calls this a
+beforeYouStart.list.bullet1.linkText = reasonable excuse (opens in new tab)
+beforeYouStart.list.bullet2 = when the reasonable excuse ended
+beforeYouStart.list.bullet3 = what happened in your own words
+beforeYouStart.warning = If HMRC decide we need extra information or evidence after reviewing your appeal, we will contact you.
+beforeYouStart.button = Start the appeal
