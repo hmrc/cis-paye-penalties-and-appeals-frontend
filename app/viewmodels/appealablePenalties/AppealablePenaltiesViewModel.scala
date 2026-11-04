@@ -17,6 +17,7 @@
 package viewmodels.appealablePenalties
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 case class AppealablePenaltiesViewModel(
                                        total: Int,
@@ -24,9 +25,31 @@ case class AppealablePenaltiesViewModel(
                                        )
 
 case class AppealablePenaltiesViewModelRow(
-                                            uniqueId         : Option[Long],
+                                            penaltyId        : Option[Long],
                                             issueDate        : Option[LocalDate],
                                             taxPeriodEndDate : Option[LocalDate],
                                             typeOfPenalty    : Option[String],
                                             amount           : Option[BigDecimal]
                                           )
+
+case class AppealablePenaltiesDisplayRow(
+                                          penaltyId: String,
+                                          issueDate: String,
+                                          taxPeriodEndDate: String,
+                                          typeOfPenalty: String,
+                                          amount: String
+                                        )
+
+object AppealablePenaltiesDisplayRow {
+  def fromRow(row: AppealablePenaltiesViewModelRow): AppealablePenaltiesDisplayRow = {
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+
+    AppealablePenaltiesDisplayRow(
+      penaltyId        = row.penaltyId.map(_.toString).getOrElse(""),
+      issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
+      taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
+      typeOfPenalty    = row.typeOfPenalty.getOrElse(""),
+      amount           = row.amount.map(a => f"£$a%.2f").getOrElse("")
+    )
+  }
+}

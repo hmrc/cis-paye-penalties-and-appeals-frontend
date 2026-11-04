@@ -1,0 +1,63 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.appealablePenalties.AppealablePenaltiesDisplayRow
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.components.{h1, Caption, Paragraph, Link}
+
+@this(
+    layout: templates.Layout,
+    govukPagination: GovukPagination,
+    govukTable: GovukTable,
+    h1: h1,
+    caption: Caption,
+    p: Paragraph,
+    link: Link
+)
+
+@(total: Int, rows: List[AppealablePenaltiesDisplayRow])(implicit request: Request[_], messages: Messages)
+
+@renderTable() = {
+    @govukTable(Table(
+        rows = rows.map { currentRow =>
+            Seq(
+                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyId, linkUrl = "#") )),
+                TableRow(content = Text( currentRow.typeOfPenalty )),
+                TableRow(content = Text( currentRow.issueDate )),
+                TableRow(content = Text( currentRow.taxPeriodEndDate )),
+                TableRow(content = Text( currentRow.amount )),
+            )
+            },
+            head = Some(Seq(
+                HeadCell(content = Text(messages("appealablePenalties.penaltyId")), attributes = Map("style" -> "width:175px")),
+                HeadCell(content = Text(messages("appealablePenalties.typeOfPenalty")), attributes = Map("style" -> "width:235px")),
+                HeadCell(content = Text(messages("appealablePenalties.issueDate")), attributes = Map("style" -> "width:215px")),
+                HeadCell(content = Text(messages("appealablePenalties.taxPeriodEndDate")), attributes = Map("style" -> "width:235px")),
+                HeadCell(content = Text(messages("appealablePenalties.amount")), attributes = Map("style" -> "width:100px")),
+            )
+        )
+    ))
+}
+
+@layout(pageTitle = titleNoForm(messages("cis.appealablePenalties.title")), showBackLink = false, isFullWidth = true) {
+
+    @caption("ClientName")
+    @h1(messages("cis.appealablePenalties.heading", total))
+
+    @p(messages("cis.appealablePenalties.p1"))
+
+    @renderTable()
+}

@@ -47,3 +47,13 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+appealablePenalties.penaltyId        = Penalty Id
+appealablePenalties.typeOfPenalty    = Penalty Type
+appealablePenalties.issueDate        = Issue Date
+appealablePenalties.taxPeriodEndDate = End of tax period
+appealablePenalties.amount           = Amount
+
+cis.appealablePenalties.title   = Appealable penalties
+cis.appealablePenalties.heading = There are {0} penalties you can appeal
+cis.appealablePenalties.p1      = To appeal a penalty, select the Penalty ID. You can only appeal one penalty at a time.
