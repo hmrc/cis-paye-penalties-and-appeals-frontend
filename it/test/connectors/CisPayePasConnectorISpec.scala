@@ -849,4 +849,51 @@ class CisPayePasConnectorISpec
       server.verify(postRequestedFor(urlPathEqualTo(getclientListDownloadStatusPath)).withHeader("Content-Type", containing("application/json")))
     }
   }
+
+  "initiateClientListDownload()" - {
+
+    val initiateRequestJson = Json.obj(
+      "serviceId" -> "CIS",
+      "credentialId" -> "123",
+      "agentId" -> "A1"
+    )
+    val initiateResponseJson: JsValue = Json.obj(
+      "browserInterval" -> 8000,
+      "businessServiceIntervals" -> Json.arr(1000, 2000)
+    )
+
+    val initiatePath = "/cis-paye-penalties-and-appeals/agent/clientlist"
+
+    "must return InitiateClientListDownloadResponse when the stub returns 200 OK" in {
+      server.stubFor(post(urlPathEqualTo(initiatePath)).withRequestBody(equalToJson(initiateRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(initiateResponseJson.toString())))
+      val request = initiateRequestJson.as[InitiateClientListDownloadRequest]
+      val result = connector.initiateClientListDownload(request).futureValue
+      result.browserInterval mustBe 8000
+      result.businessServiceIntervals mustBe Seq(1000, 2000)
+      server.verify(postRequestedFor(urlPathEqualTo(initiatePath)).withRequestBody(equalToJson(initiateRequestJson.toString())))
+    }
+
+    "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+      server.stubFor(post(urlPathEqualTo(initiatePath)).willReturn(aResponse().withStatus(400).withHeader("Content-Type", "application/json").withBody("""{"message":"Invalid payload"}""")))
+      val request = initiateRequestJson.as[InitiateClientListDownloadRequest]
+      val result = connector.initiateClientListDownload(request).failed.futureValue
+      result mustBe an[UpstreamErrorResponse]
+      result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+    }
+
+    "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+      server.stubFor(post(urlPathEqualTo(initiatePath)).willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json").withBody("""{"message":"Unexpected error"}""")))
+      val request = initiateRequestJson.as[InitiateClientListDownloadRequest]
+      val result = connector.initiateClientListDownload(request).failed.futureValue
+      result mustBe an[UpstreamErrorResponse]
+      result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+    }
+
+    "must fail when stub returns 200 OK with invalid JSON" in {
+      server.stubFor(post(urlPathEqualTo(initiatePath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{"unexpected":"shape"}""")))
+      val request = initiateRequestJson.as[InitiateClientListDownloadRequest]
+      val result = connector.initiateClientListDownload(request).failed.futureValue
+      result mustBe a[JsValidationException]
+    }
+  }
 }

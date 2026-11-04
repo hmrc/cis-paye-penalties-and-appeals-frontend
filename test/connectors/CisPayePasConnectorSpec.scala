@@ -1188,4 +1188,48 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
       verify(mockHttpClient, times(1)).post(any())(any())
     }
   }
+
+  "initiateClientListDownload" - {
+
+    val testRequest = InitiateClientListDownloadRequest(serviceId = "CIS", credentialId = "123", agentId = "A1")
+    val expectedResponse = InitiateClientListDownloadResponse(browserInterval = 8000, businessServiceIntervals = Seq(1000, 2000))
+
+    def setup(result: Future[Either[uk.gov.hmrc.http.UpstreamErrorResponse, InitiateClientListDownloadResponse]]): CisPayePasConnector = {
+      val mockHttpClient = mock[HttpClientV2]
+      val mockConfig = mock[ServicesConfig]
+      val mockRequestBuilder = mock[RequestBuilder]
+
+      when(mockConfig.baseUrl("cis-paye-penalties-and-appeals")).thenReturn(testBackendUrl)
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[Either[uk.gov.hmrc.http.UpstreamErrorResponse, InitiateClientListDownloadResponse]](any(), any()))
+        .thenReturn(result)
+
+      new CisPayePasConnector(mockHttpClient, mockConfig)
+    }
+
+    "must return InitiateClientListDownloadResponse when request is successful" in {
+      val connector = setup(Future.successful(Right(expectedResponse)))
+
+      connector.initiateClientListDownload(testRequest).futureValue mustBe expectedResponse
+    }
+
+    "must handle Left response with UpstreamErrorResponse" in {
+      val upstreamError = uk.gov.hmrc.http.UpstreamErrorResponse("Bad Request", 400)
+      val connector = setup(Future.successful(Left(upstreamError)))
+
+      whenReady(connector.initiateClientListDownload(testRequest).failed) { exception =>
+        exception mustBe upstreamError
+      }
+    }
+
+    "must handle general exceptions" in {
+      val connector = setup(Future.failed(new RuntimeException("Connection failed")))
+
+      whenReady(connector.initiateClientListDownload(testRequest).failed) { exception =>
+        exception mustBe a[RuntimeException]
+        exception.getMessage mustBe "Connection failed"
+      }
+    }
+  }
 }

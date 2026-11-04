@@ -72,5 +72,32 @@ class ClientListServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         verify(mockBackendConnector, times(1)).getClientListDownloadStatus(eqTo(testRequest))(any())
       }
     }
+
+    "initiateClientListDownload" - {
+
+      val testRequest = InitiateClientListDownloadRequest(serviceId = "CIS", credentialId = "123", agentId = "A1")
+      val expectedResponse = InitiateClientListDownloadResponse(browserInterval = 8000, businessServiceIntervals = Seq(1000, 2000))
+
+      "must return InitiateClientListDownloadResponse when the connector succeeds" in {
+        when(mockBackendConnector.initiateClientListDownload(eqTo(testRequest))(any()))
+          .thenReturn(Future.successful(expectedResponse))
+
+        val result = service.initiateClientListDownload(testRequest).futureValue
+
+        result mustBe expectedResponse
+        verify(mockBackendConnector, times(1)).initiateClientListDownload(eqTo(testRequest))(any())
+      }
+
+      "must propagate connector failure" in {
+        when(mockBackendConnector.initiateClientListDownload(eqTo(testRequest))(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        whenReady(service.initiateClientListDownload(testRequest).failed) { exception =>
+          exception mustBe a[RuntimeException]
+          exception.getMessage mustBe "Connector failed"
+        }
+        verify(mockBackendConnector, times(1)).initiateClientListDownload(eqTo(testRequest))(any())
+      }
+    }
   }
 }

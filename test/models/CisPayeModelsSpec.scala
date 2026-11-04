@@ -878,4 +878,49 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       result.isError mustBe true
     }
   }
+
+  "InitiateClientListDownloadRequest" should {
+
+    "serialize to JSON correctly" in {
+      val json = Json.toJson(InitiateClientListDownloadRequest("CIS", "123", "A1"))
+
+      (json \ "serviceId").as[String] mustBe "CIS"
+      (json \ "credentialId").as[String] mustBe "123"
+      (json \ "agentId").as[String] mustBe "A1"
+    }
+
+    "deserialize from JSON correctly" in {
+      val json = Json.obj("serviceId" -> "PAYE", "credentialId" -> "123", "agentId" -> "A1")
+
+      json.validate[InitiateClientListDownloadRequest].get mustBe InitiateClientListDownloadRequest("PAYE", "123", "A1")
+    }
+
+    "fail to deserialize when agentId is missing" in {
+      val json = Json.obj("serviceId" -> "CIS", "credentialId" -> "123")
+
+      json.validate[InitiateClientListDownloadRequest].isError mustBe true
+    }
+  }
+
+  "InitiateClientListDownloadResponse" should {
+
+    "serialize to JSON correctly" in {
+      val json = Json.toJson(InitiateClientListDownloadResponse(8000, Seq(1000, 2000)))
+
+      (json \ "browserInterval").as[Int] mustBe 8000
+      (json \ "businessServiceIntervals").as[Seq[Int]] mustBe Seq(1000, 2000)
+    }
+
+    "deserialize from JSON correctly" in {
+      val json = Json.obj("browserInterval" -> 8000, "businessServiceIntervals" -> Json.arr(1000, 2000))
+
+      json.validate[InitiateClientListDownloadResponse].get mustBe InitiateClientListDownloadResponse(8000, Seq(1000, 2000))
+    }
+
+    "fail to deserialize when browserInterval is missing" in {
+      val json = Json.obj("businessServiceIntervals" -> Json.arr(1000))
+
+      json.validate[InitiateClientListDownloadResponse].isError mustBe true
+    }
+  }
 }
