@@ -28,7 +28,13 @@
     link: Link
 )
 
-@(total: Int, rows: List[AppealablePenaltiesDisplayRow], paginationComponent: Option[Pagination], infoText: Option[String])(implicit request: Request[_], messages: Messages)
+@(
+    total: Int,
+    rows: List[AppealablePenaltiesDisplayRow],
+    paginationComponent: Option[Pagination],
+    infoText: Option[String],
+    onwardUrl: String
+)(implicit request: Request[_], messages: Messages)
 
 @renderTable() = {
     @govukTable(Table(
@@ -42,11 +48,11 @@
             )
             },
             head = Some(Seq(
-                HeadCell(content = Text(messages("appealablePenalties.penaltyId")), attributes = Map("style" -> "width:175px")),
-                HeadCell(content = Text(messages("appealablePenalties.typeOfPenalty")), attributes = Map("style" -> "width:235px")),
-                HeadCell(content = Text(messages("appealablePenalties.issueDate")), attributes = Map("style" -> "width:215px")),
-                HeadCell(content = Text(messages("appealablePenalties.taxPeriodEndDate")), attributes = Map("style" -> "width:235px")),
-                HeadCell(content = Text(messages("appealablePenalties.amount")), attributes = Map("style" -> "width:100px")),
+                HeadCell(content = Text(messages("appealablePenalties.penaltyId"))),
+                HeadCell(content = Text(messages("appealablePenalties.typeOfPenalty"))),
+                HeadCell(content = Text(messages("appealablePenalties.issueDate"))),
+                HeadCell(content = Text(messages("appealablePenalties.taxPeriodEndDate"))),
+                HeadCell(content = Text(messages("appealablePenalties.amount"))),
             )
         )
     ))
@@ -64,4 +70,11 @@
     @renderTable()
 
     @paginationComponent.map(govukPagination(_))
+
+    @link(
+        linkTextKey   = "appealablePenalties.link.text",
+        linkUrl       = onwardUrl,
+        prefixTextKey = "appealablePenalties.link.prefix",
+        fullStop      = true
+    )
 }

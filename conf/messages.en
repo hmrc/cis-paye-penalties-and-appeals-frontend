@@ -58,11 +58,12 @@ appealablePenalties.issueDate        = Issue Date
 appealablePenalties.taxPeriodEndDate = End of tax period
 appealablePenalties.amount           = Amount
 
-appealablePenalties.title   = Appealable penalties
-appealablePenalties.heading = There are {0} penalties you can appeal
-appealablePenalties.p1      = To appeal a penalty, select the Penalty ID. You can only appeal one penalty at a time.
-
-appealablePenalties.paginationInfo = Showing <b>{0}</b> to <b>{1}</b> of <b>{2}</b> records
+appealablePenalties.title            = Appealable penalties
+appealablePenalties.heading          = There are {0} penalties you can appeal
+appealablePenalties.p1               = To appeal a penalty, select the Penalty ID. You can only appeal one penalty at a time.
+appealablePenalties.paginationInfo   = Showing <b>{0}</b> to <b>{1}</b> of <b>{2}</b> records
+appealablePenalties.link.prefix      = Back to
+appealablePenalties.link.text        = Manage Construction Industry Scheme account
 
 beforeYouStart.title = Before you start
 beforeYouStart.heading = Before you start
