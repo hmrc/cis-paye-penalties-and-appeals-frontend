@@ -62,7 +62,7 @@ object AppealablePenaltiesDisplayRow {
       issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
       taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
       typeOfPenalty    = typeOfPenalty,
-      amount           = row.amount.map(a => f"£$a%.2f").getOrElse(""),
+      amount           = row.amount.map(a => f"£$a%,.2f" ).getOrElse(""),
       redirectUrl      = BeforeYouStartController.onPageLoad(penaltyId).url
     )
   }

@@ -42,13 +42,13 @@ class AppealablePenaltiesController @Inject()(
                                              view: AppealablePenaltiesView
                                            )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport with PaginationHelper with Logging {
   // TODO: remove once authentication set up
-  private val hmrcOfficeNumber = "001"
+  private val hmrcOfficeNumber = "100"
   private val schemeReferenceNumber = "CD456"
 
   private val rowsPerPage = 10
 
-  // TODO: only added CIS org route. Once authentication is set up route will depend on if the user is a contractor or agent
-  val onwardUrl = appConfig.manageCisAccountOrgUrl
+  // TODO: only added CIS org route. Once authentication is set up route will depend on if the user is from CIS/PAYE and if they are a contractor or agent
+  private val onwardUrl = appConfig.manageCisAccountOrgUrl
   
   def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData).async { implicit request =>
     val currentPage = page.getOrElse(1)
@@ -62,7 +62,7 @@ class AppealablePenaltiesController @Inject()(
     
     cisPayePasService.getCisAppealablePenalties(request)
       .map { viewModel =>
-        logger.info(s"[CisAppealablePenaltiesController][onPageLoad] - render page")
+        logger.info(s"[AppealablePenaltiesController][onPageLoad] - render page")
         val total = viewModel.total
         val rows = viewModel.rows.map(AppealablePenaltiesDisplayRow.fromRow)
 
@@ -82,7 +82,7 @@ class AppealablePenaltiesController @Inject()(
         }
       } recover {
       case ex =>
-        logger.error(s"[CisAppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
+        logger.error(s"[AppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
         Redirect(JourneyRecoveryController.onPageLoad())
     }
   }
