@@ -89,7 +89,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         total = 2,
         appealablePenalties = List(
           GetAppealablePenaltyResponse(
-            uniqueId = Some(10001),
+            penaltyId = Some(10001),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
             penaltyType = Some("CIS03"),
@@ -102,7 +102,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         total = 2,
         rows = List(
           AppealablePenaltiesViewModelRow(
-            uniqueId = Some(10001),
+            penaltyId = Some(10001),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
             typeOfPenalty = Some("CIS03"),
@@ -142,7 +142,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       )
 
       val getCisAppealablePenaltyResponse = GetAppealablePenaltyResponse(
-        uniqueId = None,
+        penaltyId = None,
         issueDate = Some(LocalDate.of(2023, 1, 1)),
         taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
         penaltyType = Some("CIS003"),
@@ -179,9 +179,9 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         schemeReferenceNumber = "AB456"
       )
 
-      def taxpayerResponse(uniqueId: String, taxOfficeRef: String): GetCisTaxpayerResponse =
+      def taxpayerResponse(penaltyId: String, taxOfficeRef: String): GetCisTaxpayerResponse =
         GetCisTaxpayerResponse(
-          uniqueId = uniqueId,
+          uniqueId = penaltyId,
           taxOfficeNumber = "123",
           taxOfficeRef = taxOfficeRef,
           aoDistrict = Some("123"),
@@ -255,9 +255,9 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     "getCisPenaltyAllowed" - {
 
       val testRequest = GetPenaltyAllowedRequest(
-        districtNumber = 1L,
-        employerReference = "HDZ",
-        uniqueId = 1L
+        hmrcOfficeNumber = 1L,
+        schemeReferenceNumber = "HDZ",
+        penaltyId = 1L
       )
 
       val testResponse = GetPenaltyAllowedResponse(
@@ -378,7 +378,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       total = 2,
       appealablePenalties = List(
         GetAppealablePenaltyResponse(
-          uniqueId = Some(10001),
+          penaltyId = Some(10001),
           issueDate = Some(LocalDate.of(2023, 1, 1)),
           taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
           penaltyType = Some("CIS03"),
@@ -391,7 +391,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       total = 2,
       rows = List(
         AppealablePenaltiesViewModelRow(
-          uniqueId = Some(10001),
+          penaltyId = Some(10001),
           issueDate = Some(LocalDate.of(2023, 1, 1)),
           taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
           typeOfPenalty = Some("CIS03"),
@@ -431,7 +431,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     )
 
     val getPayeAppealablePenaltyResponse = GetAppealablePenaltyResponse(
-      uniqueId = None,
+      penaltyId = None,
       issueDate = Some(LocalDate.of(2023, 1, 1)),
       taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
       penaltyType = Some("CIS003"),
@@ -468,12 +468,12 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       schemeReferenceNumber = "AB456"
     )
 
-    def taxpayerResponse(uniqueId: Long, employerRef: String): GetPayeTaxpayerResponse =
+    def taxpayerResponse(penaltyId: Long, employerRef: String): GetPayeTaxpayerResponse =
       GetPayeTaxpayerResponse(
-        uniqueId = uniqueId,
+        penaltyId = penaltyId,
         instanceId = 2000123L,
-        districtNumber = "123",
-        employerRef = employerRef,
+        hmrcOfficeNumber = "123",
+        schemeReferenceNumber = employerRef,
         employerName1 = Some("ABC"),
         employerName2 = None,
         agentOwnRef = None
@@ -535,9 +535,9 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
   "getPayePenaltyAllowed" - {
 
     val testRequest = GetPenaltyAllowedRequest(
-      districtNumber = 1L,
-      employerReference = "HDZ",
-      uniqueId = 1L
+      hmrcOfficeNumber = 1L,
+      schemeReferenceNumber = "HDZ",
+      penaltyId = 1L
     )
 
     val testResponse = GetPenaltyAllowedResponse(

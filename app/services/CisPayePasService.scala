@@ -45,7 +45,7 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
       total = appealablePenalties.total,
       rows  = appealablePenalties.appealablePenalties.map { penalty =>
         AppealablePenaltiesViewModelRow(
-          uniqueId         = penalty.uniqueId,
+          penaltyId         = penalty.penaltyId,
           issueDate        = penalty.issueDate,
           taxPeriodEndDate = penalty.taxPeriodEndDate,
           typeOfPenalty    = penalty.penaltyType,
@@ -96,7 +96,7 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
       total = penalties.total,
       rows = penalties.appealablePenalties.map { penalty =>
         AppealablePenaltiesViewModelRow(
-          uniqueId = penalty.uniqueId,
+          penaltyId = penalty.penaltyId,
           issueDate = penalty.issueDate,
           taxPeriodEndDate = penalty.taxPeriodEndDate,
           typeOfPenalty = penalty.penaltyType,

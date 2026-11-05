@@ -152,7 +152,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "serialize to JSON correctly" in {
       val penalty1 = GetAppealablePenaltyResponse(
-        uniqueId = Some(10001),
+        penaltyId = Some(10001),
         issueDate = Some(LocalDate.of(2023, 1, 1)),
         taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
         penaltyType = Some("CIS003"),
@@ -160,7 +160,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       )
 
       val penalty2 = GetAppealablePenaltyResponse(
-        uniqueId = Some(10002),
+        penaltyId = Some(10002),
         issueDate = Some(LocalDate.of(2025, 1, 1)),
         taxPeriodEndDate = Some(LocalDate.of(2026, 4, 1)),
         penaltyType = Some("CIS005"),
@@ -177,14 +177,14 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       (json \ "total").as[Int] mustBe 2
 
       val first = (json \ "appealablePenalties" \ 0).get
-      (first \ "uniqueId").as[Int] mustBe 10001
+      (first \ "penaltyId").as[Int] mustBe 10001
       (first \ "issueDate").as[LocalDate] mustBe LocalDate.of(2023, 1, 1)
       (first \ "taxPeriodEndDate").as[LocalDate] mustBe LocalDate.of(2023, 4, 1)
       (first \ "penaltyType").as[String] mustBe "CIS003"
       (first \ "penaltyAmount").as[BigDecimal] mustBe BigDecimal("999.23")
 
       val second = (json \ "appealablePenalties" \ 1).get
-      (second \ "uniqueId").as[Int] mustBe 10002
+      (second \ "penaltyId").as[Int] mustBe 10002
       (second \ "issueDate").as[LocalDate] mustBe LocalDate.of(2025, 1, 1)
       (second \ "taxPeriodEndDate").as[LocalDate] mustBe LocalDate.of(2026, 4, 1)
       (second \ "penaltyType").as[String] mustBe "CIS005"
@@ -196,14 +196,14 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
         "total" -> 2,
         "appealablePenalties" -> Json.arr(
           Json.obj(
-            "uniqueId" -> 1001,
+            "penaltyId" -> 1001,
             "issueDate" -> "2026-01-15",
             "taxPeriodEndDate" -> "2025-12-05",
             "penaltyType" -> "CIS003",
             "penaltyAmount" -> 100
           ),
           Json.obj(
-            "uniqueId" -> 1002,
+            "penaltyId" -> 1002,
             "issueDate" -> "2026-02-20",
             "taxPeriodEndDate" -> "2026-01-05",
             "penaltyType" -> "CIS005",
@@ -220,14 +220,14 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       response.total mustBe 2
       response.appealablePenalties mustBe List(
         GetAppealablePenaltyResponse(
-          uniqueId = Some(1001),
+          penaltyId = Some(1001),
           issueDate = Some(LocalDate.of(2026, 1, 15)),
           taxPeriodEndDate = Some(LocalDate.of(2025, 12, 5)),
           penaltyType = Some("CIS003"),
           penaltyAmount = Some(BigDecimal(100))
         ),
         GetAppealablePenaltyResponse(
-          uniqueId = Some(1002),
+          penaltyId = Some(1002),
           issueDate = Some(LocalDate.of(2026, 2, 20)),
           taxPeriodEndDate = Some(LocalDate.of(2026, 1, 5)),
           penaltyType = Some("CIS005"),
@@ -294,7 +294,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "serialize to JSON correctly" in {
       val response = GetAppealablePenaltyResponse(
-        uniqueId = Some(10001),
+        penaltyId = Some(10001),
         issueDate = Some(LocalDate.of(2023, 1, 1)),
         taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
         penaltyType = Some("CIS003"),
@@ -303,7 +303,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
       val json = Json.toJson(response)
 
-      (json \ "uniqueId").as[Int] mustBe 10001
+      (json \ "penaltyId").as[Int] mustBe 10001
       (json \ "issueDate").as[String] mustBe "2023-01-01"
       (json \ "taxPeriodEndDate").as[String] mustBe "2023-04-01"
       (json \ "penaltyType").as[String] mustBe "CIS003"
@@ -312,7 +312,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "deserialize from JSON correctly" in {
       val json = Json.obj(
-        "uniqueId" -> 10001,
+        "penaltyId" -> 10001,
         "issueDate" -> "2023-01-01",
         "taxPeriodEndDate" -> "2023-04-01",
         "penaltyType" -> "CIS003",
@@ -322,7 +322,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       val result = json.validate[GetAppealablePenaltyResponse]
 
       result mustBe a[JsSuccess[_]]
-      result.get.uniqueId mustBe Some(10001)
+      result.get.penaltyId mustBe Some(10001)
       result.get.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
       result.get.taxPeriodEndDate mustBe Some(LocalDate.of(2023, 4, 1))
       result.get.penaltyType mustBe Some("CIS003")
@@ -331,7 +331,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "fail to deserialize when type is incorrect" in {
       val json = Json.obj(
-        "uniqueId" -> "10001"
+        "penaltyId" -> "10001"
       )
 
       val result = json.validate[GetAppealablePenaltyResponse]
@@ -477,7 +477,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       (json \ "utr").toOption mustBe None
     }
 
-    "fail to deserialize when uniqueId is missing" in {
+    "fail to deserialize when penaltyId is missing" in {
       val result = (fullJson - "uniqueId").validate[GetCisTaxpayerResponse]
 
       result.isError mustBe true
@@ -505,20 +505,20 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
   "GetPayeTaxpayerResponse" should {
 
     val fullResponse = GetPayeTaxpayerResponse(
-      uniqueId = 1000123L,
+      penaltyId = 1000123L,
       instanceId = 2000123L,
-      districtNumber = "123",
-      employerRef = "AB456",
+      hmrcOfficeNumber = "123",
+      schemeReferenceNumber = "AB456",
       employerName1 = Some("ABC"),
       employerName2 = Some("DEF"),
       agentOwnRef = Some("own")
     )
 
     val fullJson = Json.obj(
-      "uniqueId" -> 1000123,
+      "penaltyId" -> 1000123,
       "instanceId" -> 2000123,
-      "districtNumber" -> "123",
-      "employerRef" -> "AB456",
+      "hmrcOfficeNumber" -> "123",
+      "schemeReferenceNumber" -> "AB456",
       "employerName1" -> "ABC",
       "employerName2" -> "DEF",
       "agentOwnRef" -> "own"
@@ -528,7 +528,7 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       val json = Json.toJson(fullResponse)
 
       json mustBe fullJson
-      (json \ "uniqueId").as[Long] mustBe 1000123L
+      (json \ "penaltyId").as[Long] mustBe 1000123L
       (json \ "instanceId").as[Long] mustBe 2000123L
     }
 
@@ -541,16 +541,16 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "deserialize when optional fields are missing" in {
       val json = Json.obj(
-        "uniqueId" -> 1000123,
+        "penaltyId" -> 1000123,
         "instanceId" -> 2000123,
-        "districtNumber" -> "123",
-        "employerRef" -> "AB456"
+        "hmrcOfficeNumber" -> "123",
+        "schemeReferenceNumber" -> "AB456"
       )
 
       val result = json.validate[GetPayeTaxpayerResponse]
 
       result mustBe a[JsSuccess[_]]
-      result.get.uniqueId mustBe 1000123L
+      result.get.penaltyId mustBe 1000123L
       result.get.employerName1 mustBe None
       result.get.employerName2 mustBe None
       result.get.agentOwnRef mustBe None
@@ -576,8 +576,8 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       (json \ "agentOwnRef").toOption mustBe None
     }
 
-    "fail to deserialize when uniqueId is missing" in {
-      val result = (fullJson - "uniqueId").validate[GetPayeTaxpayerResponse]
+    "fail to deserialize when penaltyId is missing" in {
+      val result = (fullJson - "penaltyId").validate[GetPayeTaxpayerResponse]
 
       result.isError mustBe true
     }
@@ -588,20 +588,20 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       result.isError mustBe true
     }
 
-    "fail to deserialize when districtNumber is missing" in {
-      val result = (fullJson - "districtNumber").validate[GetPayeTaxpayerResponse]
+    "fail to deserialize when hmrcOfficeNumber is missing" in {
+      val result = (fullJson - "hmrcOfficeNumber").validate[GetPayeTaxpayerResponse]
 
       result.isError mustBe true
     }
 
-    "fail to deserialize when employerRef is missing" in {
-      val result = (fullJson - "employerRef").validate[GetPayeTaxpayerResponse]
+    "fail to deserialize when schemeReferenceNumber is missing" in {
+      val result = (fullJson - "schemeReferenceNumber").validate[GetPayeTaxpayerResponse]
 
       result.isError mustBe true
     }
 
     "fail to deserialize when type is incorrect" in {
-      val result = (fullJson ++ Json.obj("uniqueId" -> "1000123")).validate[GetPayeTaxpayerResponse]
+      val result = (fullJson ++ Json.obj("penaltyId" -> "1000123")).validate[GetPayeTaxpayerResponse]
 
       result.isError mustBe true
     }
@@ -611,25 +611,25 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
 
     "serialize to JSON correctly" in {
       val request = GetPenaltyAllowedRequest(
-        districtNumber = 1L,
-        employerReference = "HDZ",
-        uniqueId = 1L
+        hmrcOfficeNumber = 1L,
+        schemeReferenceNumber = "HDZ",
+        penaltyId = 1L
       )
 
       val json = Json.toJson(request)
 
       json mustBe Json.obj(
-        "districtNumber" -> 1L,
-        "employerReference" -> "HDZ",
-        "uniqueId" -> 1L
+        "hmrcOfficeNumber" -> 1L,
+        "schemeReferenceNumber" -> "HDZ",
+        "penaltyId" -> 1L
       )
     }
 
     "deserialize from JSON correctly" in {
       val json = Json.obj(
-        "districtNumber" -> 1L,
-        "employerReference" -> "HDZ",
-        "uniqueId" -> 1L
+        "hmrcOfficeNumber" -> 1L,
+        "schemeReferenceNumber" -> "HDZ",
+        "penaltyId" -> 1L
       )
 
       val result = json.validate[GetPenaltyAllowedRequest]
@@ -638,10 +638,10 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       result.get mustBe GetPenaltyAllowedRequest(1L, "HDZ", 1L)
     }
 
-    "fail to deserialize when uniqueId is missing" in {
+    "fail to deserialize when penaltyId is missing" in {
       val json = Json.obj(
-        "districtNumber" -> 1L,
-        "employerReference" -> "HDZ"
+        "hmrcOfficeNumber" -> 1L,
+        "schemeReferenceNumber" -> "HDZ"
       )
 
       val result = json.validate[GetPenaltyAllowedRequest]
@@ -649,20 +649,20 @@ class CisPayeModelsSpec extends AnyWordSpec with Matchers {
       result.isError mustBe true
     }
 
-    "fail to deserialize when districtNumber is missing" in {
+    "fail to deserialize when hmrcOfficeNumber is missing" in {
       val json = Json.obj(
-        "employerReference" -> "HDZ",
-        "uniqueId" -> 1L
+        "schemeReferenceNumber" -> "HDZ",
+        "penaltyId" -> 1L
       )
 
       val result = json.validate[GetPenaltyAllowedRequest]
 
       result.isError mustBe true
     }
-    "fail to deserialize when employerReference is missing" in {
+    "fail to deserialize when schemeReferenceNumber is missing" in {
       val json = Json.obj(
-        "districtNumber" -> 1L,
-        "uniqueId" -> 1L
+        "hmrcOfficeNumber" -> 1L,
+        "penaltyId" -> 1L
       )
 
       val result = json.validate[GetPenaltyAllowedRequest]
