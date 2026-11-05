@@ -43,12 +43,14 @@ class AppealablePenaltiesController @Inject()(
                                            )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport with PaginationHelper with Logging {
   // TODO: remove once authentication set up
   private val hmrcOfficeNumber = "100"
-  private val schemeReferenceNumber = "CD456"
+  private val schemeReferenceNumber = "EF789"
 
   private val rowsPerPage = 10
 
   // TODO: only added CIS org route. Once authentication is set up route will depend on if the user is from CIS/PAYE and if they are a contractor or agent
   private val onwardUrl = appConfig.manageCisAccountOrgUrl
+
+  private val noticesAndStatementsUrl = "#"
   
   def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData).async { implicit request =>
     val currentPage = page.getOrElse(1)
@@ -75,7 +77,7 @@ class AppealablePenaltiesController @Inject()(
 
         pagination match {
           case Some((_, paginationComponent, infoText)) =>
-            Ok(view(total, rows, paginationComponent, infoText, onwardUrl))
+            Ok(view(total, rows, paginationComponent, infoText, noticesAndStatementsUrl, onwardUrl))
 
           case None =>
             Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))

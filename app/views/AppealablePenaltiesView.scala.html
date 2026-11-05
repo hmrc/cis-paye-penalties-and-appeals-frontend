@@ -33,6 +33,7 @@
     rows: List[AppealablePenaltiesDisplayRow],
     paginationComponent: Option[Pagination],
     infoText: Option[String],
+    noticesAndStatementsUrl: String,
     onwardUrl: String
 )(implicit request: Request[_], messages: Messages)
 
@@ -58,16 +59,35 @@
     ))
 }
 
-@layout(pageTitle = titleNoForm(messages("appealablePenalties.title")), showBackLink = false, isFullWidth = true) {
+@layout(pageTitle = titleNoForm(messages("appealablePenalties.title")), showBackLink = false, isFullWidth = total > 0) {
 
     @caption("Client name")
-    @h1(messages("appealablePenalties.heading", total))
 
-    @p(messages("appealablePenalties.p1"))
+    @total match {
+        case 0 => {
+            @h1("appealablePenalties.heading.zeroPenalties")
+            @link(
+                linkTextKey   = "appealablePenalties.zeroPenalties.link.text",
+                linkUrl       = noticesAndStatementsUrl,
+                prefixTextKey = "appealablePenalties.zeroPenalties.link.prefix",
+                fullStop      = true
+            )
+        }
+        case 1 => {
+            @h1("appealablePenalties.heading.onePenalty")
+            @p(messages("appealablePenalties.nonZeroPenalties.p1"))
+        }
+        case _ => {
+            @h1("appealablePenalties.heading.multiplePenalties", args = Seq(total))
+            @p(messages("appealablePenalties.nonZeroPenalties.p1"))
+        }
+    }
 
     @infoText.map(p(_))
 
-    @renderTable()
+    @if(total > 0) {
+        @renderTable()
+    }
 
     @paginationComponent.map(govukPagination(_))
 

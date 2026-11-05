@@ -16,6 +16,6 @@
 
 @this()
 
-@(msg: String, classes: String = "govuk-heading-l")(implicit messages: Messages)
+@(msg: String, classes: String = "govuk-heading-l", args: Seq[Any] = Nil)(implicit messages: Messages)
 
-<h1 class="@classes">@messages(msg)</h1>
+<h1 class="@classes">@messages(msg, args*)</h1>
