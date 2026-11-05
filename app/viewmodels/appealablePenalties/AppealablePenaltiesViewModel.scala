@@ -24,7 +24,7 @@ case class AppealablePenaltiesViewModel(
                                        )
 
 case class AppealablePenaltiesViewModelRow(
-                                            uniqueId         : Option[Long],
+                                            penaltyId         : Option[Long],
                                             issueDate        : Option[LocalDate],
                                             taxPeriodEndDate : Option[LocalDate],
                                             typeOfPenalty    : Option[String],
