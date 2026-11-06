@@ -25,7 +25,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import viewmodels.appealablePenalties.{AppealablePenaltiesViewModel, AppealablePenaltiesViewModelRow}
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -98,26 +97,13 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         )
       )
 
-      val expectedResponse = AppealablePenaltiesViewModel(
-        total = 2,
-        rows = List(
-          AppealablePenaltiesViewModelRow(
-            penaltyId = Some(10001),
-            issueDate = Some(LocalDate.of(2023, 1, 1)),
-            taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-            typeOfPenalty = Some("CIS03"),
-            amount = Some(BigDecimal(999.23))
-          )
-        )
-      )
-
       "must return AppealablePenaltiesViewModel when successful" in {
         when(mockBackendConnector.getCisAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
           .thenReturn(Future.successful(testResponse))
 
         val result = service.getCisAppealablePenalties(testRequest).futureValue
 
-        result mustBe expectedResponse
+        result mustBe testResponse
         verify(mockBackendConnector, times(1)).getCisAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier])
       }
 
@@ -387,26 +373,13 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       )
     )
 
-    val expectedResponse = AppealablePenaltiesViewModel(
-      total = 2,
-      rows = List(
-        AppealablePenaltiesViewModelRow(
-          penaltyId = Some(10001),
-          issueDate = Some(LocalDate.of(2023, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-          typeOfPenalty = Some("CIS03"),
-          amount = Some(BigDecimal(999.23))
-        )
-      )
-    )
-
     "must return AppealablePenaltiesViewModel when successful" in {
       when(mockBackendConnector.getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
         .thenReturn(Future.successful(testResponse))
 
       val result = service.getPayeAppealablePenalties(testRequest).futureValue
 
-      result mustBe expectedResponse
+      result mustBe testResponse
       verify(mockBackendConnector, times(1)).getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier])
     }
 
