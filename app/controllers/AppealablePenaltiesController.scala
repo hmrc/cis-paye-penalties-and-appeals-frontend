@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import controllers.actions.{DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import controllers.routes.JourneyRecoveryController
 import models.GetAppealablePenaltiesRequest
 import play.api.Logging
@@ -30,7 +30,7 @@ import viewmodels.appealablePenalties.{AppealablePenaltiesDisplayRow, Appealable
 import views.html.AppealablePenaltiesView
 
 import javax.inject.*
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AppealablePenaltiesController @Inject()(
@@ -41,9 +41,6 @@ class AppealablePenaltiesController @Inject()(
                                              cisPayePasService: CisPayePasService,
                                              view: AppealablePenaltiesView
                                            )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport with Logging {
-  // TODO: remove once authentication set up
-  private val hmrcOfficeNumber = "100"
-  private val schemeReferenceNumber = "GH012"
 
   // TODO: only added CIS org route. Once authentication is set up route will depend on if the user is from CIS/PAYE and if they are a contractor or agent
   private val onwardUrl = appConfig.manageCisAccountOrgUrl
@@ -54,20 +51,24 @@ class AppealablePenaltiesController @Inject()(
     val currentPage = page.getOrElse(1)
     val (startRow, endRow) = getRowNumbers(currentPage)
 
-    val request = GetAppealablePenaltiesRequest(
-      hmrcOfficeNumber = hmrcOfficeNumber, schemeReferenceNumber = schemeReferenceNumber, startRow = startRow, endRow = endRow
-    )
-
-    cisPayePasService.getCisAppealablePenalties(request)
-      .map { response =>
-        AppealablePenaltiesViewModel.toViewModel(response, currentPage, onwardUrl) match {
-          case Some(viewModel) => Ok(view(viewModel))
-          case None            => Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
-        }
-      } recover {
-      case ex =>
-        logger.error(s"[AppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
-        Redirect(JourneyRecoveryController.onPageLoad())
+    request.employerReference match {
+      case Some(hmrcOfficeNumber, schemeReferenceNumber) =>
+        val req = GetAppealablePenaltiesRequest(hmrcOfficeNumber, schemeReferenceNumber, startRow, endRow)
+        
+        cisPayePasService.getCisAppealablePenalties(req)
+          .map { response =>
+            AppealablePenaltiesViewModel.toViewModel(response, currentPage, onwardUrl) match {
+              case Some(viewModel) => Ok(view(viewModel))
+              case None            => Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
+            }
+          } recover {
+              case ex =>
+                logger.error(s"[AppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
+                Redirect(JourneyRecoveryController.onPageLoad())
+            }
+      case _ =>
+        logger.error("[AppealablePenaltiesController][onPageLoad] Could not find employer reference details")
+        Future.successful(Redirect(JourneyRecoveryController.onPageLoad()))
     }
   }
 
