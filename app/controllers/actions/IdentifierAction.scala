@@ -19,11 +19,15 @@ package controllers.actions
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.routes
+import models.EmployerReference
 import models.requests.IdentifierRequest
-import play.api.mvc.Results._
-import play.api.mvc._
-import uk.gov.hmrc.auth.core._
+import play.api.Logging
+import play.api.mvc.Results.*
+import play.api.mvc.*
+import uk.gov.hmrc.auth.core.*
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
@@ -36,16 +40,26 @@ class AuthenticatedIdentifierAction @Inject()(
                                                config: FrontendAppConfig,
                                                val parser: BodyParsers.Default
                                              )
-                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
+                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised().retrieve(Retrievals.internalId) {
-      _.map {
-        internalId => block(IdentifierRequest(request, internalId))
-      }.getOrElse(throw new UnauthorizedException("Unable to retrieve internal Id"))
+    authorised().retrieve(
+      Retrievals.internalId and
+        Retrievals.allEnrolments and
+        Retrievals.affinityGroup
+    ) {
+      case Some(internalId) ~ Enrolments(enrolments) ~ Some(Organisation) =>
+        hasCisOrgEnrolment(enrolments)
+          .map { employerReference =>
+            block(IdentifierRequest(request, internalId, Some(employerReference)))
+          }
+          .getOrElse(throw new UnauthorizedException("Unable to retrieve internal Id"))
+      case _ =>
+        logger.warn("EnrolmentAuthIdentifierAction - Unable to retrieve internal id or affinity group")
+        throw new UnauthorizedException("Unable to retrieve internal Id")
     } recover {
       case _: NoActiveSession =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
@@ -53,22 +67,25 @@ class AuthenticatedIdentifierAction @Inject()(
         Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }
-}
 
-class SessionIdentifierAction @Inject()(
-                                         val parser: BodyParsers.Default
-                                       )
-                                       (implicit val executionContext: ExecutionContext) extends IdentifierAction {
-
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
-    hc.sessionId match {
-      case Some(session) =>
-        block(IdentifierRequest(request, session.value))
-      case None =>
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+  def hasCisOrgEnrolment[A](enrolments: Set[Enrolment]): Option[EmployerReference] = {
+    enrolments.find(_.key == "HMRC-CIS-ORG") match {
+      case Some(enrolment) =>
+        val taxOfficeNumber = enrolment.identifiers.find(id => id.key == "TaxOfficeNumber").map(_.value)
+        val taxOfficeReference = enrolment.identifiers.find(id => id.key == "TaxOfficeReference").map(_.value)
+        val isActivated = enrolment.isActivated
+        
+        (taxOfficeNumber, taxOfficeReference, isActivated) match {
+          case (Some(number), Some(reference), true) if isValidTaxOfficeNumber(number) =>
+            Some(EmployerReference(number, reference))
+          case _ =>
+            logger.warn("EnrolmentAuthIdentifierAction - Unable to retrieve activated cis enrolments")
+            None
+        }
+      case _ => None
     }
   }
 }
+
+def isValidTaxOfficeNumber(taxOfficeNumber: String): Boolean =
+  (taxOfficeNumber != null) && taxOfficeNumber.matches("[0-9]{3}")

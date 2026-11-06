@@ -20,7 +20,6 @@ import connectors.CisPayePasConnector
 import models.*
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.appealablePenalties.{AppealablePenaltiesViewModel, AppealablePenaltiesViewModelRow}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

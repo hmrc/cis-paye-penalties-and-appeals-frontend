@@ -39,6 +39,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/cis-paye-penalties-and-appeals-frontend"
+
+  private val cisManageServiceBaseUrl: String = configuration.get[String]("cis-manage-frontend.host")
+  val manageCisAccountOrgUrl: String = s"$cisManageServiceBaseUrl/construction-industry-scheme/management/org/manage-construction-industry-scheme-account"
   
   val reasonableExcusesUrl: String = configuration.get[String]("urls.reasonableExcuses")
 

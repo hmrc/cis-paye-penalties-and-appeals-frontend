@@ -16,17 +16,89 @@
 
 package viewmodels.appealablePenalties
 
+import controllers.routes.BeforeYouStartController
+import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyResponse}
+import play.api.i18n.Messages
+import play.api.mvc.Results.Redirect
+import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+import utils.PaginationHelper
+
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 case class AppealablePenaltiesViewModel(
                                        total: Int,
-                                       rows : List[AppealablePenaltiesViewModelRow]
+                                       rows : List[AppealablePenaltiesDisplayRow],
+                                       paginationComponent: Option[Pagination],
+                                       paginationText: Option[String],
+                                       noticesUrl: Option[String] = None,
+                                       onwardUrl: String
                                        )
 
-case class AppealablePenaltiesViewModelRow(
-                                            penaltyId         : Option[Long],
-                                            issueDate        : Option[LocalDate],
-                                            taxPeriodEndDate : Option[LocalDate],
-                                            typeOfPenalty    : Option[String],
-                                            amount           : Option[BigDecimal]
-                                          )
+object AppealablePenaltiesViewModel extends PaginationHelper {
+  
+  def toViewModel(
+                   response: GetAppealablePenaltiesResponse,
+                   currentPage: Int,
+                   onwardUrl: String
+                 )(implicit messages: Messages): Option[AppealablePenaltiesViewModel] = {
+    val total = response.total
+    val rows = response.appealablePenalties.map(AppealablePenaltiesDisplayRow.fromRow)
+
+    val pagination = getPaginationWithInfoText(
+      rows = rows,
+      totalRowCount = total,
+      paginationIndex = Some(currentPage),
+      urlSelector = (p: Int) => controllers.routes.AppealablePenaltiesController.onPageLoad(Some(p)).url
+    )
+    
+    pagination match {
+      case Some((_, paginationComponent, infoText)) =>
+        Some(AppealablePenaltiesViewModel(
+          total = total,
+          rows  = rows,
+          paginationComponent = paginationComponent,
+          paginationText = infoText,
+          noticesUrl = Option.when(total == 0)("#"),
+          onwardUrl = onwardUrl
+        ))
+      case _ =>
+        None
+    }
+  }
+}
+
+case class AppealablePenaltiesDisplayRow(
+                                          penaltyId: String,
+                                          issueDate: String,
+                                          taxPeriodEndDate: String,
+                                          penaltyType: String,
+                                          penaltyAmount: String,
+                                          redirectUrl: String
+                                        )
+
+object AppealablePenaltiesDisplayRow {
+  private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+
+  def fromRow(row: GetAppealablePenaltyResponse)(implicit messages: Messages): AppealablePenaltiesDisplayRow = {
+
+    val typeOfPenalty = row.penaltyType match {
+      case Some("CIS3") => messages("appealablePenalties.penalty.cis3")
+      case Some("CIS4") => messages("appealablePenalties.penalty.cis4")
+      case Some("CIS5") => messages("appealablePenalties.penalty.cis5")
+      case Some("CIS6") => messages("appealablePenalties.penalty.cis6")
+      case _ => ""
+    }
+
+    val penaltyId = row.penaltyId.map(_.toString).getOrElse("")
+
+    AppealablePenaltiesDisplayRow(
+      penaltyId        = penaltyId,
+      issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
+      taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
+      penaltyType      = typeOfPenalty,
+      penaltyAmount    = row.penaltyAmount.map(a => f"£$a%,.2f" ).getOrElse(""),
+      redirectUrl      = BeforeYouStartController.onPageLoad(penaltyId).url
+    )
+  }
+}

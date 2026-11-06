@@ -21,7 +21,6 @@ import connectors.CisPayePasConnector
 import models.*
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.appealablePenalties.{AppealablePenaltiesViewModel, AppealablePenaltiesViewModelRow}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,22 +36,9 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
   }
 
   def getCisAppealablePenalties(getCisAppealablePenaltiesRequest: GetAppealablePenaltiesRequest)
-                               (implicit hc: HeaderCarrier): Future[AppealablePenaltiesViewModel] = {
+                               (implicit hc: HeaderCarrier): Future[GetAppealablePenaltiesResponse] = {
     logger.debug("[CisPayePasService][getCisAppealablePenalties] Getting appealable penalties")
-    for {
-      appealablePenalties <- backendConnector.getCisAppealablePenalties(getCisAppealablePenaltiesRequest)
-    } yield AppealablePenaltiesViewModel(
-      total = appealablePenalties.total,
-      rows  = appealablePenalties.appealablePenalties.map { penalty =>
-        AppealablePenaltiesViewModelRow(
-          penaltyId         = penalty.penaltyId,
-          issueDate        = penalty.issueDate,
-          taxPeriodEndDate = penalty.taxPeriodEndDate,
-          typeOfPenalty    = penalty.penaltyType,
-          amount           = penalty.penaltyAmount
-        )
-      }
-    )
+      backendConnector.getCisAppealablePenalties(getCisAppealablePenaltiesRequest)
   }
 
   def getCisAppealablePenalty(getCisAppealablePenaltyRequest: GetAppealablePenaltyRequest)
@@ -88,22 +74,9 @@ class CisPayePasService @Inject()(backendConnector: CisPayePasConnector)(implici
   }
 
   def getPayeAppealablePenalties(request: GetAppealablePenaltiesRequest)
-                               (implicit hc: HeaderCarrier): Future[AppealablePenaltiesViewModel] = {
+                               (implicit hc: HeaderCarrier): Future[GetAppealablePenaltiesResponse] = {
     logger.debug("[CisPayePasService][getPayeAppealablePenalties] Getting appealable penalties")
-    for {
-      penalties <- backendConnector.getPayeAppealablePenalties(request)
-    } yield AppealablePenaltiesViewModel(
-      total = penalties.total,
-      rows = penalties.appealablePenalties.map { penalty =>
-        AppealablePenaltiesViewModelRow(
-          penaltyId = penalty.penaltyId,
-          issueDate = penalty.issueDate,
-          taxPeriodEndDate = penalty.taxPeriodEndDate,
-          typeOfPenalty = penalty.penaltyType,
-          amount = penalty.penaltyAmount
-        )
-      }
-    )
+    backendConnector.getPayeAppealablePenalties(request)
   }
 
   def getPayeAppealablePenalty(getPayeAppealablePenaltyRequest: GetAppealablePenaltyRequest)
