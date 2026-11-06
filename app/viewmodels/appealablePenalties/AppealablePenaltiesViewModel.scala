@@ -59,7 +59,7 @@ object AppealablePenaltiesViewModel extends PaginationHelper {
           rows  = rows,
           paginationComponent = paginationComponent,
           paginationText = infoText,
-          noticesUrl = if(total == 0) Some("#") else None,
+          noticesUrl = Option.when(total == 0)("#"),
           onwardUrl = onwardUrl
         ))
       case _ =>
@@ -78,14 +78,15 @@ case class AppealablePenaltiesDisplayRow(
                                         )
 
 object AppealablePenaltiesDisplayRow {
-  def fromRow(row: GetAppealablePenaltyResponse): AppealablePenaltiesDisplayRow = {
-    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+
+  def fromRow(row: GetAppealablePenaltyResponse)(implicit messages: Messages): AppealablePenaltiesDisplayRow = {
 
     val typeOfPenalty = row.penaltyType match {
-      case Some("CIS3") => "Fixed penalty 1"
-      case Some("CIS4") => "Fixed penalty 2"
-      case Some("CIS5") => "Tax geared penalty 1"
-      case Some("CIS6") => "Tax geared penalty 2"
+      case Some("CIS3") => messages("appealablePenalties.penalty.cis3")
+      case Some("CIS4") => messages("appealablePenalties.penalty.cis4")
+      case Some("CIS5") => messages("appealablePenalties.penalty.cis5")
+      case Some("CIS6") => messages("appealablePenalties.penalty.cis6")
       case _ => ""
     }
 
