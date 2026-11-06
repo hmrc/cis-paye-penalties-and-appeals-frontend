@@ -138,14 +138,14 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         total = 2,
         appealablePenalties = List(
           GetAppealablePenaltyResponse(
-            uniqueId = Some(10001),
+            penaltyId = Some(10001),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
             penaltyType = Some("CIS03"),
             penaltyAmount = Some(BigDecimal(999.23))
           ),
           GetAppealablePenaltyResponse(
-            uniqueId = Some(10002),
+            penaltyId = Some(10002),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
             penaltyType = Some("CIS03"),
@@ -244,7 +244,7 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockConfig = mock[ServicesConfig]
         val mockRequestBuilder = mock[RequestBuilder]
         val expectedResult = GetAppealablePenaltyResponse(
-          uniqueId = None,
+          penaltyId = None,
           issueDate = Some(LocalDate.of(2023, 1, 1)),
           taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
           penaltyType = Some("CIS003"),
@@ -310,7 +310,7 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockRequestBuilder = mock[RequestBuilder]
         val customHc = HeaderCarrier(sessionId = Some(uk.gov.hmrc.http.SessionId("test-session")))
         val expectedResult = GetAppealablePenaltyResponse(
-          uniqueId = None,
+          penaltyId = None,
           issueDate = Some(LocalDate.of(2023, 1, 1)),
           taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
           penaltyType = Some("CIS003"),
@@ -436,9 +436,9 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
     "getCisPenaltyAllowed" - {
 
       val testRequest = GetPenaltyAllowedRequest(
-        districtNumber = 1L,
-        employerReference = "HDZ",
-        uniqueId = 1L
+        hmrcOfficeNumber = 1L,
+        schemeReferenceNumber = "HDZ",
+        penaltyId = 1L
       )
 
       val expectedResponse = GetPenaltyAllowedResponse(
@@ -732,14 +732,14 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         total = 2,
         appealablePenalties = List(
           GetAppealablePenaltyResponse(
-            uniqueId = Some(10001),
+            penaltyId = Some(10001),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
             penaltyType = Some("PAYE3"),
             penaltyAmount = Some(BigDecimal(999.23))
           ),
           GetAppealablePenaltyResponse(
-            uniqueId = Some(10002),
+            penaltyId = Some(10002),
             issueDate = Some(LocalDate.of(2023, 1, 1)),
             taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
             penaltyType = Some("PAYE3"),
@@ -838,7 +838,7 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockConfig = mock[ServicesConfig]
         val mockRequestBuilder = mock[RequestBuilder]
         val expectedResult = GetAppealablePenaltyResponse(
-          uniqueId = None,
+          penaltyId = None,
           issueDate = Some(LocalDate.of(2023, 1, 1)),
           taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
           penaltyType = Some("PAYE3"),
@@ -904,7 +904,7 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         val mockRequestBuilder = mock[RequestBuilder]
         val customHc = HeaderCarrier(sessionId = Some(uk.gov.hmrc.http.SessionId("test-session")))
         val expectedResult = GetAppealablePenaltyResponse(
-          uniqueId = None,
+          penaltyId = None,
           issueDate = Some(LocalDate.of(2023, 1, 1)),
           taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
           penaltyType = Some("PAYE3"),
@@ -932,10 +932,10 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
       )
 
       val expectedResult = GetPayeTaxpayerResponse(
-        uniqueId = 1000123L,
+        penaltyId = 1000123L,
         instanceId = 2000123L,
-        districtNumber = "123",
-        employerRef = "AB456",
+        hmrcOfficeNumber = "123",
+        schemeReferenceNumber = "AB456",
         employerName1 = Some("ABC"),
         employerName2 = None,
         agentOwnRef = None
@@ -1021,9 +1021,9 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
   "getPayePenaltyAllowed" - {
 
     val testRequest = GetPenaltyAllowedRequest(
-      districtNumber = 1L,
-      employerReference = "HDZ",
-      uniqueId = 1L
+      hmrcOfficeNumber = 1L,
+      schemeReferenceNumber = "HDZ",
+      penaltyId = 1L
     )
 
     val expectedResponse = GetPenaltyAllowedResponse(

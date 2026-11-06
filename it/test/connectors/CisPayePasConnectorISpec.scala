@@ -119,14 +119,14 @@ class CisPayePasConnectorISpec
         "total" -> 2,
         "appealablePenalties" -> Json.arr(
           Json.obj(
-            "uniqueId" -> 1001,
+            "penaltyId" -> 1001,
             "issueDate" -> "2026-01-15",
             "taxPeriodEndDate" -> "2025-12-05",
             "penaltyType" -> "CIS003",
             "penaltyAmount" -> 100
           ),
           Json.obj(
-            "uniqueId" -> 1002,
+            "penaltyId" -> 1002,
             "issueDate" -> "2026-02-20",
             "taxPeriodEndDate" -> "2026-01-05",
             "penaltyType" -> "CIS005",
@@ -375,9 +375,9 @@ class CisPayePasConnectorISpec
     "getCisPenaltyAllowed()" - {
 
       val getCisPenaltyAllowedRequestJson = Json.obj(
-        "districtNumber" -> 1L,
-        "employerReference" -> "HDZ",
-        "uniqueId" -> 1L
+        "hmrcOfficeNumber" -> 1L,
+        "schemeReferenceNumber" -> "HDZ",
+        "penaltyId" -> 1L
       )
       val getCisPenaltyAllowedResponseJson: JsValue = Json.obj(
         "allowed" -> true
@@ -528,14 +528,14 @@ class CisPayePasConnectorISpec
         "total" -> 2,
         "appealablePenalties" -> Json.arr(
           Json.obj(
-            "uniqueId" -> 1001,
+            "penaltyId" -> 1001,
             "issueDate" -> "2026-01-15",
             "taxPeriodEndDate" -> "2025-12-05",
             "penaltyType" -> "CIS003",
             "penaltyAmount" -> 100
           ),
           Json.obj(
-            "uniqueId" -> 1002,
+            "penaltyId" -> 1002,
             "issueDate" -> "2026-02-20",
             "taxPeriodEndDate" -> "2026-01-05",
             "penaltyType" -> "CIS005",
@@ -650,10 +650,10 @@ class CisPayePasConnectorISpec
         "schemeReferenceNumber" -> "AB456"
       )
       val getPayeTaxpayerResponseJson: JsValue = Json.obj(
-        "uniqueId" -> 1000123,
+        "penaltyId" -> 1000123,
         "instanceId" -> 2000123,
-        "districtNumber" -> "123",
-        "employerRef" -> "AB456",
+        "hmrcOfficeNumber" -> "123",
+        "schemeReferenceNumber" -> "AB456",
         "employerName1" -> "ABC",
         "employerName2" -> JsNull,
         "agentOwnRef" -> JsNull
@@ -666,10 +666,10 @@ class CisPayePasConnectorISpec
         val request = getPayeTaxpayerRequestJson.as[GetTaxpayerRequest]
         val result = connector.getPayeTaxpayer(request).futureValue
         result mustBe a[GetPayeTaxpayerResponse]
-        result.uniqueId mustBe 1000123L
+        result.penaltyId mustBe 1000123L
         result.instanceId mustBe 2000123L
-        result.districtNumber mustBe "123"
-        result.employerRef mustBe "AB456"
+        result.hmrcOfficeNumber mustBe "123"
+        result.schemeReferenceNumber mustBe "AB456"
         result.employerName1 mustBe Some("ABC")
         result.employerName2 mustBe None
         result.agentOwnRef mustBe None
@@ -727,9 +727,9 @@ class CisPayePasConnectorISpec
   "getPayePenaltyAllowed()" - {
 
     val getPayePenaltyAllowedRequestJson = Json.obj(
-      "districtNumber" -> 1L,
-      "employerReference" -> "HDZ",
-      "uniqueId" -> 1L
+      "hmrcOfficeNumber" -> 1L,
+      "schemeReferenceNumber" -> "HDZ",
+      "penaltyId" -> 1L
     )
     val getPayePenaltyAllowedResponseJson: JsValue = Json.obj(
       "allowed" -> true

@@ -107,10 +107,10 @@ object GetCisTaxpayerResponse {
 }
 
 case class GetPayeTaxpayerResponse(
-                                    uniqueId: Long,
+                                    penaltyId: Long,
                                     instanceId: Long,
-                                    districtNumber: String,
-                                    employerRef: String,
+                                    hmrcOfficeNumber: String,
+                                    schemeReferenceNumber: String,
                                     employerName1: Option[String],
                                     employerName2: Option[String],
                                     agentOwnRef: Option[String]
@@ -121,9 +121,9 @@ object GetPayeTaxpayerResponse {
 }
 
 case class GetPenaltyAllowedRequest(
-                                     districtNumber: Long,
-                                     employerReference: String,
-                                     uniqueId: Long
+                                     hmrcOfficeNumber: Long,
+                                     schemeReferenceNumber: String,
+                                     penaltyId: Long
                                    )
 
 object GetPenaltyAllowedRequest {
