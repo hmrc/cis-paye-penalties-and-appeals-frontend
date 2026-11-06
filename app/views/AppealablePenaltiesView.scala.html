@@ -35,18 +35,18 @@
         rows = vm.rows.map { currentRow =>
             Seq(
                 TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyId, linkUrl = currentRow.redirectUrl) )),
-                TableRow(content = Text( currentRow.typeOfPenalty )),
+                TableRow(content = Text( currentRow.penaltyType )),
                 TableRow(content = Text( currentRow.issueDate )),
                 TableRow(content = Text( currentRow.taxPeriodEndDate )),
-                TableRow(content = Text( currentRow.amount )),
+                TableRow(content = Text( currentRow.penaltyAmount )),
             )
             },
             head = Some(Seq(
                 HeadCell(content = Text(messages("appealablePenalties.penaltyId"))),
-                HeadCell(content = Text(messages("appealablePenalties.typeOfPenalty"))),
+                HeadCell(content = Text(messages("appealablePenalties.penaltyType"))),
                 HeadCell(content = Text(messages("appealablePenalties.issueDate"))),
                 HeadCell(content = Text(messages("appealablePenalties.taxPeriodEndDate"))),
-                HeadCell(content = Text(messages("appealablePenalties.amount"))),
+                HeadCell(content = Text(messages("appealablePenalties.penaltyAmount"))),
             )
         )
     ))

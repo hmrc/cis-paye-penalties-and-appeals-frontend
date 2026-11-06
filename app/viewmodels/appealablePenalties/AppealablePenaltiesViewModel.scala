@@ -72,8 +72,8 @@ case class AppealablePenaltiesDisplayRow(
                                           penaltyId: String,
                                           issueDate: String,
                                           taxPeriodEndDate: String,
-                                          typeOfPenalty: String,
-                                          amount: String,
+                                          penaltyType: String,
+                                          penaltyAmount: String,
                                           redirectUrl: String
                                         )
 
@@ -96,8 +96,8 @@ object AppealablePenaltiesDisplayRow {
       penaltyId        = penaltyId,
       issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
       taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
-      typeOfPenalty    = typeOfPenalty,
-      amount           = row.penaltyAmount.map(a => f"£$a%,.2f" ).getOrElse(""),
+      penaltyType      = typeOfPenalty,
+      penaltyAmount    = row.penaltyAmount.map(a => f"£$a%,.2f" ).getOrElse(""),
       redirectUrl      = BeforeYouStartController.onPageLoad(penaltyId).url
     )
   }
