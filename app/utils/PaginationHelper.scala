@@ -26,7 +26,7 @@ trait PaginationHelper extends Logging {
   private val DEFAULT_PAGE_INDEX = 1
   private val numberOfPages: Int => Int = totalRowCount => getPageCount(totalRowCount)
 
-  private def generatePreviousLink(paginationIndex: Int, numberOfPages: Int, urlPrev: String)
+  private def generatePreviousLink(paginationIndex: Int, urlPrev: String)
                                   (implicit messages: Messages): Option[PaginationLink] = {
     if (paginationIndex == 1) {
       None
@@ -137,7 +137,7 @@ trait PaginationHelper extends Logging {
         )(
           Pagination(
             items    = Some(paginationItems( validIndex, numberOfPages(totalRowCount), urlSelector                )),
-            previous = generatePreviousLink( validIndex, numberOfPages(totalRowCount), urlSelector(validIndex - 1 )),
+            previous = generatePreviousLink( validIndex, urlSelector(validIndex - 1 )),
             next     = generateNextLink(     validIndex, numberOfPages(totalRowCount), urlSelector(validIndex + 1 )),
           )
         )

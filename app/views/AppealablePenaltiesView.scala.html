@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import viewmodels.appealablePenalties.AppealablePenaltiesDisplayRow
+@import viewmodels.appealablePenalties.AppealablePenaltiesViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components.{h1, Caption, Paragraph, Link}
 
@@ -28,18 +28,11 @@
     link: Link
 )
 
-@(
-    total: Int,
-    rows: List[AppealablePenaltiesDisplayRow],
-    paginationComponent: Option[Pagination],
-    infoText: Option[String],
-    noticesAndStatementsUrl: String,
-    onwardUrl: String
-)(implicit request: Request[_], messages: Messages)
+@(vm: AppealablePenaltiesViewModel)(implicit request: Request[_], messages: Messages)
 
 @renderTable() = {
     @govukTable(Table(
-        rows = rows.map { currentRow =>
+        rows = vm.rows.map { currentRow =>
             Seq(
                 TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyId, linkUrl = currentRow.redirectUrl) )),
                 TableRow(content = Text( currentRow.typeOfPenalty )),
@@ -59,16 +52,16 @@
     ))
 }
 
-@layout(pageTitle = titleNoForm(messages("appealablePenalties.title")), showBackLink = false, isFullWidth = total > 0) {
+@layout(pageTitle = titleNoForm(messages("appealablePenalties.title")), showBackLink = false, isFullWidth = vm.total > 0) {
 
     @caption("Client name")
 
-    @total match {
+    @vm.total match {
         case 0 => {
             @h1("appealablePenalties.heading.zeroPenalties")
             @link(
                 linkTextKey   = "appealablePenalties.zeroPenalties.link.text",
-                linkUrl       = noticesAndStatementsUrl,
+                linkUrl       = vm.noticesUrl.get,
                 prefixTextKey = "appealablePenalties.zeroPenalties.link.prefix",
                 fullStop      = true
             )
@@ -78,22 +71,22 @@
             @p(messages("appealablePenalties.nonZeroPenalties.p1"))
         }
         case _ => {
-            @h1("appealablePenalties.heading.multiplePenalties", args = Seq(total))
+            @h1("appealablePenalties.heading.multiplePenalties", args = Seq(vm.total))
             @p(messages("appealablePenalties.nonZeroPenalties.p1"))
         }
     }
 
-    @infoText.map(p(_))
+    @vm.paginationText.map(p(_))
 
-    @if(total > 0) {
+    @if(vm.total > 0) {
         @renderTable()
     }
 
-    @paginationComponent.map(govukPagination(_))
+    @vm.paginationComponent.map(govukPagination(_))
 
     @link(
         linkTextKey   = "appealablePenalties.link.text",
-        linkUrl       = onwardUrl,
+        linkUrl       = vm.onwardUrl,
         prefixTextKey = "appealablePenalties.link.prefix",
         fullStop      = true
     )

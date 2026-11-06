@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CisPayePasService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.PaginationHelper
-import viewmodels.appealablePenalties.AppealablePenaltiesDisplayRow
+import viewmodels.appealablePenalties.{AppealablePenaltiesDisplayRow, AppealablePenaltiesViewModel}
 import views.html.AppealablePenaltiesView
 
 import javax.inject.*
@@ -40,47 +40,29 @@ class AppealablePenaltiesController @Inject()(
                                              getData: DataRetrievalAction,
                                              cisPayePasService: CisPayePasService,
                                              view: AppealablePenaltiesView
-                                           )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport with PaginationHelper with Logging {
+                                           )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport with Logging {
   // TODO: remove once authentication set up
   private val hmrcOfficeNumber = "100"
-  private val schemeReferenceNumber = "EF789"
-
-  private val rowsPerPage = 10
+  private val schemeReferenceNumber = "GH012"
 
   // TODO: only added CIS org route. Once authentication is set up route will depend on if the user is from CIS/PAYE and if they are a contractor or agent
   private val onwardUrl = appConfig.manageCisAccountOrgUrl
 
-  private val noticesAndStatementsUrl = "#"
-  
+  private val rowsPerPage = 10
+
   def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData).async { implicit request =>
     val currentPage = page.getOrElse(1)
-
-    val startRow = if(currentPage == 1) 0 else ((currentPage - 1) * rowsPerPage) + 1
-    val endRow = currentPage * rowsPerPage
+    val (startRow, endRow) = getRowNumbers(currentPage)
 
     val request = GetAppealablePenaltiesRequest(
       hmrcOfficeNumber = hmrcOfficeNumber, schemeReferenceNumber = schemeReferenceNumber, startRow = startRow, endRow = endRow
     )
-    
+
     cisPayePasService.getCisAppealablePenalties(request)
-      .map { viewModel =>
-        logger.info(s"[AppealablePenaltiesController][onPageLoad] - render page")
-        val total = viewModel.total
-        val rows = viewModel.rows.map(AppealablePenaltiesDisplayRow.fromRow)
-
-        val pagination = getPaginationWithInfoText(
-          rows = rows,
-          totalRowCount = total,
-          paginationIndex = Some(currentPage),
-          urlSelector = (p: Int) => controllers.routes.AppealablePenaltiesController.onPageLoad(Some(p)).url
-        )
-
-        pagination match {
-          case Some((_, paginationComponent, infoText)) =>
-            Ok(view(total, rows, paginationComponent, infoText, noticesAndStatementsUrl, onwardUrl))
-
-          case None =>
-            Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
+      .map { response =>
+        AppealablePenaltiesViewModel.toViewModel(response, currentPage, onwardUrl) match {
+          case Some(viewModel) => Ok(view(viewModel))
+          case None            => Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
         }
       } recover {
       case ex =>
@@ -88,5 +70,10 @@ class AppealablePenaltiesController @Inject()(
         Redirect(JourneyRecoveryController.onPageLoad())
     }
   }
+
+  private def getRowNumbers(currentPage: Int): (Int, Int) =
+    val startRow = if (currentPage == 1) 0 else ((currentPage - 1) * rowsPerPage) + 1
+    val endRow = currentPage * rowsPerPage
+    (startRow, endRow)
 
 }
