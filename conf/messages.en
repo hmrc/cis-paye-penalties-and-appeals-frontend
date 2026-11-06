@@ -52,12 +52,6 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
-appealablePenalties.penaltyId        = Penalty Id
-appealablePenalties.typeOfPenalty    = Penalty Type
-appealablePenalties.issueDate        = Issue Date
-appealablePenalties.taxPeriodEndDate = End of tax period
-appealablePenalties.amount           = Amount
-
 appealablePenalties.title                     = Appealable penalties
 appealablePenalties.heading.zeroPenalties     = There are no penalties to appeal
 appealablePenalties.heading.onePenalty        = There is 1 penalty you can appeal
@@ -68,6 +62,17 @@ appealablePenalties.nonZeroPenalties.p1       = To appeal a penalty, select the 
 appealablePenalties.paginationInfo            = Showing <b>{0}</b> to <b>{1}</b> of <b>{2}</b> records
 appealablePenalties.link.prefix               = Back to
 appealablePenalties.link.text                 = Manage Construction Industry Scheme account
+
+appealablePenalties.penaltyId        = Penalty Id
+appealablePenalties.typeOfPenalty    = Penalty Type
+appealablePenalties.issueDate        = Issue Date
+appealablePenalties.taxPeriodEndDate = End of tax period
+appealablePenalties.amount           = Amount
+
+appealablePenalties.penalty.cis3 = Fixed penalty 1
+appealablePenalties.penalty.cis4 = Fixed penalty 2
+appealablePenalties.penalty.cis5 = Tax geared penalty 1
+appealablePenalties.penalty.cis6 = Tax geared penalty 2
 
 beforeYouStart.title = Before you start
 beforeYouStart.heading = Before you start
