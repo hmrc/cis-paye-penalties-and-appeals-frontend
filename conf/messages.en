@@ -63,9 +63,9 @@ appealablePenalties.paginationInfo            = Showing <b>{0}</b> to <b>{1}</b>
 appealablePenalties.link.prefix               = Back to
 appealablePenalties.link.text                 = Manage Construction Industry Scheme account
 
-appealablePenalties.penaltyId        = Penalty Id
-appealablePenalties.penaltyType      = Penalty Type
-appealablePenalties.issueDate        = Issue Date
+appealablePenalties.penaltyId        = Penalty ID
+appealablePenalties.penaltyType      = Penalty type
+appealablePenalties.issueDate        = Issue date
 appealablePenalties.taxPeriodEndDate = End of tax period
 appealablePenalties.penaltyAmount    = Amount
 
