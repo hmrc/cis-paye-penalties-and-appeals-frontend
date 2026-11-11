@@ -4,8 +4,6 @@
 
 GET         /                                            controllers.IndexController.onPageLoad()
 
-GET         /appealable-penalties                        controllers.AppealablePenaltiesController.onPageLoad(page: Option[Int])
-
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
@@ -22,4 +20,6 @@ GET         /account/signed-out                          controllers.auth.Signed
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
+GET         /appealable-penalties                        controllers.AppealablePenaltiesController.onPageLoad(page: Option[Int])
 GET         /before-you-start/:penaltyId                 controllers.BeforeYouStartController.onPageLoad(penaltyId: String)
+GET         /reasonable-excuse-end-date                  controllers.AppealablePenaltiesController.onPageLoad(mode: Mode)
