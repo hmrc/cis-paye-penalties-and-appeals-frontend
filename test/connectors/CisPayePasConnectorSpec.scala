@@ -1341,4 +1341,5 @@ class CisPayePasConnectorSpec extends SpecBase with MockitoSugar {
         verify(mockHttpClient, times(1)).post(any())(any())
       }
     }
+  }
 }

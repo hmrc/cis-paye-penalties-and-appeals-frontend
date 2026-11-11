@@ -134,7 +134,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
 
   def hasCisClient(hasCisClientRequest: HasCisClientRequest)
                   (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
-    http.post(url"$base/cis/agent/clientlist/has-client")
+    http.post(url"$base/cis/agent/clientlist/clients/status")
       .withBody(Json.toJson(hasCisClientRequest))
       .execute[Either[UpstreamErrorResponse, HasClientResponse]]
       .flatMap {
@@ -290,7 +290,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
 
   def hasPayeClient(hasPayeClientRequest: HasPayeClientRequest)
                    (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
-    http.post(url"$base/paye/agent/clientlist/has-client")
+    http.post(url"$base/paye/agent/clientlist/clients/status")
       .withBody(Json.toJson(hasPayeClientRequest))
       .execute[Either[UpstreamErrorResponse, HasClientResponse]]
       .flatMap {

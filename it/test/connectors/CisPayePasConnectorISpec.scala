@@ -459,7 +459,7 @@ class CisPayePasConnectorISpec
         "hasClient" -> false
       )
 
-      val hasCisClientPath = "/cis-paye-penalties-and-appeals/cis/agent/clientlist/has-client"
+      val hasCisClientPath = "/cis-paye-penalties-and-appeals/cis/agent/clientlist/clients/status"
 
       "must return HasClientResponse with hasClient true when the stub returns 200 OK" in {
         server.stubFor(post(urlPathEqualTo(hasCisClientPath)).withRequestBody(equalToJson(hasCisClientRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasCisClientTrueResponseJson.toString())))
@@ -916,7 +916,7 @@ class CisPayePasConnectorISpec
       "hasClient" -> false
     )
 
-    val hasPayeClientPath = "/cis-paye-penalties-and-appeals/paye/agent/clientlist/has-client"
+    val hasPayeClientPath = "/cis-paye-penalties-and-appeals/paye/agent/clientlist/clients/status"
 
     "must return HasClientResponse with hasClient true when the stub returns 200 OK" in {
       server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).withRequestBody(equalToJson(hasPayeClientRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasPayeClientTrueResponseJson.toString())))
