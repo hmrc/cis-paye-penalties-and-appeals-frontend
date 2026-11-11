@@ -27,10 +27,14 @@ import models._
 class Navigator @Inject()() {
 
   private val normalRoutes: Page => UserAnswers => Call = {
+    case ExcuseEndDatePage =>
+      _ => controllers.routes.AppealablePenaltiesController.onPageLoad(None) // TODO: DTR-9776 update to Additional details page once implemented
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
+    case ExcuseEndDatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9776 update to CYA page once implemented
     case _ => _ => routes.CheckYourAnswersController.onPageLoad()
   }
 
