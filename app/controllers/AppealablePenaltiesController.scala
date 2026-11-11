@@ -38,6 +38,7 @@ class AppealablePenaltiesController @Inject()(
                                              val controllerComponents: MessagesControllerComponents,
                                              identify: IdentifierAction,
                                              getData: DataRetrievalAction,
+                                             requireData: DataRequiredAction,
                                              cisPayePasService: CisPayePasService,
                                              view: AppealablePenaltiesView
                                            )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport with Logging {
@@ -47,7 +48,7 @@ class AppealablePenaltiesController @Inject()(
 
   private val rowsPerPage = 10
 
-  def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData).async { implicit request =>
+  def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     val currentPage = page.getOrElse(1)
     val (startRow, endRow) = getRowNumbers(currentPage)
 

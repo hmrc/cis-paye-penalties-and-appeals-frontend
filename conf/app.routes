@@ -22,4 +22,8 @@ GET         /unauthorised                                controllers.Unauthorise
 
 GET         /appealable-penalties                        controllers.AppealablePenaltiesController.onPageLoad(page: Option[Int])
 GET         /before-you-start/:penaltyId                 controllers.BeforeYouStartController.onPageLoad(penaltyId: String)
-GET         /reasonable-excuse-end-date                  controllers.AppealablePenaltiesController.onPageLoad(mode: Mode)
+
+GET         /reasonable-excuse-end-date                  controllers.ExcuseEndDateController.onPageLoad(mode: Mode = NormalMode)
+POST        /reasonable-excuse-end-date                  controllers.ExcuseEndDateController.onSubmit(mode: Mode = NormalMode)
+GET         /reasonable-excuse-end-date/change           controllers.ExcuseEndDateController.onPageLoad(mode: Mode = CheckMode)
+POST        /reasonable-excuse-end-date/change           controllers.ExcuseEndDateController.onSubmit(mode: Mode = CheckMode)

@@ -83,3 +83,12 @@ beforeYouStart.list.bullet2 = when the reasonable excuse ended
 beforeYouStart.list.bullet3 = what happened in your own words
 beforeYouStart.warning = If HMRC decide we need extra information or evidence after reviewing your appeal, we will contact you.
 beforeYouStart.button = Start the appeal
+
+reasonableExcuseEndDate.heading = When did your reasonable excuse end?
+reasonableExcuseEndDate.hint    = This is the earliest date you could have acted to avoid the penalty. For example, 27 3 2024.
+
+reasonableExcuseEndDate.error.invalidKey     = placeholder invalid error
+reasonableExcuseEndDate.error.allRequiredKey = placeholder all required error
+reasonableExcuseEndDate.error.twoRequiredKey = placeholder two required error
+reasonableExcuseEndDate.error.requiredKey    = placeholder required error
+reasonableExcuseEnd.error.maxDate            = placeholder max date error

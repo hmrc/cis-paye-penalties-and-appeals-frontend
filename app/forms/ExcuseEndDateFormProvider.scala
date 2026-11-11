@@ -33,10 +33,10 @@ class ExcuseEndDateFormProvider @Inject()(timeMachine: TimeMachine) extends Mapp
   def apply()(implicit messages: Messages): Form[LocalDate] =
     Form(
       "value" -> localDate(
-        invalidKey     = "",
-        allRequiredKey = "",
-        twoRequiredKey = "",
-        requiredKey    = ""
+        invalidKey     = messages("reasonableExcuseEndDate.error.invalidKey"),
+        allRequiredKey = messages("reasonableExcuseEndDate.error.allRequiredKey"),
+        twoRequiredKey = messages("reasonableExcuseEndDate.error.twoRequiredKey"),
+        requiredKey    = messages("reasonableExcuseEndDate.error.requiredKey")
       ).verifying(maxDate(maxDateAllowed, "reasonableExcuseEnd.error.maxDate", maxDateAllowed.format(formatter)))
     )
 }
