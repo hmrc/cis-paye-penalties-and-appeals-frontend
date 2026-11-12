@@ -113,5 +113,8 @@ trait DateFluency {
             val name = item.id.split('.').last
             item.copy(autocomplete = Some(s"bday-$name"))
         })
+
+    def withoutAutocomplete: DateInput =
+      date.copy(items = date.items.map(_.copy(autocomplete = Some("off"))))
   }
 }
