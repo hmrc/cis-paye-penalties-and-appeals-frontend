@@ -28,7 +28,7 @@ class Navigator @Inject()() {
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case ExcuseEndDatePage =>
-      _ => controllers.routes.AppealablePenaltiesController.onPageLoad(None) // TODO: DTR-9783 update to Additional details page (cis-7) once implemented
+      _ => controllers.routes.IndexController.onPageLoad() // TODO: DTR-9783 update to Additional details page (cis-7) once implemented
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
