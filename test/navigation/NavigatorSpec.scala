@@ -34,6 +34,11 @@ class NavigatorSpec extends SpecBase {
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
+
+      "must go from excuse end date known page to when did excuse end page" in {
+
+        navigator.nextPage(ExcuseEndDateKnownPage, NormalMode, UserAnswers("id")) mustBe routes.ExcuseEndDateKnownController.onPageLoad(NormalMode) // TODO DTR-9774 redirect to CIS-4b-Group3
+      }
     }
 
     "in Check mode" - {

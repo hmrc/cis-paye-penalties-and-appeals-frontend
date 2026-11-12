@@ -31,10 +31,6 @@ error.summary.title = There is a problem
 pagination.previous = Prev
 pagination.next = Next
 
-index.title = cis-paye-penalties-and-appeals-frontend
-index.heading = cis-paye-penalties-and-appeals-frontend
-index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
-
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
@@ -83,3 +79,10 @@ beforeYouStart.list.bullet2 = when the reasonable excuse ended
 beforeYouStart.list.bullet3 = what happened in your own words
 beforeYouStart.warning = If HMRC decide we need extra information or evidence after reviewing your appeal, we will contact you.
 beforeYouStart.button = Start the appeal
+
+excuseEndDateKnown.title = Do you know when your reasonable excuse ended?
+excuseEndDateKnown.heading = Do you know when your reasonable excuse ended?
+excuseEndDateKnown.hint = This is the earliest date you could have acted to avoid the penalty
+excuseEndDateKnown.checkYourAnswersLabel = Do you know when your reasonable excuse ended?
+excuseEndDateKnown.error.required = Select yes if you know when your reasonable excuse ended
+excuseEndDateKnown.change.hidden = if you know when your reasonable excuse ended
