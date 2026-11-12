@@ -37,7 +37,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from excuse end date known page to when did excuse end page" in {
 
-        navigator.nextPage(ExcuseEndDateKnownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad() // TODO DTR-9774 redirect to CIS-4b-Group3
+        navigator.nextPage(ExcuseEndDateKnownPage, NormalMode, UserAnswers("id")) mustBe routes.ExcuseEndDateController.onPageLoad(NormalMode)
       }
 
       "must go from ExcuseEndDatePage to AdditionalDetailsController" in {
