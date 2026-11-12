@@ -22,7 +22,6 @@ import play.api.i18n.Messages
 import utils.TimeMachine
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class ExcuseEndDateFormProvider @Inject()(timeMachine: TimeMachine) extends Mappings {

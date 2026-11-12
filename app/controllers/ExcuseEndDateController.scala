@@ -22,8 +22,6 @@ import models.Mode
 import navigation.Navigator
 import pages.ExcuseEndDatePage
 import play.api.data.Form
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -31,8 +29,10 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ExcuseEndDateView
 
 import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ExcuseEndDateController @Inject()(
                                          override val messagesApi: MessagesApi,
                                          sessionRepository: SessionRepository,
@@ -50,7 +50,7 @@ class ExcuseEndDateController @Inject()(
 
       val form: Form[LocalDate] = formProvider()
 
-      // TODO: DTR-9776 - add hint toggle and pass to view once cis-3 is built
+      // TODO: DTR-10097 - add hint toggle and pass to view once cis-3 is built
 
       val preparedForm = request.userAnswers.get(ExcuseEndDatePage) match {
         case None        => form

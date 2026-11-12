@@ -19,7 +19,7 @@ package viewmodels.checkAnswers
 import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.{ExcuseEndDateKnownPage, ExcuseEndDatePage}
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import utils.DateTimeFormats.dateTimeFormat
 import viewmodels.checkAnswers.summary.SummaryRowResult
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
