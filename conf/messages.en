@@ -50,7 +50,7 @@ unauthorised.heading = You can’t access this service with this account
 
 appealablePenalties.title                     = Appealable penalties
 appealablePenalties.heading.zeroPenalties     = There are no penalties to appeal
-appealablePenalties.heading.onePenalty        = There is 1 penalty you can appeal
+appealablePenalties.heading.onePenalty        = There is one penalty you can appeal
 appealablePenalties.heading.multiplePenalties = There are {0} penalties you can appeal
 appealablePenalties.zeroPenalties.link.prefix = You can check the progress of any appeal received by HMRC in
 appealablePenalties.zeroPenalties.link.text   = Notices and statements

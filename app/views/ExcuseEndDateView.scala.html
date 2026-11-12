@@ -45,7 +45,7 @@
     @govukDateInput(
       DateViewModel(
         field  = form("value"),
-        legend = LegendViewModel(messages("reasonableExcuseEndDate.heading")).asPageHeading(Large)
+        legend = LegendViewModel(messages("reasonableExcuseEndDate.heading")).asPageHeading(size = Large)
       )
         .withHint(HintViewModel(messages("reasonableExcuseEndDate.group1.hint")))
         .withoutAutocomplete
