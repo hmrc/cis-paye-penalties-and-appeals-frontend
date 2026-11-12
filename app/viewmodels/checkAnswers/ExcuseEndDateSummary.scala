@@ -34,11 +34,11 @@ object ExcuseEndDateSummary {
     answers.get(ExcuseEndDatePage).map { date =>
       Row(
         SummaryListRowViewModel(
-          key = "excuseEndDate.checkYourAnswersLabel",
+          key = "reasonableExcuseEndDate.checkYourAnswersLabel",
           value = ValueViewModel(date.format(dateTimeFormat()(messages.lang))),
           actions = Seq(
             ActionItemViewModel("site.change", changeRoute.url)
-              .withVisuallyHiddenText(messages("excuseEndDate.change.hidden"))
+              .withVisuallyHiddenText(messages("reasonableExcuseEndDate.change.hidden"))
           )
         )
       )

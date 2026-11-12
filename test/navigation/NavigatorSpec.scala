@@ -54,7 +54,7 @@ class NavigatorSpec extends SpecBase {
       }
 
       "must go from ExcuseEndDatePage to SendYourAppealController" in {
-        navigator.nextPage(ExcuseEndDatePage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+        navigator.nextPage(ExcuseEndDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
       }
     }
   }

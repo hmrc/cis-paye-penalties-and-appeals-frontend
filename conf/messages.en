@@ -87,11 +87,12 @@ excuseEndDateKnown.checkYourAnswersLabel = Do you know when your reasonable excu
 excuseEndDateKnown.error.required = Select yes if you know when your reasonable excuse ended
 excuseEndDateKnown.change.hidden = if you know when your reasonable excuse ended
 
-reasonableExcuseEndDate.heading = When did your reasonable excuse end?
-reasonableExcuseEndDate.hint    = This is the earliest date you could have acted to avoid the penalty. For example, 27 3 2024.
-
-reasonableExcuseEndDate.error.invalidKey     = placeholder invalid error
-reasonableExcuseEndDate.error.allRequiredKey = placeholder all required error
-reasonableExcuseEndDate.error.twoRequiredKey = placeholder two required error
-reasonableExcuseEndDate.error.requiredKey    = placeholder required error
-reasonableExcuseEnd.error.maxDate            = placeholder max date error
+reasonableExcuseEndDate.title             = When did your reasonable excuse end?
+reasonableExcuseEndDate.heading           = When did your reasonable excuse end?
+reasonableExcuseEndDate.group1.hint       = This is the earliest date you could have acted to avoid the penalty. For example, 27 3 2024.
+reasonableExcuseEndDate.group3.hint       = For example, 27 3 2024
+reasonableExcuseEndDate.error.invalid     = placeholder invalid error
+reasonableExcuseEndDate.error.allRequired = placeholder all required error
+reasonableExcuseEndDate.error.twoRequired = placeholder two required error
+reasonableExcuseEndDate.error.required    = placeholder required error
+reasonableExcuseEndDate.error.maxDate     = placeholder max date error
