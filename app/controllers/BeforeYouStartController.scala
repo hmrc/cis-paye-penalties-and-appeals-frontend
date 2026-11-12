@@ -27,11 +27,12 @@ class BeforeYouStartController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
+                                       requireData: DataRequiredAction,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: BeforeYouStartView
                                      ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(penaltyId: String): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(penaltyId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       Ok(view("Client name"))
   }

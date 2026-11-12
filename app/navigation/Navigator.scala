@@ -27,6 +27,7 @@ import models._
 class Navigator @Inject()() {
 
   private val normalRoutes: Page => UserAnswers => Call = {
+    case ExcuseEndDateKnownPage => _ => routes.IndexController.onPageLoad() // TODO DTR-9774 redirect to CIS-4b-Group3
     case ExcuseEndDatePage =>
       _ => controllers.routes.IndexController.onPageLoad() // TODO: DTR-9783 update to Additional details page (cis-7) once implemented
     case _ => _ => routes.IndexController.onPageLoad()

@@ -18,23 +18,20 @@ package controllers
 
 import controllers.actions.IdentifierAction
 import models.UserAnswers
-import navigation.Navigator
 
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Results}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.IndexView
 
 import scala.concurrent.ExecutionContext
 
 class IndexController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
-                                 sessionRepository: SessionRepository,
                                  identify: IdentifierAction,
-                                 view: IndexView
-                               )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                 sessionRepository: SessionRepository
+                               )(implicit executionContext: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = identify.async { implicit request =>
     val userAnswers = UserAnswers(request.userId)
