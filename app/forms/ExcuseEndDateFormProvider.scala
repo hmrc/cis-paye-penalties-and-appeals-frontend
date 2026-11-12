@@ -26,17 +26,15 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class ExcuseEndDateFormProvider @Inject()(timeMachine: TimeMachine) extends Mappings {
-
-  private val formatter = DateTimeFormatter.ofPattern("d MM yyyy")
   private def maxDateAllowed: LocalDate = timeMachine.today
 
   def apply()(implicit messages: Messages): Form[LocalDate] =
     Form(
       "value" -> localDate(
-        invalidKey     = messages("reasonableExcuseEndDate.error.invalidKey"),
-        allRequiredKey = messages("reasonableExcuseEndDate.error.allRequiredKey"),
-        twoRequiredKey = messages("reasonableExcuseEndDate.error.twoRequiredKey"),
-        requiredKey    = messages("reasonableExcuseEndDate.error.requiredKey")
-      ).verifying(maxDate(maxDateAllowed, "reasonableExcuseEnd.error.maxDate", maxDateAllowed.format(formatter)))
+        invalidKey     = "reasonableExcuseEndDate.error.invalid",
+        allRequiredKey = "reasonableExcuseEndDate.error.allRequired",
+        twoRequiredKey = "reasonableExcuseEndDate.error.twoRequired",
+        requiredKey    = "reasonableExcuseEndDate.error.required"
+      ).verifying(maxDate(maxDateAllowed, "reasonableExcuseEndDate.error.maxDate"))
     )
 }
