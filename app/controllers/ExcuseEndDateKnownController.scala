@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.ExcuseEndDateKnownFormProvider
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.ExcuseEndDateKnownPage
@@ -31,6 +31,7 @@ import views.html.ExcuseEndDateKnownView
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ExcuseEndDateKnownController @Inject()(
                                          override val messagesApi: MessagesApi,
                                          sessionRepository: SessionRepository,
