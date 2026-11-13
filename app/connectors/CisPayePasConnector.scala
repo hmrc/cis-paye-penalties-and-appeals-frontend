@@ -134,7 +134,7 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
 
   def hasCisClient(hasCisClientRequest: HasCisClientRequest)
                   (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
-    http.post(url"$base/cis/agent/clientlist/has-client")
+    http.post(url"$base/cis/agent/clientlist/clients/status")
       .withBody(Json.toJson(hasCisClientRequest))
       .execute[Either[UpstreamErrorResponse, HasClientResponse]]
       .flatMap {
@@ -285,6 +285,26 @@ class CisPayePasConnector @Inject()(http: HttpClientV2,
       }
       .recover {
         case e => throw logResponse(e, "[CisPayePasConnector][initiateClientListDownload]")
+      }
+  }
+
+  def hasPayeClient(hasPayeClientRequest: HasPayeClientRequest)
+                   (implicit hc: HeaderCarrier): Future[HasClientResponse] = {
+    http.post(url"$base/paye/agent/clientlist/clients/status")
+      .withBody(Json.toJson(hasPayeClientRequest))
+      .execute[Either[UpstreamErrorResponse, HasClientResponse]]
+      .flatMap {
+        case Right(resp) =>
+          logger.debug(s"[CisPayePasConnector][hasPayeClient] request: $hasPayeClientRequest, response: $resp")
+          logger.info(s"[CisPayePasConnector][hasPayeClient] Get success with request: $hasPayeClientRequest")
+          Future.successful(
+            resp)
+        case Left(error) =>
+          logResponse(error, "[CisPayePasConnector][hasPayeClient]")
+          Future.failed(error)
+      }
+      .recover {
+        case e => throw logResponse(e, "[CisPayePasConnector][hasPayeClient]")
       }
   }
 

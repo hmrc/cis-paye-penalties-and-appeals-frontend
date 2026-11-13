@@ -459,7 +459,7 @@ class CisPayePasConnectorISpec
         "hasClient" -> false
       )
 
-      val hasCisClientPath = "/cis-paye-penalties-and-appeals/cis/agent/clientlist/has-client"
+      val hasCisClientPath = "/cis-paye-penalties-and-appeals/cis/agent/clientlist/clients/status"
 
       "must return HasClientResponse with hasClient true when the stub returns 200 OK" in {
         server.stubFor(post(urlPathEqualTo(hasCisClientPath)).withRequestBody(equalToJson(hasCisClientRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasCisClientTrueResponseJson.toString())))
@@ -894,6 +894,80 @@ class CisPayePasConnectorISpec
       val request = initiateRequestJson.as[InitiateClientListDownloadRequest]
       val result = connector.initiateClientListDownload(request).failed.futureValue
       result mustBe a[JsValidationException]
+    }
+  }
+
+  "hasPayeClient()" - {
+
+    val hasPayeClientRequestJson = Json.obj(
+      "agentDetails" -> Json.obj(
+        "credentialId" -> "CRED01",
+        "irAgentId" -> "123456"
+      ),
+      "employerDetails" -> Json.obj(
+        "hmrcOfficeNumber" -> "840",
+        "schemeReferenceNumber" -> "MZ00064"
+      )
+    )
+    val hasPayeClientTrueResponseJson: JsValue = Json.obj(
+      "hasClient" -> true
+    )
+    val hasPayeClientFalseResponseJson: JsValue = Json.obj(
+      "hasClient" -> false
+    )
+
+    val hasPayeClientPath = "/cis-paye-penalties-and-appeals/paye/agent/clientlist/clients/status"
+
+    "must return HasClientResponse with hasClient true when the stub returns 200 OK" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).withRequestBody(equalToJson(hasPayeClientRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasPayeClientTrueResponseJson.toString())))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      val result = connector.hasPayeClient(request).futureValue
+      result.hasClient mustBe true
+      server.verify(postRequestedFor(urlPathEqualTo(hasPayeClientPath)).withRequestBody(equalToJson(hasPayeClientRequestJson.toString())))
+    }
+
+    "must return HasClientResponse with hasClient false when the stub returns 200 OK" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).withRequestBody(equalToJson(hasPayeClientRequestJson.toString())).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasPayeClientFalseResponseJson.toString())))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      val result = connector.hasPayeClient(request).futureValue
+      result.hasClient mustBe false
+    }
+
+    "must throw UpstreamErrorResponse when stub returns 400 Bad Request" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).willReturn(aResponse().withStatus(400).withHeader("Content-Type", "application/json").withBody("""{"message":"Invalid payload","errors":{}}""")))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      val result = connector.hasPayeClient(request).failed.futureValue
+      result mustBe an[UpstreamErrorResponse]
+      result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 400
+    }
+
+    "must throw UpstreamErrorResponse when stub returns 500 Internal Server Error" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).willReturn(aResponse().withStatus(500).withHeader("Content-Type", "application/json").withBody("""{"message":"Unexpected error"}""")))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      val result = connector.hasPayeClient(request).failed.futureValue
+      result mustBe an[UpstreamErrorResponse]
+      result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+    }
+
+    "must fail when stub returns 200 OK with invalid JSON" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody("""{"unexpected":"shape"}""")))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      val result = connector.hasPayeClient(request).failed.futureValue
+      result mustBe a[JsValidationException]
+    }
+
+    "must make POST request to correct endpoint" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasPayeClientTrueResponseJson.toString())))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      connector.hasPayeClient(request).futureValue
+      server.verify(1, postRequestedFor(urlPathEqualTo(hasPayeClientPath)))
+    }
+
+    "must include correct headers in the request" in {
+      server.stubFor(post(urlPathEqualTo(hasPayeClientPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(hasPayeClientTrueResponseJson.toString())))
+      val request = hasPayeClientRequestJson.as[HasPayeClientRequest]
+      connector.hasPayeClient(request).futureValue
+      server.verify(postRequestedFor(urlPathEqualTo(hasPayeClientPath)).withHeader("Content-Type", containing("application/json")))
     }
   }
 }
