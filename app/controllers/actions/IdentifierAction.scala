@@ -19,7 +19,6 @@ package controllers.actions
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.routes
-import models.EmployerReference
 import models.requests.IdentifierRequest
 import play.api.Logging
 import play.api.mvc.Results.*
@@ -28,8 +27,9 @@ import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import utils.AuthUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,14 +52,16 @@ class AuthenticatedIdentifierAction @Inject()(
         Retrievals.affinityGroup
     ) {
       case Some(internalId) ~ Enrolments(enrolments) ~ Some(Organisation) =>
-        hasCisOrgEnrolment(enrolments)
-          .map { employerReference =>
+        AuthUtils.contractorReference(enrolments) match {
+          case Some(employerReference) =>
             block(IdentifierRequest(request, internalId, Some(employerReference)))
-          }
-          .getOrElse(throw new UnauthorizedException("Unable to retrieve enrolments"))
+          case None =>
+            logger.warn("AuthenticatedIdentifierAction - no activated HMRC-CIS-ORG enrolment")
+            Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+        }
       case _ =>
-        logger.warn("EnrolmentAuthIdentifierAction - Unable to retrieve internal id or affinity group")
-        throw new UnauthorizedException("Unable to retrieve user details")
+        logger.warn("AuthenticatedIdentifierAction - Unable to retrieve internal id or affinity group")
+        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
     } recover {
       case _: NoActiveSession =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
@@ -67,25 +69,4 @@ class AuthenticatedIdentifierAction @Inject()(
         Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }
-
-  def hasCisOrgEnrolment[A](enrolments: Set[Enrolment]): Option[EmployerReference] = {
-    enrolments.find(_.key == "HMRC-CIS-ORG") match {
-      case Some(enrolment) =>
-        val taxOfficeNumber = enrolment.identifiers.find(id => id.key == "TaxOfficeNumber").map(_.value)
-        val taxOfficeReference = enrolment.identifiers.find(id => id.key == "TaxOfficeReference").map(_.value)
-        val isActivated = enrolment.isActivated
-        
-        (taxOfficeNumber, taxOfficeReference, isActivated) match {
-          case (Some(number), Some(reference), true) if isValidTaxOfficeNumber(number) =>
-            Some(EmployerReference(number, reference))
-          case _ =>
-            logger.warn("EnrolmentAuthIdentifierAction - Unable to retrieve activated cis enrolments")
-            None
-        }
-      case _ => None
-    }
-  }
 }
-
-def isValidTaxOfficeNumber(taxOfficeNumber: String): Boolean =
-  (taxOfficeNumber != null) && taxOfficeNumber.matches("[0-9]{3}")

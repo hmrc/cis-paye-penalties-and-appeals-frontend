@@ -159,6 +159,71 @@ class AuthActionSpec extends SpecBase {
       }
     }
 
+    "the user is an organisation without an activated HMRC-CIS-ORG enrolment" - {
+
+      "must redirect the user to the unauthorised page" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSucceedingAuthConnector(Some("id"), Set.empty, Some(AffinityGroup.Organisation)), appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        }
+      }
+    }
+
+    "the user is an agent" - {
+
+      "must redirect the user to the unauthorised page" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val agentEnrolment = Enrolment("IR-PAYE-AGENT", Seq(EnrolmentIdentifier("IRAgentReference", "ABC123")), "Activated")
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSucceedingAuthConnector(Some("id"), Set(agentEnrolment), Some(AffinityGroup.Agent)), appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        }
+      }
+    }
+
+    "the user is an organisation with an activated HMRC-CIS-ORG enrolment" - {
+
+      "must run the block" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val cisEnrolment = Enrolment("HMRC-CIS-ORG",
+            Seq(EnrolmentIdentifier("TaxOfficeNumber", "754"), EnrolmentIdentifier("TaxOfficeReference", "EZ00100")), "Activated")
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSucceedingAuthConnector(Some("id"), Set(cisEnrolment), Some(AffinityGroup.Organisation)), appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe OK
+        }
+      }
+    }
+
     "the user has an unsupported credential role" - {
 
       "must redirect the user to the unauthorised page" in {
