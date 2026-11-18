@@ -52,5 +52,6 @@
 
     @govukButton(
         ButtonViewModel(messages("beforeYouStart.button"))
+        .asLink(controllers.routes.WhyYouAreAppealingController.onPageLoad(NormalMode).url)
     )
 }
