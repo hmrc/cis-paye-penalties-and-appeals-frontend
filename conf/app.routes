@@ -32,3 +32,8 @@ GET         /reasonable-excuse-end-date                  controllers.ExcuseEndDa
 POST        /reasonable-excuse-end-date                  controllers.ExcuseEndDateController.onSubmit(mode: Mode = NormalMode)
 GET         /reasonable-excuse-end-date/change           controllers.ExcuseEndDateController.onPageLoad(mode: Mode = CheckMode)
 POST        /reasonable-excuse-end-date/change           controllers.ExcuseEndDateController.onSubmit(mode: Mode = CheckMode)
+
+GET        /why-you-are-appealing                           controllers.WhyYouAreAppealingController.onPageLoad(mode: Mode = NormalMode)
+POST       /why-you-are-appealing                           controllers.WhyYouAreAppealingController.onSubmit(mode: Mode = NormalMode)
+GET        /why-you-are-appealing/change                    controllers.WhyYouAreAppealingController.onPageLoad(mode: Mode = CheckMode)
+POST       /why-you-are-appealing/change                    controllers.WhyYouAreAppealingController.onSubmit(mode: Mode = CheckMode)
