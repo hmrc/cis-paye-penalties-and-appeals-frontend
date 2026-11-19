@@ -35,13 +35,16 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
 
-      "must go from excuse end date known page to when did excuse end page" in {
-
+      "must go from ExcuseEndDateKnownPage to ExcuseEndDateController" in {
         navigator.nextPage(ExcuseEndDateKnownPage, NormalMode, UserAnswers("id")) mustBe routes.ExcuseEndDateController.onPageLoad(NormalMode)
       }
 
       "must go from ExcuseEndDatePage to AdditionalDetailsController" in {
         navigator.nextPage(ExcuseEndDatePage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad() // TODO: DTR-9783 - update once CIS-7 Additional details is implemented
+      }
+
+      "must go from CisContractorEndDatePage to AdditionalDetailsController" in {
+        navigator.nextPage(CisContractorEndDatePage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad() // TODO: DTR-9783 - update once CIS-7 Additional details is implemented
       }
     }
 
@@ -55,6 +58,10 @@ class NavigatorSpec extends SpecBase {
 
       "must go from ExcuseEndDatePage to SendYourAppealController" in {
         navigator.nextPage(ExcuseEndDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+      }
+
+      "must go from CisContractorEndDatePage to SendYourAppealController" in {
+        navigator.nextPage(CisContractorEndDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
       }
     }
   }

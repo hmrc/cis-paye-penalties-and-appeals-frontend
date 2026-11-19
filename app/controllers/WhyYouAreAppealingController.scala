@@ -74,7 +74,7 @@ class WhyYouAreAppealingController @Inject()(
               case "17" =>
                 Redirect(controllers.routes.ExcuseEndDateKnownController.onPageLoad(mode))
               case "20" =>
-                Redirect(controllers.routes.WhyYouAreAppealingController.onPageLoad(mode)) //TODO: Change for group 5 DTR-9777
+                Redirect(controllers.routes.CisContractorEndDateController.onPageLoad(mode))
               case "5" =>
                 Redirect(controllers.routes.WhyYouAreAppealingController.onPageLoad(mode)) //TODO: Change for group 6 DTR-9780
               case "18" =>
