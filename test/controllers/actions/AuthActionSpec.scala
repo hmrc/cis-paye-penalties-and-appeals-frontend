@@ -25,7 +25,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -159,6 +159,71 @@ class AuthActionSpec extends SpecBase {
       }
     }
 
+    "the user is an organisation without an activated HMRC-CIS-ORG enrolment" - {
+
+      "must redirect the user to the unauthorised page" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSucceedingAuthConnector(Some("id"), Set.empty, Some(AffinityGroup.Organisation)), appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        }
+      }
+    }
+
+    "the user is an agent" - {
+
+      "must redirect the user to the unauthorised page" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val agentEnrolment = Enrolment("IR-PAYE-AGENT", Seq(EnrolmentIdentifier("IRAgentReference", "ABC123")), "Activated")
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSucceedingAuthConnector(Some("id"), Set(agentEnrolment), Some(AffinityGroup.Agent)), appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        }
+      }
+    }
+
+    "the user is an organisation with an activated HMRC-CIS-ORG enrolment" - {
+
+      "must run the block" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val cisEnrolment = Enrolment("HMRC-CIS-ORG",
+            Seq(EnrolmentIdentifier("TaxOfficeNumber", "754"), EnrolmentIdentifier("TaxOfficeReference", "EZ00100")), "Activated")
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSucceedingAuthConnector(Some("id"), Set(cisEnrolment), Some(AffinityGroup.Organisation)), appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe OK
+        }
+      }
+    }
+
     "the user has an unsupported credential role" - {
 
       "must redirect the user to the unauthorised page" in {
@@ -179,6 +244,14 @@ class AuthActionSpec extends SpecBase {
       }
     }
   }
+}
+
+/** Returns the internal id, enrolments and affinity group that the identifier actions retrieve. */
+class FakeSucceedingAuthConnector(internalId: Option[String], enrolments: Set[Enrolment], affinityGroup: Option[AffinityGroup])
+  extends AuthConnector {
+
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
+    Future.successful(new ~(new ~(internalId, Enrolments(enrolments)), affinityGroup).asInstanceOf[A])
 }
 
 class FakeFailingAuthConnector @Inject()(exceptionToReturn: Throwable) extends AuthConnector {
