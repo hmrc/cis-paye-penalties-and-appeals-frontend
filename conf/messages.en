@@ -117,9 +117,10 @@ whyYouAreAppealing.checkYourAnswersLabel    = Reason for appeal
 whyYouAreAppealing.error.required           = Give reason for appeal
 whyYouAreAppealing.change.hidden            = WhyYouAreAppealing
 
-cisContractorEndDate.title = When did you stop being a CIS contractor?
-cisContractorEndDate.heading = When did you stop being a CIS contractor?
-cisContractorEndDate.p1 = This means you’re no longer a contractor under the Construction Industry Scheme. This is because you’ve permanently stopped hiring and paying subcontractors for construction work.
+cisContractorEndDate.title = Your CIS registration
+cisContractorEndDate.heading = Your CIS registration
+cisContractorEndDate.p1 = Your reason for appeal means you’re no longer a contractor under the Construction Industry Scheme. This is because you’ve permanently stopped hiring and paying subcontractors for construction work.
+cisContractorEndDate.h2 = When did you stop being a CIS contractor?
 cisContractorEndDate.hint = Enter the date you last paid a subcontractor under the scheme. For example, 27 3 2024.
 cisContractorEndDate.checkYourAnswersLabel = CisContractorEndDate
 cisContractorEndDate.error.allRequired = placeholder all required error

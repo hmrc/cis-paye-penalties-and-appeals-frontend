@@ -15,7 +15,6 @@
  *@
 
 @import views.html.components._
-@import viewmodels.LegendSize.Large
 
 @this(
     layout: templates.Layout,
@@ -24,6 +23,7 @@
     govukDateInput: GovukDateInput,
     govukButton: GovukButton,
     caption: Caption,
+    h1: h1,
     p: Paragraph
 )
 
@@ -39,10 +39,14 @@
 
         @caption("Client name")
 
+        @h1("cisContractorEndDate.heading")
+
+        @p("cisContractorEndDate.p1")
+
         @govukDateInput(
             DateViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("cisContractorEndDate.heading")).asPageHeading(size = Large)
+                legend = LegendViewModel(messages("cisContractorEndDate.h2")).asPageSubHeading()
             )
             .withHint(HintViewModel(messages("cisContractorEndDate.hint")))
             .withoutAutocomplete
