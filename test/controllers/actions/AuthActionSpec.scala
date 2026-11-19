@@ -25,7 +25,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -244,6 +244,14 @@ class AuthActionSpec extends SpecBase {
       }
     }
   }
+}
+
+/** Returns the internal id, enrolments and affinity group that the identifier actions retrieve. */
+class FakeSucceedingAuthConnector(internalId: Option[String], enrolments: Set[Enrolment], affinityGroup: Option[AffinityGroup])
+  extends AuthConnector {
+
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
+    Future.successful(new ~(new ~(internalId, Enrolments(enrolments)), affinityGroup).asInstanceOf[A])
 }
 
 class FakeFailingAuthConnector @Inject()(exceptionToReturn: Throwable) extends AuthConnector {
