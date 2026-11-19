@@ -18,55 +18,27 @@ package controllers.actions
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import controllers.routes
+import models.EmployerReference
 import models.requests.IdentifierRequest
-import play.api.Logging
-import play.api.mvc.Results.*
 import play.api.mvc.*
 import uk.gov.hmrc.auth.core.*
-import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.AuthUtils
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 trait IdentifierAction extends ActionBuilder[IdentifierRequest, AnyContent] with ActionFunction[Request, IdentifierRequest]
 
+/** CIS contractor guard: an Organisation with an activated HMRC-CIS-ORG enrolment. */
 class AuthenticatedIdentifierAction @Inject()(
-                                               override val authConnector: AuthConnector,
+                                               authConnector: AuthConnector,
                                                config: FrontendAppConfig,
-                                               val parser: BodyParsers.Default
+                                               parser: BodyParsers.Default
                                              )
-                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions with Logging {
+                                             (implicit executionContext: ExecutionContext)
+  extends EnrolmentIdentifierAction(authConnector, config, parser) with IdentifierAction {
 
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
+  override protected def enrolmentKey: String = AuthUtils.CisOrgEnrolmentKey
 
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
-    authorised().retrieve(
-      Retrievals.internalId and
-        Retrievals.allEnrolments and
-        Retrievals.affinityGroup
-    ) {
-      case Some(internalId) ~ Enrolments(enrolments) ~ Some(Organisation) =>
-        AuthUtils.contractorReference(enrolments) match {
-          case Some(employerReference) =>
-            block(IdentifierRequest(request, internalId, Some(employerReference)))
-          case None =>
-            logger.warn("AuthenticatedIdentifierAction - no activated HMRC-CIS-ORG enrolment")
-            Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
-        }
-      case _ =>
-        logger.warn("AuthenticatedIdentifierAction - Unable to retrieve internal id or affinity group")
-        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
-    } recover {
-      case _: NoActiveSession =>
-        Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-      case _: AuthorisationException =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
-    }
-  }
+  override protected def employerReference(enrolments: Set[Enrolment]): Option[EmployerReference] =
+    AuthUtils.contractorReference(enrolments)
 }

@@ -21,7 +21,8 @@ import uk.gov.hmrc.auth.core.Enrolment
 
 object AuthUtils {
 
-  val CisOrgEnrolmentKey        = "HMRC-CIS-ORG"
+  val CisOrgEnrolmentKey           = "HMRC-CIS-ORG"
+  val PayeEmployerEnrolmentKey     = "IR-PAYE"
   private val TaxOfficeNumberId    = "TaxOfficeNumber"
   private val TaxOfficeReferenceId = "TaxOfficeReference"
 
@@ -30,8 +31,15 @@ object AuthUtils {
 
   /** The contractor's tax office number and reference, from an activated HMRC-CIS-ORG enrolment. */
   def contractorReference(enrolments: Set[Enrolment]): Option[EmployerReference] =
+    employerReference(CisOrgEnrolmentKey, enrolments)
+
+  /** The PAYE employer's tax office number and reference, from an activated IR-PAYE enrolment. */
+  def payeEmployerReference(enrolments: Set[Enrolment]): Option[EmployerReference] =
+    employerReference(PayeEmployerEnrolmentKey, enrolments)
+
+  private def employerReference(enrolmentKey: String, enrolments: Set[Enrolment]): Option[EmployerReference] =
     for {
-      enrolment <- enrolments.find(_.key == CisOrgEnrolmentKey) if enrolment.isActivated
+      enrolment <- enrolments.find(_.key == enrolmentKey) if enrolment.isActivated
       number    <- enrolment.identifiers.find(_.key == TaxOfficeNumberId).map(_.value) if isValidTaxOfficeNumber(number)
       reference <- enrolment.identifiers.find(_.key == TaxOfficeReferenceId).map(_.value) if reference.trim.nonEmpty
     } yield EmployerReference(number, reference)
