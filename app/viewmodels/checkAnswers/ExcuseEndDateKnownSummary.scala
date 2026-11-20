@@ -17,28 +17,37 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.WhyYouAreAppealing.NoneOfThese
 import models.{CheckMode, UserAnswers}
-import pages.ExcuseEndDateKnownPage
+import pages.{ExcuseEndDateKnownPage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.checkAnswers.summary.SummaryRowResult
+import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object ExcuseEndDateKnownSummary  {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(ExcuseEndDateKnownPage).map {
-      answer =>
+  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryRowResult] = {
+    val changeRoute = routes.ExcuseEndDateKnownController.onPageLoad(CheckMode)
 
-        val value = if (answer) "site.yes" else "site.no"
-
+    answers.get(ExcuseEndDateKnownPage).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+      Row(
         SummaryListRowViewModel(
           key     = "excuseEndDateKnown.checkYourAnswersLabel",
           value   = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.ExcuseEndDateKnownController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", changeRoute.url)
               .withVisuallyHiddenText(messages("excuseEndDateKnown.change.hidden"))
           )
         )
+      )
+    }.orElse {
+      answers.get(WhyYouAreAppealingPage) match {
+        case Some(reason) if reason == NoneOfThese => Some(Missing(changeRoute))
+        case _ => None
+      }
     }
+  }
 }

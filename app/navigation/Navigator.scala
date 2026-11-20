@@ -30,11 +30,13 @@ class Navigator @Inject()() {
     case ExcuseEndDateKnownPage =>
       _ => routes.ExcuseEndDateController.onPageLoad(NormalMode)
     case ExcuseEndDatePage =>
-      _ => routes.IndexController.onPageLoad() // TODO: DTR-9783 update to Additional details page (cis-7) once implemented
+      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case CisContractorEndDatePage =>
-      _ => routes.IndexController.onPageLoad() // TODO: DTR-9783 update to Additional details page (cis-7) once implemented
+      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case FileReturnDatePage =>
-      _ => routes.IndexController.onPageLoad() // TODO: DTR-9783 update to Additional details page (cis-7) once implemented
+      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
+    case AdditionalDetailsPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
@@ -44,6 +46,8 @@ class Navigator @Inject()() {
     case CisContractorEndDatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case FileReturnDatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+    case AdditionalDetailsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case _ => _ => routes.CheckYourAnswersController.onPageLoad()
   }

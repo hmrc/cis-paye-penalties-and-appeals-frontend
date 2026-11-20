@@ -47,3 +47,8 @@ GET         /when-did-you-file-the-return                controllers.FileReturnD
 POST        /when-did-you-file-the-return                controllers.FileReturnDateController.onSubmit(mode: Mode = NormalMode)
 GET         /when-did-you-file-the-return/change         controllers.FileReturnDateController.onPageLoad(mode: Mode = CheckMode)
 POST        /when-did-you-file-the-return/change         controllers.FileReturnDateController.onSubmit(mode: Mode = CheckMode)
+
+GET         /additional-details                          controllers.AdditionalDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST        /additional-details                          controllers.AdditionalDetailsController.onSubmit(mode: Mode = NormalMode)
+GET         /additional-details/change                   controllers.AdditionalDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST        /additional-details/change                   controllers.AdditionalDetailsController.onSubmit(mode: Mode = CheckMode)
