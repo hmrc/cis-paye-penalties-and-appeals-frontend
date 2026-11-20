@@ -17,10 +17,11 @@
 package viewmodels.checkAnswers
 
 import base.SpecBase
-import models.CheckMode
-import pages.ExcuseEndDateKnownPage
+import models.{CheckMode, WhyYouAreAppealing}
+import pages.{ExcuseEndDateKnownPage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.running
+import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
 
 
 class ExcuseEndDateKnownSummarySpec extends SpecBase {
@@ -29,7 +30,7 @@ class ExcuseEndDateKnownSummarySpec extends SpecBase {
 
     "when excuse end date known is present" - {
 
-      "must return a SummaryListRow with 'yes' text and change link" in {
+      "must return Some(Row) with 'yes' text and change link" in {
 
         val userAnswers = emptyUserAnswers
           .set(ExcuseEndDateKnownPage, true).success.value
@@ -38,8 +39,12 @@ class ExcuseEndDateKnownSummarySpec extends SpecBase {
         running(application) {
           implicit val msgs: Messages = messages(application)
 
-          val result = ExcuseEndDateKnownSummary.row(userAnswers).getOrElse(fail("Expected Some(row) but got None"))
+          val row = ExcuseEndDateKnownSummary.row(userAnswers).getOrElse(fail("Failed to get summary list row"))
 
+          val result = row match {
+            case Row(r) => r
+            case _ => fail("Expected Row but got Missing")
+          }
           result.key.content.asHtml.toString() mustEqual msgs("excuseEndDateKnown.checkYourAnswersLabel")
 
           val contentString = result.value.content.asHtml.toString()
@@ -53,7 +58,7 @@ class ExcuseEndDateKnownSummarySpec extends SpecBase {
         }
       }
 
-      "must return a SummaryListRow with 'no' text and change link" in {
+      "must return Some(Row) with 'no' text and change link" in {
 
         val userAnswers = emptyUserAnswers
           .set(ExcuseEndDateKnownPage, false).success.value
@@ -62,8 +67,12 @@ class ExcuseEndDateKnownSummarySpec extends SpecBase {
         running(application) {
           implicit val msgs: Messages = messages(application)
 
-          val result = ExcuseEndDateKnownSummary.row(userAnswers).getOrElse(fail("Expected Some(row) but got None"))
+          val row = ExcuseEndDateKnownSummary.row(userAnswers).getOrElse(fail("Failed to get summary list row"))
 
+          val result = row match {
+            case Row(r) => r
+            case _ => fail("Expected Row but got Missing")
+          }
           result.key.content.asHtml.toString() mustEqual msgs("excuseEndDateKnown.checkYourAnswersLabel")
 
           val contentString = result.value.content.asHtml.toString()
@@ -78,19 +87,58 @@ class ExcuseEndDateKnownSummarySpec extends SpecBase {
       }
     }
 
-    "when excuse end date known is not present" - {
+    "when excuse end date known is absent" - {
 
-      "must return None" in {
+      "when reasonable excuse is NoneOfThese" - {
 
-        val userAnswers = emptyUserAnswers
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        "must return Some(Missing) with the correct redirect call" in {
 
-        running(application) {
-          implicit val msgs: Messages = messages(application)
+          val userAnswers = emptyUserAnswers
+            .set(WhyYouAreAppealingPage, WhyYouAreAppealing.NoneOfThese).success.value
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          val result = ExcuseEndDateKnownSummary.row(userAnswers)
+          running(application) {
+            implicit val msgs: Messages = messages(application)
 
-          result mustBe None
+            val result = ExcuseEndDateKnownSummary.row(userAnswers).getOrElse(fail("Failed to get summary list row"))
+
+            result match {
+              case Missing(call) =>
+                call mustEqual controllers.routes.ExcuseEndDateKnownController.onPageLoad(CheckMode)
+
+              case Row(_) =>
+                fail("Expected Missing but got Row")
+            }
+          }
+        }
+      }
+
+      "when reasonable excuse is not NoneOfThese" - {
+
+        "must return None" in {
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+          running(application) {
+            implicit val msgs: Messages = messages(application)
+
+            val userAnswers = emptyUserAnswers
+              .set(WhyYouAreAppealingPage, WhyYouAreAppealing.Contractor).success.value
+
+            ExcuseEndDateKnownSummary.row(userAnswers) mustBe None
+          }
+        }
+      }
+
+      "when reasonable excuse is absent" - {
+
+        "must return None" in {
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+          running(application) {
+            implicit val msgs: Messages = messages(application)
+
+            ExcuseEndDateKnownSummary.row(emptyUserAnswers) mustBe None
+          }
         }
       }
     }

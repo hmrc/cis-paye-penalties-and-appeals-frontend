@@ -126,7 +126,7 @@ class ExcuseEndDateKnownControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url // TODO redirect to CIS-7
+        redirectLocation(result).value mustEqual controllers.routes.AdditionalDetailsController.onPageLoad(NormalMode).url
       }
     }
 

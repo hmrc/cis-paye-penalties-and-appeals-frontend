@@ -70,8 +70,7 @@ class ExcuseEndDateKnownController @Inject()(
             _              <- sessionRepository.set(updatedAnswers)
           } yield {
             if (!value && mode == NormalMode) {
-              // TODO redirect to CIS-7
-              Redirect(navigator.nextPage(ExcuseEndDateKnownPage, mode, updatedAnswers))
+              Redirect(controllers.routes.AdditionalDetailsController.onPageLoad(mode))
             } else {
               Redirect(navigator.nextPage(ExcuseEndDateKnownPage, mode, updatedAnswers))
             }

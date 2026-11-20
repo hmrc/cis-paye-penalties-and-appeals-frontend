@@ -130,7 +130,7 @@ class ExcuseEndDateControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, postRequest(excuseEndDateRoute)).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url // TODO: DTR-9783 - update to correct URL
+          redirectLocation(result).value mustEqual onwardRoute.url
         }
       }
 

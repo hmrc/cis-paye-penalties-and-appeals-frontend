@@ -128,3 +128,16 @@ cisContractorEndDate.error.twoRequired = placeholder two required error
 cisContractorEndDate.error.required = placeholder required error
 cisContractorEndDate.error.invalid = placeholder invalid error
 cisContractorEndDate.change.hidden = CisContractorEndDate
+
+additionalDetails.title = Additional details
+additionalDetails.heading = Additional details
+additionalDetails.p1 = This is where you can tell us more about your reason for appeal. Explain:
+additionalDetails.list.bullet1 = what happened
+additionalDetails.list.bullet2 = how it led to the penalty
+additionalDetails.list.bullet3 = what steps you took to comply with HMRC
+additionalDetails.p2 = Do not include medical details or personal information unless it is needed for your appeal.
+additionalDetails.h2 = Tell us more about your reason for appeal
+additionalDetails.checkYourAnswersLabel = Additional details
+additionalDetails.error.required = Enter additional details
+additionalDetails.error.length = Additional details must be 1000 characters or less
+additionalDetails.change.hidden = additional details
