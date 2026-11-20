@@ -47,6 +47,10 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(CisContractorEndDatePage, NormalMode, UserAnswers("id")) mustBe routes.AdditionalDetailsController.onPageLoad(NormalMode)
       }
 
+      "must go from FileReturnDatePage to AdditionalDetailsController" in {
+        navigator.nextPage(FileReturnDatePage, NormalMode, UserAnswers("id")) mustBe routes.AdditionalDetailsController.onPageLoad(NormalMode)
+      }
+
       "must go from AdditionalDetailsPage to SendYourAppealController" in {
         navigator.nextPage(AdditionalDetailsPage, NormalMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
       }
@@ -66,6 +70,10 @@ class NavigatorSpec extends SpecBase {
 
       "must go from CisContractorEndDatePage to SendYourAppealController" in {
         navigator.nextPage(CisContractorEndDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+      }
+
+      "must go from FileReturnDatePage to SendYourAppealController" in {
+        navigator.nextPage(FileReturnDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
       }
 
       "must go from AdditionalDetailsPage to SendYourAppealController" in {

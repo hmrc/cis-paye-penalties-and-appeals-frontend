@@ -33,6 +33,8 @@ class Navigator @Inject()() {
       _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case CisContractorEndDatePage =>
       _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
+    case FileReturnDatePage =>
+      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case AdditionalDetailsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case _ => _ => routes.IndexController.onPageLoad()
@@ -42,6 +44,8 @@ class Navigator @Inject()() {
     case ExcuseEndDatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case CisContractorEndDatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+    case FileReturnDatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case AdditionalDetailsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented

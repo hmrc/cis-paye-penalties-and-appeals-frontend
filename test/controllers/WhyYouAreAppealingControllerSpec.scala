@@ -152,7 +152,7 @@ class WhyYouAreAppealingControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to group 6 page when valid data is submitted for reason 5" in {
+    "must redirect to group 6 page (FileReturnDateController) when valid data is submitted for reason 5" in {
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -164,7 +164,7 @@ class WhyYouAreAppealingControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, postRequest(whyYouAreAppealingRoute, "5")).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.WhyYouAreAppealingController.onPageLoad(NormalMode).url // TODO: DTR-9780 - update to correct URL
+        redirectLocation(result).value mustEqual routes.FileReturnDateController.onPageLoad(NormalMode).url
       }
     }
 
