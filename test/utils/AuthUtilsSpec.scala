@@ -49,4 +49,42 @@ class AuthUtilsSpec extends SpecBase {
       AuthUtils.contractorReference(Set(noReference)) mustBe None
     }
   }
+
+  private def irPaye(number: String = "754", reference: String = "EZ00100", state: String = "Activated") =
+    Enrolment("IR-PAYE", Seq(EnrolmentIdentifier("TaxOfficeNumber", number), EnrolmentIdentifier("TaxOfficeReference", reference)), state)
+
+  "payeEmployerReference" - {
+
+    "must return the tax office number and reference from an activated IR-PAYE enrolment" in {
+      AuthUtils.payeEmployerReference(Set(irPaye())) mustBe Some(EmployerReference("754", "EZ00100"))
+    }
+
+    "must return None when there is no IR-PAYE enrolment" in {
+      AuthUtils.payeEmployerReference(Set(cisOrg())) mustBe None
+      AuthUtils.payeEmployerReference(Set.empty) mustBe None
+    }
+
+    "must return None when the enrolment is not activated" in {
+      AuthUtils.payeEmployerReference(Set(irPaye(state = "Inactive"))) mustBe None
+    }
+
+    "must return None when the tax office number is not 3 digits" in {
+      AuthUtils.payeEmployerReference(Set(irPaye(number = "75"))) mustBe None
+      AuthUtils.payeEmployerReference(Set(irPaye(number = "7544"))) mustBe None
+      AuthUtils.payeEmployerReference(Set(irPaye(number = "75A"))) mustBe None
+    }
+
+    "must return None when the reference is blank" in {
+      AuthUtils.payeEmployerReference(Set(irPaye(reference = "  "))) mustBe None
+    }
+
+    "must return None when an identifier is missing" in {
+      val noReference = Enrolment("IR-PAYE", Seq(EnrolmentIdentifier("TaxOfficeNumber", "754")), "Activated")
+      AuthUtils.payeEmployerReference(Set(noReference)) mustBe None
+    }
+
+    "must not accept an HMRC-CIS-ORG enrolment as a PAYE employer" in {
+      AuthUtils.payeEmployerReference(Set(cisOrg())) mustBe None
+    }
+  }
 }
