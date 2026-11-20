@@ -34,7 +34,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class WhyYouAreAppealingController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        sessionRepository: SessionRepository,
-                                       navigator: Navigator,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
@@ -76,7 +75,7 @@ class WhyYouAreAppealingController @Inject()(
               case "20" =>
                 Redirect(controllers.routes.CisContractorEndDateController.onPageLoad(mode))
               case "5" =>
-                Redirect(controllers.routes.WhyYouAreAppealingController.onPageLoad(mode)) //TODO: Change for group 6 DTR-9780
+                Redirect(controllers.routes.FileReturnDateController.onPageLoad(mode))
               case "18" =>
                 Redirect(controllers.routes.WhyYouAreAppealingController.onPageLoad(mode)) //TODO: Change for group 7 DTR-9786
               case _ =>

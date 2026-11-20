@@ -128,3 +128,14 @@ cisContractorEndDate.error.twoRequired = placeholder two required error
 cisContractorEndDate.error.required = placeholder required error
 cisContractorEndDate.error.invalid = placeholder invalid error
 cisContractorEndDate.change.hidden = CisContractorEndDate
+
+fileReturnDate.title                 = When did you file the return?
+fileReturnDate.heading               = When did you file the return?
+fileReturnDate.hint                  = This is the date you submitted the online return to HMRC. For example, 27 3 2024.
+fileReturnDate.error.invalid         = placeholder invalid error
+fileReturnDate.error.allRequired     = placeholder all required error
+fileReturnDate.error.twoRequired     = placeholder two required error
+fileReturnDate.error.required        = placeholder required error
+fileReturnDate.error.maxDate         = placeholder max date error
+fileReturnDate.checkYourAnswersLabel = FileReturnDate
+fileReturnDate.change.hidden         = FileReturnDate
