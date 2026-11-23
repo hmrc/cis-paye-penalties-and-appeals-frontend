@@ -46,7 +46,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val result = action.callTransform(IdentifierRequest(
           FakeRequest(),
           "id",
-          Some(EmployerReference("hmrcOfficeNumber", "schemeReferenceNumber"))
+          EmployerReference("hmrcOfficeNumber", "schemeReferenceNumber")
         )).futureValue
 
         result.userAnswers must not be defined
@@ -64,7 +64,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val result = action.callTransform(new IdentifierRequest(
           FakeRequest(),
           "id",
-          Some(EmployerReference("hmrcOfficeNumber", "schemeReferenceNumber"))
+          EmployerReference("hmrcOfficeNumber", "schemeReferenceNumber")
         )).futureValue
 
         result.userAnswers mustBe defined

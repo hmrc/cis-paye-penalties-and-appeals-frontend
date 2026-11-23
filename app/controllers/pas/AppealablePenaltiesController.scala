@@ -19,7 +19,7 @@ package controllers.pas
 import config.FrontendAppConfig
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import controllers.routes.JourneyRecoveryController
-import models.GetAppealablePenaltiesRequest
+import models.{EmployerReference, GetAppealablePenaltiesRequest}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,26 +50,21 @@ class AppealablePenaltiesController @Inject()(
   def onPageLoad(page: Option[Int]): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     val currentPage = page.getOrElse(1)
     val (startRow, endRow) = getRowNumbers(currentPage)
+    val EmployerReference(hmrcOfficeNumber, schemeReferenceNumber) = request.employerReference
 
-    request.employerReference match {
-      case Some(hmrcOfficeNumber, schemeReferenceNumber) =>
-        val req = GetAppealablePenaltiesRequest(hmrcOfficeNumber, schemeReferenceNumber, startRow, endRow)
+    val req = GetAppealablePenaltiesRequest(hmrcOfficeNumber, schemeReferenceNumber, startRow, endRow)
         
-        cisPayePasService.getCisAppealablePenalties(req)
-          .map { response =>
-            AppealablePenaltiesViewModel.toViewModel(response, currentPage, onwardUrl) match {
-              case Some(viewModel) => Ok(view(viewModel))
-              case None            => Redirect(controllers.pas.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
-            }
-          } recover {
-              case ex =>
-                logger.error(s"[AppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
-                Redirect(JourneyRecoveryController.onPageLoad())
-            }
-      case _ =>
-        logger.error("[AppealablePenaltiesController][onPageLoad] Could not find employer reference details")
-        Future.successful(Redirect(JourneyRecoveryController.onPageLoad()))
-    }
+    cisPayePasService.getCisAppealablePenalties(req)
+      .map { response =>
+        AppealablePenaltiesViewModel.toViewModel(response, currentPage, onwardUrl) match {
+          case Some(viewModel) => Ok(view(viewModel))
+          case None            => Redirect(controllers.pas.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
+        }
+      } recover {
+          case ex =>
+            logger.error(s"[AppealablePenaltiesController][onPageLoad] Unexpected failure: ${ex.getMessage}")
+            Redirect(JourneyRecoveryController.onPageLoad())
+      }
   }
 
   private def getRowNumbers(currentPage: Int): (Int, Int) =

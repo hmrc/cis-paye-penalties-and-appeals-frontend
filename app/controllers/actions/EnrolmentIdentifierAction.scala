@@ -63,7 +63,7 @@ abstract class EnrolmentIdentifierAction(
       case Some(internalId) ~ Enrolments(enrolments) ~ Some(Organisation) =>
         employerReference(enrolments) match {
           case Some(reference) =>
-            block(IdentifierRequest(request, internalId, Some(reference)))
+            block(IdentifierRequest(request, internalId, reference))
           case None =>
             logger.warn(s"${getClass.getSimpleName} - no activated $enrolmentKey enrolment")
             Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))

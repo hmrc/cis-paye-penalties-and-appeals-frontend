@@ -34,7 +34,7 @@ class PayeIdentifierActionSpec extends SpecBase {
     var seen: Option[EmployerReference] = None
 
     def onPageLoad(): Action[AnyContent] = authAction { request =>
-      seen = request.employerReference
+      seen = Some(request.employerReference)
       Results.Ok
     }
   }
