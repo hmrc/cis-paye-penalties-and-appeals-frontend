@@ -76,8 +76,6 @@ class WhyYouAreAppealingController @Inject()(
                 Redirect(controllers.pas.routes.FileReturnDateController.onPageLoad(mode))
               case "18" =>
                 Redirect(controllers.pas.routes.WhyYouAreAppealingController.onPageLoad(mode)) //TODO: Change for group 7 DTR-9786
-              case _ =>
-                Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
             }
           }
       )
