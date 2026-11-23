@@ -23,7 +23,6 @@ import play.api.i18n.Messages
 import play.api.test.Helpers.running
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
 
-
 class ExcuseEndDateKnownSummarySpec extends SpecBase {
 
   "ExcuseEndDateKnownSummary" - {

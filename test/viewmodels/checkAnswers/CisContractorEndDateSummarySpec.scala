@@ -25,7 +25,6 @@ import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
 
 import java.time.LocalDate
 
-
 class CisContractorEndDateSummarySpec extends SpecBase {
 
   "CisContractorEndDateSummary" - {

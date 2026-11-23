@@ -17,7 +17,6 @@
 package forms.pas
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.pas.ExcuseEndDateKnownFormProvider
 import play.api.data.FormError
 
 class ExcuseEndDateKnownFormProviderSpec extends BooleanFieldBehaviours {

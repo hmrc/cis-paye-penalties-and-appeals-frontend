@@ -17,7 +17,6 @@
 package forms.pas
 
 import forms.behaviours.OptionFieldBehaviours
-import forms.pas.WhyYouAreAppealingFormProvider
 import models.WhyYouAreAppealing
 import play.api.data.FormError
 
