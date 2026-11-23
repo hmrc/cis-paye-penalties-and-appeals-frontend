@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import models.CheckMode
-import pages.{ExcuseEndDateKnownPage, ExcuseEndDatePage}
+import pages.pas.{ExcuseEndDateKnownPage, ExcuseEndDatePage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.running
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
@@ -51,7 +51,7 @@ class ExcuseEndDateSummarySpec extends SpecBase {
           result.key.content.asHtml.toString() mustEqual msgs("reasonableExcuseEndDate.checkYourAnswersLabel")
           result.value.content.asHtml.toString() mustEqual msgs("26 October 2022")
           result.actions.get.items.size mustEqual 1
-          result.actions.get.items.head.href mustEqual controllers.routes.ExcuseEndDateController.onPageLoad(CheckMode).url
+          result.actions.get.items.head.href mustEqual controllers.pas.routes.ExcuseEndDateController.onPageLoad(CheckMode).url
           result.actions.get.items.head.content.asHtml.toString() must include(msgs("site.change"))
           result.actions.get.items.head.visuallyHiddenText.value mustEqual msgs("reasonableExcuseEndDate.change.hidden")
         }
@@ -73,7 +73,7 @@ class ExcuseEndDateSummarySpec extends SpecBase {
 
           result match {
             case Missing(call) =>
-              call mustEqual controllers.routes.ExcuseEndDateController.onPageLoad(CheckMode)
+              call mustEqual controllers.pas.routes.ExcuseEndDateController.onPageLoad(CheckMode)
 
             case Row(_) =>
               fail("Expected Missing but got Row")

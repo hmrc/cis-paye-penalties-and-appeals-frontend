@@ -37,7 +37,7 @@ class IndexController @Inject()(
     val userAnswers = UserAnswers(request.userId)
 
     sessionRepository.set(userAnswers).map { _ =>
-      Results.Redirect(controllers.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
+      Results.Redirect(controllers.pas.routes.AppealablePenaltiesController.onPageLoad(Some(1)))
     }
   }
 }

@@ -16,14 +16,12 @@
 
 package viewmodels.appealablePenalties
 
-import controllers.routes.BeforeYouStartController
+import controllers.pas.routes.BeforeYouStartController
 import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyResponse}
 import play.api.i18n.Messages
-import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 import utils.PaginationHelper
 
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 case class AppealablePenaltiesViewModel(
@@ -49,7 +47,7 @@ object AppealablePenaltiesViewModel extends PaginationHelper {
       rows = rows,
       totalRowCount = total,
       paginationIndex = Some(currentPage),
-      urlSelector = (p: Int) => controllers.routes.AppealablePenaltiesController.onPageLoad(Some(p)).url
+      urlSelector = (p: Int) => controllers.pas.routes.AppealablePenaltiesController.onPageLoad(Some(p)).url
     )
     
     pagination match {

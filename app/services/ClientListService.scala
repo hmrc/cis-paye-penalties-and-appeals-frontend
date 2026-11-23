@@ -22,9 +22,9 @@ import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class ClientListService @Inject()(backendConnector: CisPayePasConnector)(implicit ec: ExecutionContext) extends Logging {
+class ClientListService @Inject()(backendConnector: CisPayePasConnector) extends Logging {
   
   def getClientListDownloadStatus(clientListStatusRequest: ClientListStatusRequest)
                      (implicit hc: HeaderCarrier): Future[ClientListStatusResponse] = {
