@@ -16,10 +16,10 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
+import controllers.pas.routes
 import models.WhyYouAreAppealing.Contractor
 import models.{CheckMode, UserAnswers}
-import pages.{AdditionalDetailsPage, WhyYouAreAppealingPage}
+import pages.pas.{AdditionalDetailsPage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent

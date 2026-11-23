@@ -16,9 +16,9 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
+import controllers.pas.routes
 import models.{CheckMode, UserAnswers, WhyYouAreAppealing}
-import pages.{FileReturnDatePage, WhyYouAreAppealingPage}
+import pages.pas.{FileReturnDatePage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
 import utils.DateTimeFormats.dateTimeFormat
 import viewmodels.checkAnswers.summary.SummaryRowResult

@@ -17,39 +17,38 @@
 package navigation
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.mvc.Call
-import controllers.routes
-import pages._
-import models._
+import pages.*
+import models.*
+import pages.pas.{AdditionalDetailsPage, CisContractorEndDatePage, ExcuseEndDateKnownPage, ExcuseEndDatePage, FileReturnDatePage}
 
 @Singleton
 class Navigator @Inject()() {
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case ExcuseEndDateKnownPage =>
-      _ => routes.ExcuseEndDateController.onPageLoad(NormalMode)
+      _ => controllers.pas.routes.ExcuseEndDateController.onPageLoad(NormalMode)
     case ExcuseEndDatePage =>
-      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
+      _ => controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case CisContractorEndDatePage =>
-      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
+      _ => controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case FileReturnDatePage =>
-      _ => routes.AdditionalDetailsController.onPageLoad(NormalMode)
+      _ => controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case AdditionalDetailsPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
-    case _ => _ => routes.IndexController.onPageLoad()
+      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+    case _ => _ => controllers.routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case ExcuseEndDatePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case CisContractorEndDatePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case FileReturnDatePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
     case AdditionalDetailsPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad()
+      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+    case _ => _ => controllers.routes.CheckYourAnswersController.onPageLoad()
   }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {

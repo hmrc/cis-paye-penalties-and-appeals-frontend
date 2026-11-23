@@ -18,13 +18,12 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import models.{CheckMode, WhyYouAreAppealing}
-import pages.{CisContractorEndDatePage, WhyYouAreAppealingPage}
+import pages.pas.{CisContractorEndDatePage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.running
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
 
 import java.time.LocalDate
-
 
 class CisContractorEndDateSummarySpec extends SpecBase {
 
@@ -51,7 +50,7 @@ class CisContractorEndDateSummarySpec extends SpecBase {
           result.key.content.asHtml.toString() mustEqual msgs("cisContractorEndDate.checkYourAnswersLabel")
           result.value.content.asHtml.toString() mustEqual msgs("26 October 2022")
           result.actions.get.items.size mustEqual 1
-          result.actions.get.items.head.href mustEqual controllers.routes.CisContractorEndDateController.onPageLoad(CheckMode).url
+          result.actions.get.items.head.href mustEqual controllers.pas.routes.CisContractorEndDateController.onPageLoad(CheckMode).url
           result.actions.get.items.head.content.asHtml.toString() must include(msgs("site.change"))
           result.actions.get.items.head.visuallyHiddenText.value mustEqual msgs("cisContractorEndDate.change.hidden")
         }
@@ -75,7 +74,7 @@ class CisContractorEndDateSummarySpec extends SpecBase {
 
             result match {
               case Missing(call) =>
-                call mustEqual controllers.routes.CisContractorEndDateController.onPageLoad(CheckMode)
+                call mustEqual controllers.pas.routes.CisContractorEndDateController.onPageLoad(CheckMode)
 
               case Row(_) =>
                 fail("Expected Missing but got Row")

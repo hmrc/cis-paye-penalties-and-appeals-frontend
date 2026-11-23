@@ -153,7 +153,7 @@ class PaginationHelperSpec extends AnyFreeSpec with Matchers with SpecBase {
   }
 
   trait Fixture extends PaginationHelper {
-    val urlSelector: Int => String = (pageIndex: Int) => controllers.routes.AppealablePenaltiesController.onPageLoad(Some(pageIndex)).url
+    val urlSelector: Int => String = (pageIndex: Int) => controllers.pas.routes.AppealablePenaltiesController.onPageLoad(Some(pageIndex)).url
     val application: Application = applicationBuilder(userAnswers = None).build()
     implicit val messages: Messages = stubMessages()
   }

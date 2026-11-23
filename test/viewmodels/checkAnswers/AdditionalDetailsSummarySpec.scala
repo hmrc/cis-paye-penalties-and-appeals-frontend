@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import models.{CheckMode, WhyYouAreAppealing}
-import pages.{AdditionalDetailsPage, WhyYouAreAppealingPage}
+import pages.pas.{AdditionalDetailsPage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.running
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
@@ -49,7 +49,7 @@ class AdditionalDetailsSummarySpec extends SpecBase {
           result.key.content.asHtml.toString() mustEqual msgs("additionalDetails.checkYourAnswersLabel")
           result.value.content.asHtml.toString() mustEqual msgs("Additional details")
           result.actions.get.items.size mustEqual 1
-          result.actions.get.items.head.href mustEqual controllers.routes.AdditionalDetailsController.onPageLoad(CheckMode).url
+          result.actions.get.items.head.href mustEqual controllers.pas.routes.AdditionalDetailsController.onPageLoad(CheckMode).url
           result.actions.get.items.head.content.asHtml.toString() must include(msgs("site.change"))
           result.actions.get.items.head.visuallyHiddenText.value mustEqual msgs("additionalDetails.change.hidden")
         }
@@ -73,7 +73,7 @@ class AdditionalDetailsSummarySpec extends SpecBase {
 
             result match {
               case Missing(call) =>
-                call mustEqual controllers.routes.AdditionalDetailsController.onPageLoad(CheckMode)
+                call mustEqual controllers.pas.routes.AdditionalDetailsController.onPageLoad(CheckMode)
 
               case Row(_) =>
                 fail("Expected Missing but got Row")

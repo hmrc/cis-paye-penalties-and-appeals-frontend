@@ -18,8 +18,9 @@ package navigation
 
 import base.SpecBase
 import controllers.routes
-import pages._
-import models._
+import pages.*
+import models.*
+import pages.pas.{AdditionalDetailsPage, CisContractorEndDatePage, ExcuseEndDateKnownPage, ExcuseEndDatePage, FileReturnDatePage}
 
 class NavigatorSpec extends SpecBase {
 
@@ -36,19 +37,19 @@ class NavigatorSpec extends SpecBase {
       }
 
       "must go from ExcuseEndDateKnownPage to ExcuseEndDateController" in {
-        navigator.nextPage(ExcuseEndDateKnownPage, NormalMode, UserAnswers("id")) mustBe routes.ExcuseEndDateController.onPageLoad(NormalMode)
+        navigator.nextPage(ExcuseEndDateKnownPage, NormalMode, UserAnswers("id")) mustBe controllers.pas.routes.ExcuseEndDateController.onPageLoad(NormalMode)
       }
 
       "must go from ExcuseEndDatePage to AdditionalDetailsController" in {
-        navigator.nextPage(ExcuseEndDatePage, NormalMode, UserAnswers("id")) mustBe routes.AdditionalDetailsController.onPageLoad(NormalMode)
+        navigator.nextPage(ExcuseEndDatePage, NormalMode, UserAnswers("id")) mustBe controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
       }
 
       "must go from CisContractorEndDatePage to AdditionalDetailsController" in {
-        navigator.nextPage(CisContractorEndDatePage, NormalMode, UserAnswers("id")) mustBe routes.AdditionalDetailsController.onPageLoad(NormalMode)
+        navigator.nextPage(CisContractorEndDatePage, NormalMode, UserAnswers("id")) mustBe controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
       }
 
       "must go from FileReturnDatePage to AdditionalDetailsController" in {
-        navigator.nextPage(FileReturnDatePage, NormalMode, UserAnswers("id")) mustBe routes.AdditionalDetailsController.onPageLoad(NormalMode)
+        navigator.nextPage(FileReturnDatePage, NormalMode, UserAnswers("id")) mustBe controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
       }
 
       "must go from AdditionalDetailsPage to SendYourAppealController" in {

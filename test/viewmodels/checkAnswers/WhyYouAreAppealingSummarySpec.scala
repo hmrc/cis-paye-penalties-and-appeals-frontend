@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import models.{CheckMode, WhyYouAreAppealing}
-import pages.WhyYouAreAppealingPage
+import pages.pas.WhyYouAreAppealingPage
 import play.api.i18n.Messages
 import play.api.test.Helpers.running
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
@@ -50,7 +50,7 @@ class WhyYouAreAppealingSummarySpec extends SpecBase {
           result.key.content.asHtml.toString() mustEqual msgs("whyYouAreAppealing.checkYourAnswersLabel")
           result.value.content.asHtml.toString() mustEqual msgs(s"whyYouAreAppealing.$answer")
           result.actions.get.items.size mustEqual 1
-          result.actions.get.items.head.href mustEqual controllers.routes.WhyYouAreAppealingController.onPageLoad(CheckMode).url
+          result.actions.get.items.head.href mustEqual controllers.pas.routes.WhyYouAreAppealingController.onPageLoad(CheckMode).url
           result.actions.get.items.head.content.asHtml.toString() must include(msgs("site.change"))
           result.actions.get.items.head.visuallyHiddenText.value mustEqual msgs("whyYouAreAppealing.change.hidden")
         }
@@ -69,7 +69,7 @@ class WhyYouAreAppealingSummarySpec extends SpecBase {
 
           result match {
             case Missing(call) =>
-              call mustEqual controllers.routes.WhyYouAreAppealingController.onPageLoad(CheckMode)
+              call mustEqual controllers.pas.routes.WhyYouAreAppealingController.onPageLoad(CheckMode)
 
             case Row(_) =>
               fail("Expected Missing but got Row")

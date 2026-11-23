@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 
 class IndexControllerSpec extends SpecBase {
 
@@ -34,7 +34,7 @@ class IndexControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.AppealablePenaltiesController.onPageLoad(Some(1)).url
+        redirectLocation(result).value mustEqual controllers.pas.routes.AppealablePenaltiesController.onPageLoad(Some(1)).url
       }
     }
   }

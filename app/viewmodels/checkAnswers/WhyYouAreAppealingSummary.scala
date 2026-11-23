@@ -16,9 +16,9 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
+import controllers.pas.routes
 import models.{CheckMode, UserAnswers}
-import pages.WhyYouAreAppealingPage
+import pages.pas.WhyYouAreAppealingPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent

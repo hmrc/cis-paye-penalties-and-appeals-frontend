@@ -16,10 +16,10 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
+import controllers.pas.routes
 import models.WhyYouAreAppealing.NoneOfThese
 import models.{CheckMode, UserAnswers}
-import pages.{ExcuseEndDateKnownPage, WhyYouAreAppealingPage}
+import pages.pas.{ExcuseEndDateKnownPage, WhyYouAreAppealingPage}
 import play.api.i18n.Messages
 import viewmodels.checkAnswers.summary.SummaryRowResult
 import viewmodels.checkAnswers.summary.SummaryRowResult.{Missing, Row}
