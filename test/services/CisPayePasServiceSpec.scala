@@ -87,17 +87,17 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       val testResponse = GetAppealablePenaltiesResponse(
         total = 2,
         appealablePenalties = List(
-          GetAppealablePenaltyResponse(
-            penaltyId = Some(10001),
+          GetAppealablePenaltyItem(
+            penaltyId = 10001,
             issueDate = LocalDate.of(2023, 1, 1),
             taxPeriodEndDate = LocalDate.of(2023, 4, 1),
-            penaltyType = "CIS03",
+            penaltyType = "CIS3",
             penaltyAmount = BigDecimal(999.23)
           )
         )
       )
 
-      "must return AppealablePenaltiesViewModel when successful" in {
+      "must return GetAppealablePenaltiesResponse when successful" in {
         when(mockBackendConnector.getCisAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
           .thenReturn(Future.successful(testResponse))
 
@@ -128,7 +128,6 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       )
 
       val getCisAppealablePenaltyResponse = GetAppealablePenaltyResponse(
-        penaltyId = None,
         issueDate = LocalDate.of(2023, 1, 1),
         taxPeriodEndDate = LocalDate.of(2023, 4, 1),
         penaltyType = "CIS003",
@@ -314,8 +313,8 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     val testResponse = GetAppealablePenaltiesResponse(
       total = 2,
       appealablePenalties = List(
-        GetAppealablePenaltyResponse(
-          penaltyId = Some(10001),
+        GetAppealablePenaltyItem(
+          penaltyId = 10001,
           issueDate = LocalDate.of(2023, 1, 1),
           taxPeriodEndDate = LocalDate.of(2023, 4, 1),
           penaltyType = "CIS03",
@@ -324,7 +323,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       )
     )
 
-    "must return AppealablePenaltiesViewModel when successful" in {
+    "must return GetAppealablePenaltiesResponse when successful" in {
       when(mockBackendConnector.getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
         .thenReturn(Future.successful(testResponse))
 
@@ -355,7 +354,6 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     )
 
     val getPayeAppealablePenaltyResponse = GetAppealablePenaltyResponse(
-      penaltyId = None,
       issueDate = LocalDate.of(2023, 1, 1),
       taxPeriodEndDate = LocalDate.of(2023, 4, 1),
       penaltyType = "CIS003",
