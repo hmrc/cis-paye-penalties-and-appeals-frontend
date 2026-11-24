@@ -34,10 +34,10 @@ class AppealablePenaltiesViewModelSpec extends AnyWordSpec with Matchers {
         appealablePenalties = List(
           GetAppealablePenaltyResponse(
             penaltyId = Some(1L),
-            issueDate = Some(LocalDate.of(2026, 1, 1)),
-            taxPeriodEndDate = Some(LocalDate.of(2026, 4, 1)),
-            penaltyType = Some("CIS3"),
-            penaltyAmount = Some(BigDecimal(100.00))
+            issueDate = LocalDate.of(2026, 1, 1),
+            taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+            penaltyType = "CIS3",
+            penaltyAmount = BigDecimal(100.00)
           )
         )
       )
@@ -52,7 +52,7 @@ class AppealablePenaltiesViewModelSpec extends AnyWordSpec with Matchers {
       result mustBe defined
 
       model.total mustBe 1
-      model.rows.head.penaltyId mustBe "1"
+      model.rows.head.penaltyId mustBe 1L
       model.noticesUrl mustBe None
       model.onwardUrl mustBe "#"
     }
@@ -83,63 +83,75 @@ class AppealablePenaltiesViewModelSpec extends AnyWordSpec with Matchers {
       val responseRows: Seq[GetAppealablePenaltyResponse] = Seq(
         GetAppealablePenaltyResponse(
           penaltyId = Some(1L),
-          issueDate = Some(LocalDate.of(2026, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2026, 4, 1)),
-          penaltyType = Some("CIS3"),
-          penaltyAmount = Some(BigDecimal(1000.87))
+          issueDate = LocalDate.of(2026, 1, 1),
+          taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+          penaltyType = "CIS3",
+          penaltyAmount = BigDecimal(1000.87)
         ),
         GetAppealablePenaltyResponse(
           penaltyId = Some(1L),
-          issueDate = Some(LocalDate.of(2026, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2026, 4, 1)),
-          penaltyType = Some("CIS4"),
-          penaltyAmount = Some(BigDecimal(1000.87))
+          issueDate = LocalDate.of(2026, 1, 1),
+          taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+          penaltyType = "CIS4",
+          penaltyAmount = BigDecimal(1000.87)
         ),
         GetAppealablePenaltyResponse(
           penaltyId = Some(1L),
-          issueDate = Some(LocalDate.of(2026, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2026, 4, 1)),
-          penaltyType = Some("CIS5"),
-          penaltyAmount = Some(BigDecimal(1000.87))
+          issueDate = LocalDate.of(2026, 1, 1),
+          taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+          penaltyType = "CIS5",
+          penaltyAmount = BigDecimal(1000.87)
         ),
         GetAppealablePenaltyResponse(
           penaltyId = Some(1L),
-          issueDate = Some(LocalDate.of(2026, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2026, 4, 1)),
-          penaltyType = Some("CIS6"),
-          penaltyAmount = Some(BigDecimal(1000.87))
+          issueDate = LocalDate.of(2026, 1, 1),
+          taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+          penaltyType = "CIS6",
+          penaltyAmount = BigDecimal(1000.87)
         )
       )
 
       responseRows.foreach { responseRow =>
         val result: AppealablePenaltiesDisplayRow = AppealablePenaltiesDisplayRow.fromRow(responseRow)
 
-        val pType = responseRow.penaltyType.get.toLowerCase
-
-        result.penaltyId mustBe "1"
+        result.penaltyId mustBe 1L
         result.issueDate mustBe "1 January 2026"
         result.taxPeriodEndDate mustBe "1 April 2026"
-        result.penaltyType mustBe messages(s"appealablePenalties.penalty.$pType")
+        result.penaltyType mustBe messages(s"appealablePenalties.penalty.${responseRow.penaltyType.toLowerCase}")
         result.penaltyAmount mustBe "£1,000.87"
       }
     }
 
-    "parse missing optional fields using fallback blanks" in new Fixture {
+    "throw IllegalStateException when typeOfPenalty is invalid" in new Fixture {
       val emptyRow = GetAppealablePenaltyResponse(
-        penaltyId = None,
-        issueDate = None,
-        taxPeriodEndDate = None,
-        penaltyType = None,
-        penaltyAmount = None
+        penaltyId = Some(1L),
+        issueDate = LocalDate.of(2026, 1, 1),
+        taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+        penaltyType = "invalid",
+        penaltyAmount = BigDecimal(1000.87)
       )
 
-      val result: AppealablePenaltiesDisplayRow = AppealablePenaltiesDisplayRow.fromRow(emptyRow)
+      val ex: IllegalStateException = intercept[IllegalStateException] {
+        AppealablePenaltiesDisplayRow.fromRow(emptyRow)
+      }
 
-      result.penaltyId mustBe ""
-      result.issueDate mustBe ""
-      result.taxPeriodEndDate mustBe ""
-      result.penaltyType mustBe ""
-      result.penaltyAmount mustBe ""
+      ex.getMessage mustBe "[AppealablePenaltiesDisplayRow][fromRow] Invalid penaltyType: invalid"
+    }
+
+    "throw IllegalStateException when penaltyId is None" in new Fixture {
+      val emptyRow = GetAppealablePenaltyResponse(
+        penaltyId = None,
+        issueDate = LocalDate.of(2026, 1, 1),
+        taxPeriodEndDate = LocalDate.of(2026, 4, 1),
+        penaltyType = "CIS3",
+        penaltyAmount = BigDecimal(1000.87)
+      )
+
+      val ex: IllegalStateException = intercept[IllegalStateException] {
+        AppealablePenaltiesDisplayRow.fromRow(emptyRow)
+      }
+
+      ex.getMessage mustBe "[AppealablePenaltiesDisplayRow][fromRow] Missing penaltyId"
     }
   }
 

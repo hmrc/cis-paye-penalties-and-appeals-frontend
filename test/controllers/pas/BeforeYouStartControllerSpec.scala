@@ -25,12 +25,14 @@ class BeforeYouStartControllerSpec extends SpecBase {
 
   "BeforeYouStart Controller" - {
 
+    val penaltyId = 123L
+
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.BeforeYouStartController.onPageLoad("123").url)
+        val request = FakeRequest(GET, routes.BeforeYouStartController.onPageLoad(penaltyId).url)
 
         val result = route(application, request).value
 

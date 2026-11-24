@@ -21,7 +21,7 @@ GET         /account/signed-out                          controllers.auth.Signed
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
 GET         /appealable-penalties                        controllers.pas.AppealablePenaltiesController.onPageLoad(page: Option[Int])
-GET         /before-you-start/:penaltyId                 controllers.pas.BeforeYouStartController.onPageLoad(penaltyId: String)
+GET         /before-you-start/:penaltyId                 controllers.pas.BeforeYouStartController.onPageLoad(penaltyId: Long)
 
 GET         /excuse-end-date-known                       controllers.pas.ExcuseEndDateKnownController.onPageLoad(mode: Mode = NormalMode)
 POST        /excuse-end-date-known                       controllers.pas.ExcuseEndDateKnownController.onSubmit(mode: Mode = NormalMode)

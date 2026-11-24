@@ -67,7 +67,7 @@ object AppealablePenaltiesViewModel extends PaginationHelper {
 }
 
 case class AppealablePenaltiesDisplayRow(
-                                          penaltyId: String,
+                                          penaltyId: Long,
                                           issueDate: String,
                                           taxPeriodEndDate: String,
                                           penaltyType: String,
@@ -81,21 +81,21 @@ object AppealablePenaltiesDisplayRow {
   def fromRow(row: GetAppealablePenaltyResponse)(implicit messages: Messages): AppealablePenaltiesDisplayRow = {
 
     val typeOfPenalty = row.penaltyType match {
-      case Some("CIS3") => messages("appealablePenalties.penalty.cis3")
-      case Some("CIS4") => messages("appealablePenalties.penalty.cis4")
-      case Some("CIS5") => messages("appealablePenalties.penalty.cis5")
-      case Some("CIS6") => messages("appealablePenalties.penalty.cis6")
-      case _ => ""
+      case "CIS3" => messages("appealablePenalties.penalty.cis3")
+      case "CIS4" => messages("appealablePenalties.penalty.cis4")
+      case "CIS5" => messages("appealablePenalties.penalty.cis5")
+      case "CIS6" => messages("appealablePenalties.penalty.cis6")
+      case other  => throw new IllegalStateException(s"[AppealablePenaltiesDisplayRow][fromRow] Invalid penaltyType: $other")
     }
-
-    val penaltyId = row.penaltyId.map(_.toString).getOrElse("")
+    
+    val penaltyId = row.penaltyId.getOrElse(throw new IllegalStateException("[AppealablePenaltiesDisplayRow][fromRow] Missing penaltyId"))
 
     AppealablePenaltiesDisplayRow(
       penaltyId        = penaltyId,
-      issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
-      taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
+      issueDate        = row.issueDate.format(dateFormatter),
+      taxPeriodEndDate = row.taxPeriodEndDate.format(dateFormatter),
       penaltyType      = typeOfPenalty,
-      penaltyAmount    = row.penaltyAmount.map(a => f"£$a%,.2f" ).getOrElse(""),
+      penaltyAmount    = f"£${row.penaltyAmount}%,.2f",
       redirectUrl      = BeforeYouStartController.onPageLoad(penaltyId).url
     )
   }

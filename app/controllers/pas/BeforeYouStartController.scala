@@ -33,7 +33,7 @@ class BeforeYouStartController @Inject()(
                                        view: BeforeYouStartView
                                      ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(penaltyId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(penaltyId: Long): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       Ok(view("Client name"))
   }
