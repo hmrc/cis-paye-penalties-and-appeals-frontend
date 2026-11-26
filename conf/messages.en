@@ -32,9 +32,6 @@ error.summary.title = There is a problem
 pagination.previous = Prev
 pagination.next = Next
 
-checkYourAnswers.title = Check your answers
-checkYourAnswers.heading = Check your answers
-
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
@@ -60,11 +57,11 @@ appealablePenalties.paginationInfo            = Showing <b>{0}</b> to <b>{1}</b>
 appealablePenalties.link.prefix               = Back to
 appealablePenalties.link.text                 = Manage Construction Industry Scheme account
 
-appealablePenalties.penaltyId        = Penalty ID
-appealablePenalties.penaltyType      = Penalty type
-appealablePenalties.issueDate        = Issue date
-appealablePenalties.taxPeriodEndDate = End of tax period
-appealablePenalties.penaltyAmount    = Amount
+penaltyDetails.penaltyId             = Penalty ID
+penaltyDetails.penaltyType           = Penalty type
+penaltyDetails.issueDate             = Issue date
+penaltyDetails.taxPeriodEndDate      = End of tax period
+penaltyDetails.penaltyAmount         = Amount
 
 appealablePenalties.penalty.cis3 = Fixed penalty 1
 appealablePenalties.penalty.cis4 = Fixed penalty 2
@@ -88,15 +85,17 @@ excuseEndDateKnown.checkYourAnswersLabel = Do you know when your reasonable excu
 excuseEndDateKnown.error.required = Select yes if you know when your reasonable excuse ended
 excuseEndDateKnown.change.hidden = if you know when your reasonable excuse ended
 
-reasonableExcuseEndDate.title             = When did your reasonable excuse end?
-reasonableExcuseEndDate.heading           = When did your reasonable excuse end?
-reasonableExcuseEndDate.group1.hint       = This is the earliest date you could have acted to avoid the penalty. For example, 27 3 2024.
-reasonableExcuseEndDate.group3.hint       = For example, 27 3 2024
-reasonableExcuseEndDate.error.invalid     = placeholder invalid error
-reasonableExcuseEndDate.error.allRequired = placeholder all required error
-reasonableExcuseEndDate.error.twoRequired = placeholder two required error
-reasonableExcuseEndDate.error.required    = placeholder required error
-reasonableExcuseEndDate.error.maxDate     = placeholder max date error
+reasonableExcuseEndDate.title                   = When did your reasonable excuse end?
+reasonableExcuseEndDate.heading                 = When did your reasonable excuse end?
+reasonableExcuseEndDate.group1.hint             = This is the earliest date you could have acted to avoid the penalty. For example, 27 3 2024.
+reasonableExcuseEndDate.group3.hint             = For example, 27 3 2024
+reasonableExcuseEndDate.error.invalid           = placeholder invalid error
+reasonableExcuseEndDate.error.allRequired       = placeholder all required error
+reasonableExcuseEndDate.error.twoRequired       = placeholder two required error
+reasonableExcuseEndDate.error.required          = placeholder required error
+reasonableExcuseEndDate.error.maxDate           = placeholder max date error
+reasonableExcuseEndDate.checkYourAnswersLabel   = When did your reasonable excuse end?
+reasonableExcuseEndDate.change.hidden           = when your reasonable excuse ended
 
 whyYouAreAppealing.title                    = Why are you appealing this penalty?
 whyYouAreAppealing.title.caption            = You can enter additional details about every reason for appeal
@@ -115,19 +114,19 @@ whyYouAreAppealing.17                       = None of these
 whyYouAreAppealing.17.hint                  = Only select if your reason for appeal is not covered by any other option
 whyYouAreAppealing.checkYourAnswersLabel    = Reason for appeal
 whyYouAreAppealing.error.required           = Give reason for appeal
-whyYouAreAppealing.change.hidden            = WhyYouAreAppealing
+whyYouAreAppealing.change.hidden            = reason for appeal
 
 cisContractorEndDate.title = Your CIS registration
 cisContractorEndDate.heading = Your CIS registration
 cisContractorEndDate.p1 = Your reason for appeal means you’re no longer a contractor under the Construction Industry Scheme. This is because you’ve permanently stopped hiring and paying subcontractors for construction work.
 cisContractorEndDate.h2 = When did you stop being a CIS contractor?
 cisContractorEndDate.hint = Enter the date you last paid a subcontractor under the scheme. For example, 27 3 2024.
-cisContractorEndDate.checkYourAnswersLabel = CisContractorEndDate
+cisContractorEndDate.checkYourAnswersLabel = When did you stop being a CIS contractor?
 cisContractorEndDate.error.allRequired = placeholder all required error
 cisContractorEndDate.error.twoRequired = placeholder two required error
 cisContractorEndDate.error.required = placeholder required error
 cisContractorEndDate.error.invalid = placeholder invalid error
-cisContractorEndDate.change.hidden = CisContractorEndDate
+cisContractorEndDate.change.hidden = when you stopped being a CIS contractor
 
 fileReturnDate.title                 = When did you file the return?
 fileReturnDate.heading               = When did you file the return?
@@ -137,8 +136,8 @@ fileReturnDate.error.allRequired     = placeholder all required error
 fileReturnDate.error.twoRequired     = placeholder two required error
 fileReturnDate.error.required        = placeholder required error
 fileReturnDate.error.maxDate         = placeholder max date error
-fileReturnDate.checkYourAnswersLabel = FileReturnDate
-fileReturnDate.change.hidden         = FileReturnDate
+fileReturnDate.checkYourAnswersLabel = When did you file the return?
+fileReturnDate.change.hidden         = when you filed the return
 
 additionalDetails.title = Additional details
 additionalDetails.heading = Additional details
@@ -152,3 +151,11 @@ additionalDetails.checkYourAnswersLabel = Additional details
 additionalDetails.error.required = Enter additional details
 additionalDetails.error.length = Additional details must be 1000 characters or less
 additionalDetails.change.hidden = additional details
+
+sendYourAppeal.title = Send your appeal
+sendYourAppeal.heading = Send your appeal
+sendYourAppeal.penaltyDetails.heading = Penalty details
+sendYourAppeal.checkYourAnswers.heading = Check your answers
+sendYourAppeal.declaration.heading = Declaration
+sendYourAppeal.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge. A false declaration can result in prosecution.
+sendYourAppeal.button = Accept and send

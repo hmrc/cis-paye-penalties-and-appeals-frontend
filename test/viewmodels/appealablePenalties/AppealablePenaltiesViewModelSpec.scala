@@ -16,7 +16,7 @@
 
 package viewmodels.appealablePenalties
 
-import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyItem, GetAppealablePenaltyResponse}
+import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyItem}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
@@ -52,7 +52,7 @@ class AppealablePenaltiesViewModelSpec extends AnyWordSpec with Matchers {
       result mustBe defined
 
       model.total mustBe 1
-      model.rows.head.penaltyId mustBe 1L
+      model.rows.head.penaltyDetails.penaltyId mustBe "1"
       model.noticesUrl mustBe None
       model.onwardUrl mustBe "#"
     }
@@ -114,11 +114,11 @@ class AppealablePenaltiesViewModelSpec extends AnyWordSpec with Matchers {
       responseRows.foreach { responseRow =>
         val result: AppealablePenaltiesDisplayRow = AppealablePenaltiesDisplayRow.fromRow(responseRow)
 
-        result.penaltyId mustBe 1L
-        result.issueDate mustBe "1 January 2026"
-        result.taxPeriodEndDate mustBe "1 April 2026"
-        result.penaltyType mustBe messages(s"appealablePenalties.penalty.${responseRow.penaltyType.toLowerCase}")
-        result.penaltyAmount mustBe "£1,000.87"
+        result.penaltyDetails.penaltyId mustBe "1"
+        result.penaltyDetails.issueDate mustBe "1 January 2026"
+        result.penaltyDetails.taxPeriodEndDate mustBe "1 April 2026"
+        result.penaltyDetails.penaltyType mustBe messages(s"appealablePenalties.penalty.${responseRow.penaltyType.toLowerCase}")
+        result.penaltyDetails.penaltyAmount mustBe "£1,000.87"
       }
     }
 
@@ -135,7 +135,7 @@ class AppealablePenaltiesViewModelSpec extends AnyWordSpec with Matchers {
         AppealablePenaltiesDisplayRow.fromRow(emptyRow)
       }
 
-      ex.getMessage mustBe "[AppealablePenaltiesDisplayRow][fromRow] Invalid penaltyType: invalid"
+      ex.getMessage mustBe "[PenaltyDetailsViewModel][from] Invalid penaltyType: invalid"
     }
   }
 }

@@ -12,8 +12,6 @@ GET         /refresh-session                             controllers.KeepAliveCo
 
 GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad()
-
 GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut()
 GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey()
 GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad()
@@ -52,3 +50,5 @@ GET         /additional-details                          controllers.pas.Additio
 POST        /additional-details                          controllers.pas.AdditionalDetailsController.onSubmit(mode: Mode = NormalMode)
 GET         /additional-details/change                   controllers.pas.AdditionalDetailsController.onPageLoad(mode: Mode = CheckMode)
 POST        /additional-details/change                   controllers.pas.AdditionalDetailsController.onSubmit(mode: Mode = CheckMode)
+
+GET         /send-your-appeal                            controllers.pas.SendYourAppealController.onPageLoad()

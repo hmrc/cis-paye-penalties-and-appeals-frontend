@@ -35,20 +35,20 @@ class Navigator @Inject()() {
     case FileReturnDatePage =>
       _ => controllers.pas.routes.AdditionalDetailsController.onPageLoad(NormalMode)
     case AdditionalDetailsPage =>
-      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.pas.routes.SendYourAppealController.onPageLoad()
     case _ => _ => controllers.routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case ExcuseEndDatePage =>
-      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.pas.routes.SendYourAppealController.onPageLoad()
     case CisContractorEndDatePage =>
-      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.pas.routes.SendYourAppealController.onPageLoad()
     case FileReturnDatePage =>
-      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
+      _ => controllers.pas.routes.SendYourAppealController.onPageLoad()
     case AdditionalDetailsPage =>
-      _ => controllers.routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 update to CYA page (cis-8) once implemented
-    case _ => _ => controllers.routes.CheckYourAnswersController.onPageLoad()
+      _ => controllers.pas.routes.SendYourAppealController.onPageLoad()
+    case _ => _ => controllers.pas.routes.SendYourAppealController.onPageLoad()
   }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {

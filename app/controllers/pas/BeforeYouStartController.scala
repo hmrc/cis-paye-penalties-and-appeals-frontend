@@ -17,12 +17,15 @@
 package controllers.pas
 
 import controllers.actions.*
+import models.UserAnswers
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.pas.BeforeYouStartView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class BeforeYouStartController @Inject()(
                                        override val messagesApi: MessagesApi,
@@ -30,11 +33,16 @@ class BeforeYouStartController @Inject()(
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
                                        val controllerComponents: MessagesControllerComponents,
+                                       sessionRepository: SessionRepository,
                                        view: BeforeYouStartView
-                                     ) extends FrontendBaseController with I18nSupport {
+                                     )(implicit executionContext: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(penaltyId: Long): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(penaltyId: Long): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      Ok(view("Client name"))
+      for {
+        updated <- sessionRepository.set(request.userAnswers.copy(penaltyId = Some(penaltyId)))
+      } yield {
+        Ok(view("Client name"))
+      }
   }
 }

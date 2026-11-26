@@ -53,7 +53,7 @@ class NavigatorSpec extends SpecBase {
       }
 
       "must go from AdditionalDetailsPage to SendYourAppealController" in {
-        navigator.nextPage(AdditionalDetailsPage, NormalMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+        navigator.nextPage(AdditionalDetailsPage, NormalMode, UserAnswers("id")) mustBe controllers.pas.routes.SendYourAppealController.onPageLoad()
       }
     }
 
@@ -62,23 +62,23 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad()
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe controllers.pas.routes.SendYourAppealController.onPageLoad()
       }
 
       "must go from ExcuseEndDatePage to SendYourAppealController" in {
-        navigator.nextPage(ExcuseEndDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+        navigator.nextPage(ExcuseEndDatePage, CheckMode, UserAnswers("id")) mustBe controllers.pas.routes.SendYourAppealController.onPageLoad()
       }
 
       "must go from CisContractorEndDatePage to SendYourAppealController" in {
-        navigator.nextPage(CisContractorEndDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+        navigator.nextPage(CisContractorEndDatePage, CheckMode, UserAnswers("id")) mustBe controllers.pas.routes.SendYourAppealController.onPageLoad()
       }
 
       "must go from FileReturnDatePage to SendYourAppealController" in {
-        navigator.nextPage(FileReturnDatePage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+        navigator.nextPage(FileReturnDatePage, CheckMode, UserAnswers("id")) mustBe controllers.pas.routes.SendYourAppealController.onPageLoad()
       }
 
       "must go from AdditionalDetailsPage to SendYourAppealController" in {
-        navigator.nextPage(AdditionalDetailsPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad() // TODO: DTR-9786 - update once CIS-8 Send your appeal is implemented
+        navigator.nextPage(AdditionalDetailsPage, CheckMode, UserAnswers("id")) mustBe controllers.pas.routes.SendYourAppealController.onPageLoad()
       }
     }
   }

@@ -22,8 +22,6 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 import utils.PaginationHelper
 
-import java.time.format.DateTimeFormatter
-
 case class AppealablePenaltiesViewModel(
                                        total: Int,
                                        rows : List[AppealablePenaltiesDisplayRow],
@@ -67,34 +65,16 @@ object AppealablePenaltiesViewModel extends PaginationHelper {
 }
 
 case class AppealablePenaltiesDisplayRow(
-                                          penaltyId: Long,
-                                          issueDate: String,
-                                          taxPeriodEndDate: String,
-                                          penaltyType: String,
-                                          penaltyAmount: String,
+                                          penaltyDetails: PenaltyDetailsViewModel,
                                           redirectUrl: String
                                         )
 
 object AppealablePenaltiesDisplayRow {
-  private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-
+  
   def fromRow(row: GetAppealablePenaltyItem)(implicit messages: Messages): AppealablePenaltiesDisplayRow = {
-
-    val typeOfPenalty = row.penaltyType match {
-      case "CIS3" => messages("appealablePenalties.penalty.cis3")
-      case "CIS4" => messages("appealablePenalties.penalty.cis4")
-      case "CIS5" => messages("appealablePenalties.penalty.cis5")
-      case "CIS6" => messages("appealablePenalties.penalty.cis6")
-      case other  => throw new IllegalStateException(s"[AppealablePenaltiesDisplayRow][fromRow] Invalid penaltyType: $other")
-    }
-
     AppealablePenaltiesDisplayRow(
-      penaltyId        = row.penaltyId,
-      issueDate        = row.issueDate.format(dateFormatter),
-      taxPeriodEndDate = row.taxPeriodEndDate.format(dateFormatter),
-      penaltyType      = typeOfPenalty,
-      penaltyAmount    = f"£${row.penaltyAmount}%,.2f",
-      redirectUrl      = BeforeYouStartController.onPageLoad(row.penaltyId).url
+      penaltyDetails = PenaltyDetailsViewModel.from(row),
+      redirectUrl = BeforeYouStartController.onPageLoad(row.penaltyId).url
     )
   }
 }
