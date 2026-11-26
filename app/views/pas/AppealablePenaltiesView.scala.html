@@ -34,7 +34,7 @@
     @govukTable(Table(
         rows = vm.rows.map { currentRow =>
             Seq(
-                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyDetails.penaltyId.toString, linkUrl = currentRow.redirectUrl) )),
+                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyDetails.penaltyId, linkUrl = currentRow.redirectUrl) )),
                 TableRow(content = Text( currentRow.penaltyDetails.penaltyType )),
                 TableRow(content = Text( currentRow.penaltyDetails.issueDate )),
                 TableRow(content = Text( currentRow.penaltyDetails.taxPeriodEndDate )),

@@ -14,13 +14,14 @@
  * limitations under the License.
  *@
 
-@import views.html.components.{h1, Paragraph, Caption}
+@import views.html.components.{h1, h2, Paragraph, Caption}
 
 @this(
     layout: templates.Layout,
     govukSummaryList: GovukSummaryList,
     caption: Caption,
     h1: h1,
+    h2: h2,
     p: Paragraph,
     govukButton: GovukButton
 )
@@ -32,13 +33,13 @@
     @caption("Client name")
     @h1("sendYourAppeal.heading")
 
-    <h2 class="govuk-heading-m">@messages("sendYourAppeal.penaltyDetails.heading")</h2>
+    @h2("sendYourAppeal.penaltyDetails.heading")
     @govukSummaryList(penaltyDetailsSummary)
 
-    <h2 class="govuk-heading-m">@messages("sendYourAppeal.checkYourAnswers.heading")</h2>
+    @h2("sendYourAppeal.checkYourAnswers.heading")
     @govukSummaryList(answersSummary)
 
-    <h2 class="govuk-heading-m">@messages("sendYourAppeal.declaration.heading")</h2>
+    @h2("sendYourAppeal.declaration.heading")
     @p("sendYourAppeal.declaration.p1")
 
     @govukButton(
