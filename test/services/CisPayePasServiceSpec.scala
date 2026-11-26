@@ -87,17 +87,17 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       val testResponse = GetAppealablePenaltiesResponse(
         total = 2,
         appealablePenalties = List(
-          GetAppealablePenaltyResponse(
-            penaltyId = Some(10001),
-            issueDate = Some(LocalDate.of(2023, 1, 1)),
-            taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-            penaltyType = Some("CIS03"),
-            penaltyAmount = Some(BigDecimal(999.23))
+          GetAppealablePenaltyItem(
+            penaltyId = 10001,
+            issueDate = LocalDate.of(2023, 1, 1),
+            taxPeriodEndDate = LocalDate.of(2023, 4, 1),
+            penaltyType = "CIS3",
+            penaltyAmount = BigDecimal(999.23)
           )
         )
       )
 
-      "must return AppealablePenaltiesViewModel when successful" in {
+      "must return GetAppealablePenaltiesResponse when successful" in {
         when(mockBackendConnector.getCisAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
           .thenReturn(Future.successful(testResponse))
 
@@ -128,11 +128,10 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       )
 
       val getCisAppealablePenaltyResponse = GetAppealablePenaltyResponse(
-        penaltyId = None,
-        issueDate = Some(LocalDate.of(2023, 1, 1)),
-        taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-        penaltyType = Some("CIS003"),
-        penaltyAmount = Some(BigDecimal("999.23"))
+        issueDate = LocalDate.of(2023, 1, 1),
+        taxPeriodEndDate = LocalDate.of(2023, 4, 1),
+        penaltyType = "CIS003",
+        penaltyAmount = BigDecimal("999.23")
       )
 
       "must return GetCisAppealablePenaltyResponse when request provided" in {
@@ -142,7 +141,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
         val result = service.getCisAppealablePenalty(getCisAppealablePenaltyRequest).futureValue
 
         result mustBe getCisAppealablePenaltyResponse
-        result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+        result.issueDate mustBe LocalDate.of(2023, 1, 1)
         verify(mockBackendConnector, times(1)).getCisAppealablePenalty(eqTo(getCisAppealablePenaltyRequest))(any())
       }
 
@@ -314,17 +313,17 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     val testResponse = GetAppealablePenaltiesResponse(
       total = 2,
       appealablePenalties = List(
-        GetAppealablePenaltyResponse(
-          penaltyId = Some(10001),
-          issueDate = Some(LocalDate.of(2023, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-          penaltyType = Some("CIS03"),
-          penaltyAmount = Some(BigDecimal(999.23))
+        GetAppealablePenaltyItem(
+          penaltyId = 10001,
+          issueDate = LocalDate.of(2023, 1, 1),
+          taxPeriodEndDate = LocalDate.of(2023, 4, 1),
+          penaltyType = "CIS03",
+          penaltyAmount = BigDecimal(999.23)
         )
       )
     )
 
-    "must return AppealablePenaltiesViewModel when successful" in {
+    "must return GetAppealablePenaltiesResponse when successful" in {
       when(mockBackendConnector.getPayeAppealablePenalties(eqTo(testRequest))(any[HeaderCarrier]))
         .thenReturn(Future.successful(testResponse))
 
@@ -355,11 +354,10 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
     )
 
     val getPayeAppealablePenaltyResponse = GetAppealablePenaltyResponse(
-      penaltyId = None,
-      issueDate = Some(LocalDate.of(2023, 1, 1)),
-      taxPeriodEndDate = Some(LocalDate.of(2023, 4, 1)),
-      penaltyType = Some("CIS003"),
-      penaltyAmount = Some(BigDecimal("999.23"))
+      issueDate = LocalDate.of(2023, 1, 1),
+      taxPeriodEndDate = LocalDate.of(2023, 4, 1),
+      penaltyType = "CIS003",
+      penaltyAmount = BigDecimal("999.23")
     )
 
     "must return GetPayeAppealablePenaltyResponse when request provided" in {
@@ -369,7 +367,7 @@ class CisPayePasServiceSpec extends SpecBase with MockitoSugar with BeforeAndAft
       val result = service.getPayeAppealablePenalty(getPayeAppealablePenaltyRequest).futureValue
 
       result mustBe getPayeAppealablePenaltyResponse
-      result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+      result.issueDate mustBe LocalDate.of(2023, 1, 1)
       verify(mockBackendConnector, times(1)).getPayeAppealablePenalty(eqTo(getPayeAppealablePenaltyRequest))(any())
     }
 

@@ -17,7 +17,7 @@
 package viewmodels.appealablePenalties
 
 import controllers.pas.routes.BeforeYouStartController
-import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyResponse}
+import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyItem}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 import utils.PaginationHelper
@@ -67,7 +67,7 @@ object AppealablePenaltiesViewModel extends PaginationHelper {
 }
 
 case class AppealablePenaltiesDisplayRow(
-                                          penaltyId: String,
+                                          penaltyId: Long,
                                           issueDate: String,
                                           taxPeriodEndDate: String,
                                           penaltyType: String,
@@ -78,25 +78,23 @@ case class AppealablePenaltiesDisplayRow(
 object AppealablePenaltiesDisplayRow {
   private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
-  def fromRow(row: GetAppealablePenaltyResponse)(implicit messages: Messages): AppealablePenaltiesDisplayRow = {
+  def fromRow(row: GetAppealablePenaltyItem)(implicit messages: Messages): AppealablePenaltiesDisplayRow = {
 
     val typeOfPenalty = row.penaltyType match {
-      case Some("CIS3") => messages("appealablePenalties.penalty.cis3")
-      case Some("CIS4") => messages("appealablePenalties.penalty.cis4")
-      case Some("CIS5") => messages("appealablePenalties.penalty.cis5")
-      case Some("CIS6") => messages("appealablePenalties.penalty.cis6")
-      case _ => ""
+      case "CIS3" => messages("appealablePenalties.penalty.cis3")
+      case "CIS4" => messages("appealablePenalties.penalty.cis4")
+      case "CIS5" => messages("appealablePenalties.penalty.cis5")
+      case "CIS6" => messages("appealablePenalties.penalty.cis6")
+      case other  => throw new IllegalStateException(s"[AppealablePenaltiesDisplayRow][fromRow] Invalid penaltyType: $other")
     }
 
-    val penaltyId = row.penaltyId.map(_.toString).getOrElse("")
-
     AppealablePenaltiesDisplayRow(
-      penaltyId        = penaltyId,
-      issueDate        = row.issueDate.map(_.format(dateFormatter)).getOrElse(""),
-      taxPeriodEndDate = row.taxPeriodEndDate.map(_.format(dateFormatter)).getOrElse(""),
+      penaltyId        = row.penaltyId,
+      issueDate        = row.issueDate.format(dateFormatter),
+      taxPeriodEndDate = row.taxPeriodEndDate.format(dateFormatter),
       penaltyType      = typeOfPenalty,
-      penaltyAmount    = row.penaltyAmount.map(a => f"£$a%,.2f" ).getOrElse(""),
-      redirectUrl      = BeforeYouStartController.onPageLoad(penaltyId).url
+      penaltyAmount    = f"£${row.penaltyAmount}%,.2f",
+      redirectUrl      = BeforeYouStartController.onPageLoad(row.penaltyId).url
     )
   }
 }

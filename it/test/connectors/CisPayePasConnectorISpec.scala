@@ -199,7 +199,7 @@ class CisPayePasConnectorISpec
         server.stubFor(post(urlPathEqualTo(getCisAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getCisAppealablePenaltyResponseJson.toString())))
         val request = getCisAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         val result = connector.getCisAppealablePenalty(request).futureValue
-        result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+        result.issueDate mustBe LocalDate.of(2023, 1, 1)
         server.verify(postRequestedFor(urlPathEqualTo(getCisAppealablePenaltyPath)))
       }
 
@@ -608,7 +608,7 @@ class CisPayePasConnectorISpec
         server.stubFor(post(urlPathEqualTo(getPayeAppealablePenaltyPath)).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(getPayeAppealablePenaltyResponseJson.toString())))
         val request = getPayeAppealablePenaltyRequestJson.as[GetAppealablePenaltyRequest]
         val result = connector.getPayeAppealablePenalty(request).futureValue
-        result.issueDate mustBe Some(LocalDate.of(2023, 1, 1))
+        result.issueDate mustBe LocalDate.of(2023, 1, 1)
         server.verify(postRequestedFor(urlPathEqualTo(getPayeAppealablePenaltyPath)))
       }
 

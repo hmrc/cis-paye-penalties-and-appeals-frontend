@@ -18,7 +18,7 @@ package controllers.pas
 
 import base.SpecBase
 import config.FrontendAppConfig
-import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyResponse}
+import models.{GetAppealablePenaltiesResponse, GetAppealablePenaltyItem}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -193,14 +193,14 @@ class AppealablePenaltiesControllerSpec extends SpecBase {
     val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
     val cisOrgUrl: String = appConfig.manageCisAccountOrgUrl
 
-    def generateRows(num: Int): List[GetAppealablePenaltyResponse] =
+    def generateRows(num: Int): List[GetAppealablePenaltyItem] =
       (0 to num).toList.map { index =>
-        GetAppealablePenaltyResponse(
-          penaltyId = Some(index),
-          issueDate = Some(LocalDate.of(2025, 1, 1)),
-          taxPeriodEndDate = Some(LocalDate.of(2025, 4, 1)),
-          penaltyType = Some("CIS3"),
-          penaltyAmount = Some(BigDecimal(100.00))
+        GetAppealablePenaltyItem(
+          penaltyId = index,
+          issueDate = LocalDate.of(2025, 1, 1),
+          taxPeriodEndDate = LocalDate.of(2025, 4, 1),
+          penaltyType = "CIS3",
+          penaltyAmount = BigDecimal(100.00)
         )
       }
   }
