@@ -34,19 +34,19 @@
     @govukTable(Table(
         rows = vm.rows.map { currentRow =>
             Seq(
-                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyId.toString, linkUrl = currentRow.redirectUrl) )),
-                TableRow(content = Text( currentRow.penaltyType )),
-                TableRow(content = Text( currentRow.issueDate )),
-                TableRow(content = Text( currentRow.taxPeriodEndDate )),
-                TableRow(content = Text( currentRow.penaltyAmount )),
+                TableRow(content = HtmlContent( link( linkTextKey = currentRow.penaltyDetails.penaltyId.toString, linkUrl = currentRow.redirectUrl) )),
+                TableRow(content = Text( currentRow.penaltyDetails.penaltyType )),
+                TableRow(content = Text( currentRow.penaltyDetails.issueDate )),
+                TableRow(content = Text( currentRow.penaltyDetails.taxPeriodEndDate )),
+                TableRow(content = Text( currentRow.penaltyDetails.penaltyAmount )),
             )
             },
             head = Some(Seq(
-                HeadCell(content = Text(messages("appealablePenalties.penaltyId"))),
-                HeadCell(content = Text(messages("appealablePenalties.penaltyType"))),
-                HeadCell(content = Text(messages("appealablePenalties.issueDate"))),
-                HeadCell(content = Text(messages("appealablePenalties.taxPeriodEndDate"))),
-                HeadCell(content = Text(messages("appealablePenalties.penaltyAmount"))),
+                HeadCell(content = Text(messages("penaltyDetails.penaltyId"))),
+                HeadCell(content = Text(messages("penaltyDetails.penaltyType"))),
+                HeadCell(content = Text(messages("penaltyDetails.issueDate"))),
+                HeadCell(content = Text(messages("penaltyDetails.taxPeriodEndDate"))),
+                HeadCell(content = Text(messages("penaltyDetails.penaltyAmount"))),
             )
         )
     ))

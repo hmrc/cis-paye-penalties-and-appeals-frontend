@@ -19,7 +19,7 @@ package controllers.pas
 import controllers.actions.*
 import forms.pas.WhyYouAreAppealingFormProvider
 import models.Mode
-import pages.pas.WhyYouAreAppealingPage
+import pages.pas.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.pas.WhyYouAreAppealingView
 
 import javax.inject.Inject
+import scala.util.Success
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhyYouAreAppealingController @Inject()(
@@ -63,7 +64,18 @@ class WhyYouAreAppealingController @Inject()(
         value =>
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(WhyYouAreAppealingPage, value))
-            _              <- sessionRepository.set(updatedAnswers)
+            finalAnswers   <- Future.fromTry {
+              if !request.userAnswers.get(WhyYouAreAppealingPage).contains(value) then
+                updatedAnswers
+                  .remove(ExcuseEndDateKnownPage)
+                  .flatMap(_.remove(ExcuseEndDatePage))
+                  .flatMap(_.remove(CisContractorEndDatePage))
+                  .flatMap(_.remove(FileReturnDatePage))
+                  .flatMap(_.remove(AdditionalDetailsPage))
+              else
+                Success(updatedAnswers)
+            }
+            _              <- sessionRepository.set(finalAnswers)
           } yield {
             value.toString match {
               case "3" | "6" | "21" | "7" | "8" | "13" =>
@@ -75,7 +87,7 @@ class WhyYouAreAppealingController @Inject()(
               case "5" =>
                 Redirect(controllers.pas.routes.FileReturnDateController.onPageLoad(mode))
               case "18" =>
-                Redirect(controllers.pas.routes.WhyYouAreAppealingController.onPageLoad(mode)) //TODO: Change for group 7 DTR-9786
+                Redirect(controllers.pas.routes.SendYourAppealController.onPageLoad())
             }
           }
       )

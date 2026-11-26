@@ -29,7 +29,7 @@ import viewmodels.implicits.*
 
 object WhyYouAreAppealingSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryRowResult] = {
+  def row(answers: UserAnswers)(implicit messages: Messages): SummaryRowResult = {
     val changeRoute = routes.WhyYouAreAppealingController.onPageLoad(CheckMode)
 
     answers.get(WhyYouAreAppealingPage).map { answer =>
@@ -49,8 +49,8 @@ object WhyYouAreAppealingSummary {
           )
         )
       )
-    }.orElse {
-      Some(Missing(changeRoute))
+    }.getOrElse {
+      Missing(changeRoute)
     }
   }
 }

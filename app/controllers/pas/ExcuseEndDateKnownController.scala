@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.pas.ExcuseEndDateKnownFormProvider
 import models.{Mode, NormalMode}
 import navigation.Navigator
-import pages.pas.ExcuseEndDateKnownPage
+import pages.pas.{ExcuseEndDateKnownPage, ExcuseEndDatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.pas.ExcuseEndDateKnownView
 
 import javax.inject.{Inject, Singleton}
+import scala.util.Success
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -66,7 +67,11 @@ class ExcuseEndDateKnownController @Inject()(
         value =>
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(ExcuseEndDateKnownPage, value))
-            _              <- sessionRepository.set(updatedAnswers)
+            finalAnswers <- Future.fromTry {
+              if !value then updatedAnswers.remove(ExcuseEndDatePage)
+              else Success(updatedAnswers)
+            }
+            _            <- sessionRepository.set(finalAnswers)
           } yield {
             if (!value && mode == NormalMode) {
               Redirect(controllers.pas.routes.AdditionalDetailsController.onPageLoad(mode))

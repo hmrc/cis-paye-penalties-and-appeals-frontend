@@ -19,10 +19,11 @@ package controllers.pas
 import base.SpecBase
 import forms.pas.WhyYouAreAppealingFormProvider
 import models.{CheckMode, NormalMode, UserAnswers, WhyYouAreAppealing}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.pas.WhyYouAreAppealingPage
+import pages.pas.{AdditionalDetailsPage, CisContractorEndDatePage, ExcuseEndDateKnownPage, ExcuseEndDatePage, FileReturnDatePage, WhyYouAreAppealingPage}
 import play.api.Application
 import play.api.inject.bind
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -31,6 +32,7 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.pas.WhyYouAreAppealingView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class WhyYouAreAppealingControllerSpec extends SpecBase with MockitoSugar {
@@ -166,7 +168,7 @@ class WhyYouAreAppealingControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to group 7 page when valid data is submitted for reason 18" in {
+    "must redirect to group 7 page (SendYourAppealController) when valid data is submitted for reason 18" in {
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -178,7 +180,73 @@ class WhyYouAreAppealingControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, postRequest(whyYouAreAppealingRoute, "18")).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.WhyYouAreAppealingController.onPageLoad(NormalMode).url // TODO: DTR-9786 - update to correct URL
+        redirectLocation(result).value mustEqual routes.SendYourAppealController.onPageLoad().url
+      }
+    }
+
+    "must clear answers when WhyYouAreAppealing answer was previously another option than selected" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(WhyYouAreAppealingPage, WhyYouAreAppealing.Victim).success.value
+        .set(ExcuseEndDateKnownPage, true).success.value
+        .set(ExcuseEndDatePage, LocalDate.of(2022, 10, 26)).success.value
+        .set(CisContractorEndDatePage, LocalDate.of(2022, 10, 26)).success.value
+        .set(FileReturnDatePage, LocalDate.of(2022, 10, 26)).success.value
+        .set(AdditionalDetailsPage, "Some details").success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
+        .build()
+
+      running(application) {
+        val result = route(application, postRequest(whyYouAreAppealingRoute, WhyYouAreAppealing.SeriousIllness.toString)).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.ExcuseEndDateController.onPageLoad(NormalMode).url
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(uaCaptor.capture())
+        uaCaptor.getValue.get(ExcuseEndDateKnownPage).isDefined mustBe false
+        uaCaptor.getValue.get(ExcuseEndDatePage).isDefined mustBe false
+        uaCaptor.getValue.get(CisContractorEndDatePage).isDefined mustBe false
+        uaCaptor.getValue.get(FileReturnDatePage).isDefined mustBe false
+        uaCaptor.getValue.get(AdditionalDetailsPage).isDefined mustBe false
+      }
+    }
+
+    "must not clear answers when WhyYouAreAppealing answer was previously the same option as selected" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(WhyYouAreAppealingPage, WhyYouAreAppealing.Victim).success.value
+        .set(ExcuseEndDateKnownPage, true).success.value
+        .set(ExcuseEndDatePage, LocalDate.of(2022, 10, 26)).success.value
+        .set(CisContractorEndDatePage, LocalDate.of(2022, 10, 26)).success.value
+        .set(FileReturnDatePage, LocalDate.of(2022, 10, 26)).success.value
+        .set(AdditionalDetailsPage, "Some details").success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
+        .build()
+
+      running(application) {
+        val result = route(application, postRequest(whyYouAreAppealingRoute, WhyYouAreAppealing.Victim.toString)).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.ExcuseEndDateController.onPageLoad(NormalMode).url
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(uaCaptor.capture())
+        uaCaptor.getValue.get(ExcuseEndDateKnownPage).isDefined mustBe true
+        uaCaptor.getValue.get(ExcuseEndDatePage).isDefined mustBe true
+        uaCaptor.getValue.get(CisContractorEndDatePage).isDefined mustBe true
+        uaCaptor.getValue.get(FileReturnDatePage).isDefined mustBe true
+        uaCaptor.getValue.get(AdditionalDetailsPage).isDefined mustBe true
       }
     }
 

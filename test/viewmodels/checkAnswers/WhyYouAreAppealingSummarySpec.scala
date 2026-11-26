@@ -29,7 +29,7 @@ class WhyYouAreAppealingSummarySpec extends SpecBase {
 
     "when reason present" - {
 
-      "must return Some(Row) with the answer and change link" in {
+      "must return Row with the answer and change link" in {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
         running(application) {
@@ -40,7 +40,7 @@ class WhyYouAreAppealingSummarySpec extends SpecBase {
           val userAnswers = emptyUserAnswers
             .set(WhyYouAreAppealingPage, answer).success.value
 
-          val row = WhyYouAreAppealingSummary.row(userAnswers).getOrElse(fail("Failed to get summary list row"))
+          val row = WhyYouAreAppealingSummary.row(userAnswers)
 
           val result = row match {
             case Row(r) => r
@@ -59,13 +59,13 @@ class WhyYouAreAppealingSummarySpec extends SpecBase {
 
     "when reason absent" - {
 
-      "must return Some(Missing) with the correct redirect call" in {
+      "must return Missing with the correct redirect call" in {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
         running(application) {
           implicit val msgs: Messages = messages(application)
 
-          val result = WhyYouAreAppealingSummary.row(emptyUserAnswers).getOrElse(fail("Failed to get summary list row"))
+          val result = WhyYouAreAppealingSummary.row(emptyUserAnswers)
 
           result match {
             case Missing(call) =>
