@@ -19,67 +19,55 @@ package controllers.pas
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import controllers.routes
-import models.{GetAppealablePenaltyItem, GetAppealablePenaltyRequest}
+import models.AppealSubmissionReceipt
+import pages.pas.SendYourAppealPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.CisPayePasService
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CheckAnswersUtil.redirectOrRender
-import viewmodels.appealablePenalties.PenaltyDetailsViewModel
-import viewmodels.checkAnswers.*
+import utils.AppealSummaryBuilder
 import views.html.pas.SendYourAppealView
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SendYourAppealController @Inject()(
                                             override val messagesApi: MessagesApi,
+                                            sessionRepository: SessionRepository,
                                             identify: IdentifierAction,
                                             getData: DataRetrievalAction,
                                             requireData: DataRequiredAction,
                                             val controllerComponents: MessagesControllerComponents,
-                                            cisPayePasService: CisPayePasService,
+                                            appealSummaryBuilder: AppealSummaryBuilder,
                                             view: SendYourAppealView
                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Logging {
 
+  // TODO: DTR-8978 - populate this information with iForms response
+  private val timestamp = "2021-03-12T09:52:32.765Z"
+  private val acknowledgementReference = "58S41GNKDMEQDUZ"
+
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userAnswers.penaltyId.map { penaltyId =>
-        val getAppealablePenaltyRequest = GetAppealablePenaltyRequest(
-          penaltyId = penaltyId,
-          hmrcOfficeNumber = request.employerReference.hmrcOfficeNumber,
-          schemeReferenceNumber = request.employerReference.schemeReferenceNumber
-        )
-        cisPayePasService.getCisAppealablePenalty(getAppealablePenaltyRequest).map { response =>
-          val penaltyDetailsItem = GetAppealablePenaltyItem(
-            penaltyId = penaltyId,
-            issueDate = response.issueDate,
-            taxPeriodEndDate = response.taxPeriodEndDate,
-            penaltyType = response.penaltyType,
-            penaltyAmount = response.penaltyAmount
-          )
-          val penaltyDetailsSummaryList = PenaltyDetailsSummaryList(PenaltyDetailsViewModel.from(penaltyDetailsItem))
-
-          val rowResults = Seq(
-            Some(WhyYouAreAppealingSummary.row(request.userAnswers)),
-            ExcuseEndDateKnownSummary.row(request.userAnswers),
-            ExcuseEndDateSummary.row(request.userAnswers),
-            CisContractorEndDateSummary.row(request.userAnswers),
-            FileReturnDateSummary.row(request.userAnswers),
-            AdditionalDetailsSummary.row(request.userAnswers)
-          ).flatten
-
-          redirectOrRender(rowResults) match {
-            case Left(call) => Redirect(call)
-            case Right(summaryList) => Ok(view(penaltyDetailsSummaryList, summaryList))
-          }
+      appealSummaryBuilder.build(submitted = false).map {
+        case Left(redirect) => redirect
+        case Right(summaries) => Ok(view(summaries.penaltyDetailsSummaryList, summaries.answersSummaryList))
         } recover {
           case ex =>
             logger.error(s"[SendYourAppealController][onPageLoad] Unexpected failure: ${ex.getMessage}")
             Redirect(routes.JourneyRecoveryController.onPageLoad())
         }
-      }.getOrElse {
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-      }
+  }
+
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      val receipt = AppealSubmissionReceipt(
+        acknowledgementReference = acknowledgementReference,
+        submittedAt = timestamp
+      )
+
+      for {
+        updatedAnswers <- Future.fromTry(request.userAnswers.set(SendYourAppealPage, receipt))
+        _              <- sessionRepository.set(updatedAnswers)
+      } yield Redirect(controllers.pas.routes.AppealConfirmationController.onPageLoad()) // TODO: DTR-9789 - update to Appeal received page
   }
 }

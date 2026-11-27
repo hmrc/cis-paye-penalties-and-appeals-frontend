@@ -226,3 +226,11 @@ object InitiateClientListDownloadResponse {
   implicit val format: OFormat[InitiateClientListDownloadResponse] = Json.format[InitiateClientListDownloadResponse]
 }
 
+case class AppealSubmissionReceipt(
+                                    acknowledgementReference: String,
+                                    submittedAt: String
+                                  )
+
+object AppealSubmissionReceipt {
+  implicit val format: OFormat[AppealSubmissionReceipt] = Json.format[AppealSubmissionReceipt]
+}

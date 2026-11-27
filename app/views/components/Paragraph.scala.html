@@ -18,11 +18,10 @@
 
 @(
     msg: String,
-    extraClasses: String = ""
+    extraClasses: String = "",
+    args: Seq[Any] = Nil
 )(implicit messages: Messages)
 
 <p class="govuk-body @extraClasses">
-    @{
-        Html(messages(msg))
-    }
+    @messages(msg, args*)
 </p>

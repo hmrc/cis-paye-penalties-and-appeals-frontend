@@ -159,3 +159,12 @@ sendYourAppeal.checkYourAnswers.heading = Check your answers
 sendYourAppeal.declaration.heading = Declaration
 sendYourAppeal.declaration.p1 = By submitting this appeal, you are making a legal declaration that the information is correct and complete to the best of your knowledge. A false declaration can result in prosecution.
 sendYourAppeal.button = Accept and send
+
+appealConfirmation.title = Appeal confirmation
+appealConfirmation.heading = Appeal confirmation
+appealConfirmation.p1 = Sent at {0} GMT on {1}.
+appealConfirmation.acknowledgementReference = Acknowledgement reference:
+appealConfirmation.link1.text = Print or save a copy of this page
+appealConfirmation.link2.text = View a PDF of this page
+appealConfirmation.penaltyDetails.heading = Penalty details
+appealConfirmation.appealDetails.heading = Appeal details
