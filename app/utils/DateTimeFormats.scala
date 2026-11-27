@@ -18,6 +18,7 @@ package utils
 
 import play.api.i18n.Lang
 
+import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -36,4 +37,15 @@ object DateTimeFormats {
 
   val dateTimeHintFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d M yyyy")
+
+  def formatTimestamp(timestamp: String): Seq[String] =
+    val gmtDateTime = Instant.parse(timestamp).atZone(ZoneId.of("GMT"))
+
+    val timeFormatter = DateTimeFormatter.ofPattern("h:mma", Locale.ENGLISH)
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH)
+
+    Seq(
+      gmtDateTime.format(timeFormatter).toLowerCase,
+      gmtDateTime.format(dateFormatter)
+    )
 }

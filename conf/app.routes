@@ -52,3 +52,6 @@ GET         /additional-details/change                   controllers.pas.Additio
 POST        /additional-details/change                   controllers.pas.AdditionalDetailsController.onSubmit(mode: Mode = CheckMode)
 
 GET         /send-your-appeal                            controllers.pas.SendYourAppealController.onPageLoad()
+POST        /send-your-appeal                            controllers.pas.SendYourAppealController.onSubmit()
+
+GET         /appeal-confirmation                         controllers.pas.AppealConfirmationController.onPageLoad()

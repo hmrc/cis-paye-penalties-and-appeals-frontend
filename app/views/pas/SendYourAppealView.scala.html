@@ -19,6 +19,7 @@
 @this(
     layout: templates.Layout,
     govukSummaryList: GovukSummaryList,
+    formHelper: FormWithCSRF,
     caption: Caption,
     h1: h1,
     h2: h2,
@@ -29,20 +30,22 @@
 @(penaltyDetailsSummary: SummaryList, answersSummary: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("sendYourAppeal.title"))) {
+    @formHelper(action = controllers.pas.routes.SendYourAppealController.onSubmit()) {
 
-    @caption("Client name")
-    @h1("sendYourAppeal.heading")
+        @caption("Client name")
+        @h1("sendYourAppeal.heading")
 
-    @h2("sendYourAppeal.penaltyDetails.heading")
-    @govukSummaryList(penaltyDetailsSummary)
+        @h2("sendYourAppeal.penaltyDetails.heading")
+        @govukSummaryList(penaltyDetailsSummary)
 
-    @h2("sendYourAppeal.checkYourAnswers.heading")
-    @govukSummaryList(answersSummary)
+        @h2("sendYourAppeal.checkYourAnswers.heading")
+        @govukSummaryList(answersSummary)
 
-    @h2("sendYourAppeal.declaration.heading")
-    @p("sendYourAppeal.declaration.p1")
+        @h2("sendYourAppeal.declaration.heading")
+        @p("sendYourAppeal.declaration.p1")
 
-    @govukButton(
-        ButtonViewModel(messages("sendYourAppeal.button"))
-    )
+        @govukButton(
+            ButtonViewModel(messages("sendYourAppeal.button"))
+        )
+    }
 }
